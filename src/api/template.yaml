@@ -106,6 +106,45 @@ Resources:
         - DomainName: !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
           HostedZoneId: !Ref HostedZone
       ValidationMethod: DNS
+  UIDistro:
+    Type: AWS::CloudFront::Distribution
+    DependsOn: Certificate
+    Properties:
+      DistributionConfig: 
+        Aliases: 
+          - String
+        AnycastIpListId: String
+        CacheBehaviors: 
+          - CacheBehavior
+        CNAMEs: 
+          - String
+        Comment: String
+        ContinuousDeploymentPolicyId: String
+        CustomErrorResponses: 
+          - CustomErrorResponse
+        CustomOrigin: 
+          LegacyCustomOrigin
+        DefaultCacheBehavior: 
+          DefaultCacheBehavior
+        DefaultRootObject: String
+        Enabled: Boolean
+        HttpVersion: String
+        IPV6Enabled: Boolean
+        Logging: 
+          Logging
+        OriginGroups: 
+          OriginGroups
+        Origins: 
+          - Origin
+        PriceClass: String
+        Restrictions: 
+          Restrictions
+        S3Origin: 
+          LegacyS3Origin
+        Staging: Boolean
+        ViewerCertificate: 
+          ViewerCertificate
+        WebACLId: String
   # WebSocketAuth:
   #   Type: AWS::ApiGatewayV2::Authorizer
   #   Properties:
@@ -745,3 +784,5 @@ Resources:
 Outputs:
   UIBucketName:
     Value: !Ref UIBucket
+  UIDistroId:
+    Value: !Ref UIDistro

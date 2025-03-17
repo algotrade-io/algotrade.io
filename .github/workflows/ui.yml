@@ -81,7 +81,7 @@ jobs:
           CF_DISTRO_ID: ${{ fromJSON(format('["{0}","{1}"]', secrets.DEV_CF_DISTRO_ID, secrets.CF_DISTRO_ID))[github.ref_name == 'master'] }}
           VITE_COVERAGE: ${{ fromJSON(format('["{0}","{1}"]', true, false))[github.ref_name == 'master'] }}
 
-      - name: Get CF Outputs
+      - name: Get CloudFormation Outputs
         run: |
           AWS_S3_BUCKET=$(aws cloudformation describe-stacks --stack-name api-dev --query 'Stacks[0].Outputs[?OutputKey==`UIBucketName`].OutputValue' --output text)
           echo "AWS_S3_BUCKET=${AWS_S3_BUCKET}" >> $GITHUB_ENV
