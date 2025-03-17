@@ -112,13 +112,11 @@ Resources:
     Properties:
       DistributionConfig: 
         Aliases: 
-          - String
-        AnycastIpListId: String
+          - !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
         CacheBehaviors: 
           - CacheBehavior
         CNAMEs: 
           - String
-        Comment: String
         ContinuousDeploymentPolicyId: String
         CustomErrorResponses: 
           - CustomErrorResponse
