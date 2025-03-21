@@ -108,7 +108,9 @@ Resources:
       ValidationMethod: DNS
   UIDistro:
     Type: AWS::CloudFront::Distribution
-    DependsOn: Certificate
+    DependsOn: 
+    - Certificate
+    - UIBucket
     Properties:
       DistributionConfig: 
         Aliases: 
@@ -125,9 +127,9 @@ Resources:
         DefaultCacheBehavior: 
           DefaultCacheBehavior
         DefaultRootObject: String
-        Enabled: Boolean
+        Enabled: true
         HttpVersion: String
-        IPV6Enabled: Boolean
+        IPV6Enabled: true
         Logging: 
           Logging
         OriginGroups: 
