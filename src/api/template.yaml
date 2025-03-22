@@ -128,20 +128,16 @@ Resources:
           DefaultCacheBehavior
         DefaultRootObject: String
         Enabled: true
-        HttpVersion: String
+        HttpVersion: http3
         IPV6Enabled: true
-        Logging: 
-          Logging
         OriginGroups: 
           OriginGroups
         Origins: 
           - Origin
-        PriceClass: String
         Restrictions: 
           Restrictions
         S3Origin: 
           LegacyS3Origin
-        Staging: Boolean
         ViewerCertificate: 
           ViewerCertificate
         WebACLId: String
