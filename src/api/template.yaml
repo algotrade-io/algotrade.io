@@ -140,7 +140,6 @@ Resources:
           LegacyS3Origin
         ViewerCertificate: 
           ViewerCertificate
-        WebACLId: String
   # WebSocketAuth:
   #   Type: AWS::ApiGatewayV2::Authorizer
   #   Properties:
