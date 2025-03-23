@@ -117,8 +117,6 @@ Resources:
           - !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
         CacheBehaviors: 
           - CacheBehavior
-        CNAMEs: 
-          - String
         CustomErrorResponses: 
           - CustomErrorResponse
         CustomOrigin: 
