@@ -135,7 +135,7 @@ Resources:
         Origins:
           - CustomOriginConfig: 
               OriginProtocolPolicy: http-only
-            DomainName: !GetAtt UIBucket.WebsiteURL
+            DomainName: !Select [1, !Split [ "//", !GetAtt UIBucket.WebsiteURL ]] 
             Id: x
         ViewerCertificate: 
           AcmCertificateArn: !Ref Certificate
