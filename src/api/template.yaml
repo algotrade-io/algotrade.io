@@ -158,13 +158,10 @@ Resources:
             DomainName: String
             Id: x
             OriginAccessControlId: String
-            # OriginCustomHeaders: 
-            #   - OriginCustomHeader
-            # OriginPath: String
-            S3OriginConfig: 
-              S3OriginConfig
-            VpcOriginConfig: 
-              VpcOriginConfig
+            # S3OriginConfig: 
+            #   S3OriginConfig
+            # VpcOriginConfig: 
+            #   VpcOriginConfig
         ViewerCertificate: 
           AcmCertificateArn: !Ref Certificate
           MinimumProtocolVersion: TLSv1.2_2021
