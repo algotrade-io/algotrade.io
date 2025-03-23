@@ -89,6 +89,31 @@ Resources:
     Type: "AWS::Route53::HostedZone"
     Properties: 
       Name: !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
+  RecordSet:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      AliasTarget: 
+        AliasTarget
+      CidrRoutingConfig: 
+        CidrRoutingConfig
+      Comment: String
+      Failover: String
+      GeoLocation: 
+        GeoLocation
+      GeoProximityLocation: 
+        GeoProximityLocation
+      HealthCheckId: String
+      HostedZoneId: String
+      HostedZoneName: String
+      MultiValueAnswer: Boolean
+      Name: String
+      Region: String
+      ResourceRecords: 
+        - String
+      SetIdentifier: String
+      TTL: String
+      Type: String
+      Weight: Integer
   WebSocketApi:
       Type: AWS::ApiGatewayV2::Api
       Properties:
