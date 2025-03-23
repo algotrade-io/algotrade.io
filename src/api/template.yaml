@@ -116,7 +116,10 @@ Resources:
         Aliases: 
           - !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
         CustomErrorResponses: 
-          - CustomErrorResponse
+          - ErrorCachingMinTTL: 60
+            ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: "/index.html"
         DefaultCacheBehavior: 
             AllowedMethods: 
               - String
@@ -146,7 +149,6 @@ Resources:
             TrustedSigners: 
               - String
             ViewerProtocolPolicy: String
-        # DefaultRootObject: String
         Enabled: true
         HttpVersion: http3
         IPV6Enabled: true
