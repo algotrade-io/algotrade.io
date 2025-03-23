@@ -135,35 +135,28 @@ Resources:
               - FunctionAssociation
             GrpcConfig: 
               GrpcConfig
-            LambdaFunctionAssociations: 
-              - LambdaFunctionAssociation
-            MaxTTL: Number
-            MinTTL: Number
-            OriginRequestPolicyId: String
-            RealtimeLogConfigArn: String
-            ResponseHeadersPolicyId: String
-            SmoothStreaming: Boolean
+            # LambdaFunctionAssociations: 
+            #   - LambdaFunctionAssociation
+            # MaxTTL: Number
+            # MinTTL: Number
+            # OriginRequestPolicyId: String
+            # RealtimeLogConfigArn: String
+            # ResponseHeadersPolicyId: String
+            # SmoothStreaming: Boolean
             TargetOriginId: x
-            TrustedKeyGroups: 
-              - String
-            TrustedSigners: 
-              - String
-            ViewerProtocolPolicy: String
+            # TrustedKeyGroups: 
+            #   - String
+            # TrustedSigners: 
+            #   - String
+            ViewerProtocolPolicy: redirect-to-https
         Enabled: true
         HttpVersion: http3
         IPV6Enabled: true
         Origins:
           - CustomOriginConfig: 
-              # HTTPPort: Integer
-              # HTTPSPort: Integer
-              # OriginKeepaliveTimeout: Integer
               OriginProtocolPolicy: http-only
-              # OriginReadTimeout: Integer
-              # OriginSSLProtocols: 
-              #   - String
-            DomainName: String
+            DomainName: !GetAtt UIBucket.WebsiteURL
             Id: x
-            # OriginAccessControlId: String
         ViewerCertificate: 
           AcmCertificateArn: !Ref Certificate
           MinimumProtocolVersion: TLSv1.2_2021
