@@ -91,29 +91,14 @@ Resources:
       Name: !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
   RecordSet:
     Type: AWS::Route53::RecordSet
+    DependsOn: HostedZone
     Properties:
       AliasTarget: 
-        AliasTarget
-      CidrRoutingConfig: 
-        CidrRoutingConfig
-      Comment: String
-      Failover: String
-      GeoLocation: 
-        GeoLocation
-      GeoProximityLocation: 
-        GeoProximityLocation
-      HealthCheckId: String
-      HostedZoneId: String
-      HostedZoneName: String
-      MultiValueAnswer: Boolean
-      Name: String
-      Region: String
-      ResourceRecords: 
-        - String
-      SetIdentifier: String
-      TTL: String
-      Type: String
-      Weight: Integer
+        DNSName: !GetAtt UIDistro.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2 # hosted zone for all CloudFront distros
+      HostedZoneId: !Ref HostedZone
+      Name: !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
+      Type: A
   WebSocketApi:
       Type: AWS::ApiGatewayV2::Api
       Properties:
