@@ -121,20 +121,12 @@ Resources:
             ResponseCode: 200
             ResponsePagePath: "/index.html"
         DefaultCacheBehavior: 
-            AllowedMethods: 
-              - String
-            CachedMethods: 
-              - String
+            # AllowedMethods: 
+            #   - String
+            # CachedMethods: 
+            #   - String
             CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6 # CachingOptimized
             Compress: true
-            # DefaultTTL: Number
-            # FieldLevelEncryptionId: String
-            # ForwardedValues: 
-            #   ForwardedValues
-            # FunctionAssociations: 
-            #   - FunctionAssociation
-            # GrpcConfig: 
-            #   GrpcConfig
             TargetOriginId: x
             ViewerProtocolPolicy: redirect-to-https
         Enabled: true
