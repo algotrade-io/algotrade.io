@@ -143,7 +143,7 @@ Resources:
             RealtimeLogConfigArn: String
             ResponseHeadersPolicyId: String
             SmoothStreaming: Boolean
-            TargetOriginId: String
+            TargetOriginId: x
             TrustedKeyGroups: 
               - String
             TrustedSigners: 
@@ -152,13 +152,11 @@ Resources:
         Enabled: true
         HttpVersion: http3
         IPV6Enabled: true
-        Origins: 
-          # - ConnectionAttempts: 3
-            # ConnectionTimeout: Integer
-            CustomOriginConfig: 
+        Origins:
+          - CustomOriginConfig: 
               CustomOriginConfig
             DomainName: String
-            Id: String
+            Id: x
             OriginAccessControlId: String
             OriginCustomHeaders: 
               - OriginCustomHeader
