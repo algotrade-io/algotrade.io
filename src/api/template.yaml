@@ -153,9 +153,28 @@ Resources:
         HttpVersion: http3
         IPV6Enabled: true
         Origins: 
-          - Origin
+          - ConnectionAttempts: Integer
+            ConnectionTimeout: Integer
+            CustomOriginConfig: 
+              CustomOriginConfig
+            DomainName: String
+            Id: String
+            OriginAccessControlId: String
+            OriginCustomHeaders: 
+              - OriginCustomHeader
+            OriginPath: String
+            OriginShield: 
+              OriginShield
+            S3OriginConfig: 
+              S3OriginConfig
+            VpcOriginConfig: 
+              VpcOriginConfig
         ViewerCertificate: 
-          ViewerCertificate
+          AcmCertificateArn: !Ref Certificate
+          # CloudFrontDefaultCertificate: Boolean
+          # IamCertificateId: String
+          MinimumProtocolVersion: TLSv1.2_2021
+          SslSupportMethod: sni-only
   # WebSocketAuth:
   #   Type: AWS::ApiGatewayV2::Authorizer
   #   Properties:
