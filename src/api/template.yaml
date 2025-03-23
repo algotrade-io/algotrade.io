@@ -154,13 +154,13 @@ Resources:
         IPV6Enabled: true
         Origins:
           - CustomOriginConfig: 
-              HTTPPort: Integer
-              HTTPSPort: Integer
-              OriginKeepaliveTimeout: Integer
-              OriginProtocolPolicy: String
-              OriginReadTimeout: Integer
-              OriginSSLProtocols: 
-                - String
+              # HTTPPort: Integer
+              # HTTPSPort: Integer
+              # OriginKeepaliveTimeout: Integer
+              OriginProtocolPolicy: http-only
+              # OriginReadTimeout: Integer
+              # OriginSSLProtocols: 
+              #   - String
             DomainName: String
             Id: x
             # OriginAccessControlId: String
