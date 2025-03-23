@@ -115,20 +115,41 @@ Resources:
       DistributionConfig: 
         Aliases: 
           - !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
-        CacheBehaviors: 
-          - CacheBehavior
         CustomErrorResponses: 
           - CustomErrorResponse
-        CustomOrigin: 
-          LegacyCustomOrigin
         DefaultCacheBehavior: 
-          DefaultCacheBehavior
-        DefaultRootObject: String
+            AllowedMethods: 
+              - String
+            CachedMethods: 
+              - String
+            CachePolicyId: String
+            Compress: Boolean
+            DefaultTTL: Number
+            FieldLevelEncryptionId: String
+            ForwardedValues: 
+              ForwardedValues
+            FunctionAssociations: 
+              - FunctionAssociation
+            GrpcConfig: 
+              GrpcConfig
+            LambdaFunctionAssociations: 
+              - LambdaFunctionAssociation
+            MaxTTL: Number
+            MinTTL: Number
+            OriginRequestPolicyId: String
+            RealtimeLogConfigArn: String
+            ResponseHeadersPolicyId: String
+            SmoothStreaming: Boolean
+            TargetOriginId: String
+            TrustedKeyGroups: 
+              - String
+            TrustedSigners: 
+              - String
+            ViewerProtocolPolicy: String
+        # DefaultRootObject: String
         Enabled: true
         HttpVersion: http3
         IPV6Enabled: true
-        OriginGroups: 
-          OriginGroups
         Origins: 
           - Origin
         ViewerCertificate: 
