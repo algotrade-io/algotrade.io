@@ -131,8 +131,6 @@ Resources:
           OriginGroups
         Origins: 
           - Origin
-        S3Origin: 
-          LegacyS3Origin
         ViewerCertificate: 
           ViewerCertificate
   # WebSocketAuth:
