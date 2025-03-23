@@ -153,8 +153,8 @@ Resources:
         HttpVersion: http3
         IPV6Enabled: true
         Origins: 
-          - ConnectionAttempts: Integer
-            ConnectionTimeout: Integer
+          # - ConnectionAttempts: 3
+            # ConnectionTimeout: Integer
             CustomOriginConfig: 
               CustomOriginConfig
             DomainName: String
@@ -171,8 +171,6 @@ Resources:
               VpcOriginConfig
         ViewerCertificate: 
           AcmCertificateArn: !Ref Certificate
-          # CloudFrontDefaultCertificate: Boolean
-          # IamCertificateId: String
           MinimumProtocolVersion: TLSv1.2_2021
           SslSupportMethod: sni-only
   # WebSocketAuth:
