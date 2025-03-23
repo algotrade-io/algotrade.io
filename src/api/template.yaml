@@ -125,29 +125,17 @@ Resources:
               - String
             CachedMethods: 
               - String
-            CachePolicyId: String
-            Compress: Boolean
-            DefaultTTL: Number
-            FieldLevelEncryptionId: String
-            ForwardedValues: 
-              ForwardedValues
-            FunctionAssociations: 
-              - FunctionAssociation
-            GrpcConfig: 
-              GrpcConfig
-            # LambdaFunctionAssociations: 
-            #   - LambdaFunctionAssociation
-            # MaxTTL: Number
-            # MinTTL: Number
-            # OriginRequestPolicyId: String
-            # RealtimeLogConfigArn: String
-            # ResponseHeadersPolicyId: String
-            # SmoothStreaming: Boolean
+            CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6 # CachingOptimized
+            Compress: true
+            # DefaultTTL: Number
+            # FieldLevelEncryptionId: String
+            # ForwardedValues: 
+            #   ForwardedValues
+            # FunctionAssociations: 
+            #   - FunctionAssociation
+            # GrpcConfig: 
+            #   GrpcConfig
             TargetOriginId: x
-            # TrustedKeyGroups: 
-            #   - String
-            # TrustedSigners: 
-            #   - String
             ViewerProtocolPolicy: redirect-to-https
         Enabled: true
         HttpVersion: http3
