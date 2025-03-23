@@ -158,11 +158,9 @@ Resources:
             DomainName: String
             Id: x
             OriginAccessControlId: String
-            OriginCustomHeaders: 
-              - OriginCustomHeader
-            OriginPath: String
-            OriginShield: 
-              OriginShield
+            # OriginCustomHeaders: 
+            #   - OriginCustomHeader
+            # OriginPath: String
             S3OriginConfig: 
               S3OriginConfig
             VpcOriginConfig: 
