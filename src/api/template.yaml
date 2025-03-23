@@ -154,14 +154,16 @@ Resources:
         IPV6Enabled: true
         Origins:
           - CustomOriginConfig: 
-              CustomOriginConfig
+              HTTPPort: Integer
+              HTTPSPort: Integer
+              OriginKeepaliveTimeout: Integer
+              OriginProtocolPolicy: String
+              OriginReadTimeout: Integer
+              OriginSSLProtocols: 
+                - String
             DomainName: String
             Id: x
-            OriginAccessControlId: String
-            # S3OriginConfig: 
-            #   S3OriginConfig
-            # VpcOriginConfig: 
-            #   VpcOriginConfig
+            # OriginAccessControlId: String
         ViewerCertificate: 
           AcmCertificateArn: !Ref Certificate
           MinimumProtocolVersion: TLSv1.2_2021
