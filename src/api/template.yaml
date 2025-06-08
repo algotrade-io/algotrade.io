@@ -741,6 +741,7 @@ Resources:
             RestApiId: !Ref ApiGatewayApi
   UsersTable:
     Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
     Properties:
       TableName: !Sub "users-${Stage}"
       BillingMode: PAY_PER_REQUEST
