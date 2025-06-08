@@ -85,19 +85,6 @@ Resources:
       BucketName: !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
       WebsiteConfiguration:
         IndexDocument: index.html
-      # Bucket Policy
-      # {
-      #     "Version": "2012-10-17", done
-      #     "Statement": [
-      #         {
-      #             "Sid": "PublicReadGetObject",
-      #             "Effect": "Allow", done
-      #             "Principal": "*", done
-      #             "Action": "s3:GetObject", done
-      #             "Resource": "arn:aws:s3:::dev.forcepu.sh/*"
-      #         }
-      #     ]
-      # }
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
@@ -110,6 +97,7 @@ Resources:
             Effect: Allow
             Resource: !Sub arn:aws:s3:::${UIBucket}/*
             Principal: '*'
+            Sid: PublicReadGetObject
   HostedZone: 
     Type: AWS::Route53::HostedZone
     Properties: 
