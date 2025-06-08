@@ -23,7 +23,7 @@ import '@cypress/code-coverage/support'
 
 const repoRoot = Cypress.config('repoRoot') || ''; // or projectRoot
 export const domain = `dev.${repoRoot.split('/').pop()}`;
-// export const getUrl = (path) => `${domain}${path}`
+export const getUrl = (path) => `https://${domain}/${path}`
 
 Cypress.on('uncaught:exception', (err, runnable) => {
     const { name } = err;

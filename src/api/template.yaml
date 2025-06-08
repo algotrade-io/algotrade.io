@@ -81,7 +81,7 @@ Resources:
         BlockPublicAcls: false
       OwnershipControls:
         Rules:
-          - ObjectOwnership: ObjectWriter
+          - ObjectOwnership: BucketOwnerEnforced
       BucketName: !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
       WebsiteConfiguration:
         IndexDocument: index.html
