@@ -1,8 +1,14 @@
+import { rootDir, repoRoot } from "../support/e2e";
+
 describe('Alerts', () => {
     beforeEach(() => {
       cy.visit('/alerts')
     })
     it('Update preferences', () => {
+      console.log('rootDir', rootDir);
+      console.log('repoRoot', repoRoot);
+      cy.log(`Project root directory is: ${rootDir}`);
+      cy.log(`Repo root is: ${repoRoot}`);
       const toggle = '.ant-switch';
       cy.get(toggle).first().should('be.disabled');
       cy.login();

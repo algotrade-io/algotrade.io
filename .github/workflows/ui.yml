@@ -113,7 +113,7 @@ jobs:
         with:
           record: true
           install: false
-          wait-on: 'https://dev.forcepu.sh'
+          wait-on: 'https://${{ env.AWS_S3_BUCKET }}'
           config-file: cypress.config.ts
           command-prefix: "--"
         env:
