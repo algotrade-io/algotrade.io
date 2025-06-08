@@ -14,7 +14,7 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import path from 'path';
+// import path from 'path';
 import './commands'
 
 // Alternatively you can use CommonJS syntax:
@@ -23,7 +23,10 @@ import './commands'
 import '@cypress/code-coverage/support'
 
 const repoRoot = Cypress.config('repoRoot') || ''; // or projectRoot
-export const domain = `dev.${path.basename(repoRoot)}`;
+// can't use path in browser, so need to use setupNodeEvents in cypress.config.ts
+// then use cy.task in e2e.ts or test
+// export const domain = `dev.${path.basename(repoRoot)}`;
+export const domain = `dev.${repoRoot.split('/').pop()}`;
 
 Cypress.on('uncaught:exception', (err, runnable) => {
     const { name } = err;
