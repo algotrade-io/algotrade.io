@@ -14,6 +14,7 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
+import path from 'path';
 import './commands'
 
 // Alternatively you can use CommonJS syntax:
@@ -21,18 +22,8 @@ import './commands'
 
 import '@cypress/code-coverage/support'
 
-// const domain = `dev.${__dirname}`;
-// console.log('domain', domain);
-
-// Get the project root directory from Cypress's own configuration.
-export const rootDir: string = Cypress.config('projectRoot');
-export const repoRoot: string | null = Cypress.config('repoRoot');
-
-// You can now use the rootDir variable.
-// For example, to log it to the Cypress command log (for debugging):
-// cy.log(`Project root directory is: ${rootDir}`);
-console.log('rootDir', rootDir)
-console.log('repoRoot', repoRoot)
+const repoRoot = Cypress.config('repoRoot') || ''; // or projectRoot
+export const domain = `dev.${path.basename(repoRoot)}`;
 
 Cypress.on('uncaught:exception', (err, runnable) => {
     const { name } = err;

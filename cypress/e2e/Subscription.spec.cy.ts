@@ -1,3 +1,5 @@
+import { domain } from "../support/e2e";
+
 describe('Subscription', () => {
     beforeEach(() => {
       cy.visit('/subscription')
@@ -53,6 +55,6 @@ describe('Subscription', () => {
         
         // Try contact us link
         cy.get('a').contains('Contact us!').click();
-        cy.url().should('eq', 'https://dev.forcepu.sh/contact');
+        cy.url().should('eq', `https://dev.${domain}/contact`);
     })
   })
