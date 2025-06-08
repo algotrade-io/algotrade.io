@@ -74,6 +74,21 @@ Conditions:
     !Equals [!Ref Stage, prod]
 
 Resources:
+  DomainIdentity:
+    Type: AWS::SES::EmailIdentity
+    Properties:
+      ConfigurationSetAttributes: 
+        ConfigurationSetAttributes
+      DkimAttributes: 
+        DkimAttributes
+      DkimSigningAttributes: 
+        DkimSigningAttributes
+      EmailIdentity: String
+      FeedbackAttributes: 
+        FeedbackAttributes
+      MailFromAttributes: 
+        MailFromAttributes
+
   UIBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -87,6 +102,7 @@ Resources:
         IndexDocument: index.html
   BucketPolicy:
     Type: AWS::S3::BucketPolicy
+    DependsOn: UIBucket
     Properties:
       Bucket: !Ref UIBucket
       PolicyDocument:
