@@ -1,67 +1,67 @@
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
 
 Parameters:
   Domain:
-    Type: "String"
+    Type: String
   S3Bucket:
-    Type: "String"
+    Type: String
     NoEcho: true
   Stage:
-    Type: "String"
+    Type: String
     AllowedValues:
       - dev
       - prod
   UserPoolArn:
-    Type: "String"
+    Type: String
     NoEcho: true
   UserPoolId:
-    Type: "String"
+    Type: String
     NoEcho: true
   WebClientId:
-    Type: "String"
+    Type: String
     NoEcho: true
   StripeSecretKey:
-    Type: "String"
+    Type: String
     NoEcho: true
   StripeWebhookSecret:
-    Type: "String"
+    Type: String
     NoEcho: true
   StripePriceId:
-    Type: "String"
+    Type: String
     NoEcho: true
   EmailUser:
-    Type: "String"
+    Type: String
     NoEcho: true
   EmailPass:
-    Type: "String"
+    Type: String
     NoEcho: true
   Salt:
-    Type: "String"
+    Type: String
     NoEcho: true
   EmitSecret:
-    Type: "String"
+    Type: String
     NoEcho: true
   SignalEmail:
-    Type: "String"
+    Type: String
     NoEcho: true
   RHUsername:
-    Type: "String"
+    Type: String
     NoEcho: true
   RHPassword:
-    Type: "String"
+    Type: String
     NoEcho: true
   RH2FA:
-    Type: "String"
+    Type: String
     NoEcho: true
   RHUsername2:
-    Type: "String"
+    Type: String
     NoEcho: true
   RHPassword2:
-    Type: "String"
+    Type: String
     NoEcho: true
   RH2FA2:
-    Type: "String"
+    Type: String
     NoEcho: true
 
 Globals:
@@ -75,7 +75,7 @@ Conditions:
 
 Resources:
   UIBucket:
-    Type: 'AWS::S3::Bucket'
+    Type: AWS::S3::Bucket
     Properties:
       PublicAccessBlockConfiguration:
         BlockPublicAcls: false
@@ -85,8 +85,42 @@ Resources:
       BucketName: !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
       WebsiteConfiguration:
         IndexDocument: index.html
+      # Bucket Policy
+      # {
+      #     "Version": "2012-10-17", done
+      #     "Statement": [
+      #         {
+      #             "Sid": "PublicReadGetObject",
+      #             "Effect": "Allow",
+      #             "Principal": "*",
+      #             "Action": "s3:GetObject", done
+      #             "Resource": "arn:aws:s3:::dev.forcepu.sh/*"
+      #         }
+      #     ]
+      # }
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref UIBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - s3:GetObject
+            Effect: Allow
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref DOC-EXAMPLE-BUCKET
+                - /*
+            Principal: '*'
+            Condition:
+              StringLike:
+                'aws:Referer':
+                  - 'http://www.example.com/*'
+                  - 'http://example.net/*'
   HostedZone: 
-    Type: "AWS::Route53::HostedZone"
+    Type: AWS::Route53::HostedZone
     Properties: 
       Name: !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
   RecordSet:
