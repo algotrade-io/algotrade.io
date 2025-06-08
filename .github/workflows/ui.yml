@@ -91,7 +91,7 @@ jobs:
           STACK_NAME: ${{ fromJSON(format('["{0}","{1}"]', 'api-dev', 'api'))[github.ref_name == 'master'] }}
       
       - name: Deploy UI
-        run: aws s3 sync dist s3://${{ env.AWS_S3_BUCKET }} --acl public-read --follow-symlinks --delete
+        run: aws s3 sync dist s3://${{ env.AWS_S3_BUCKET }} --follow-symlinks --delete
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
