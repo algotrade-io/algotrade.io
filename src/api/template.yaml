@@ -76,15 +76,15 @@ Conditions:
 Resources:
   DomainIdentity:
     Type: AWS::SES::EmailIdentity
+    DependsOn: HostedZone
     Properties:
       DkimAttributes: 
         SigningEnabled: true
-      # DkimSigningAttributes: 
-      #   DkimSigningAttributes
       EmailIdentity: !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
       FeedbackAttributes: 
         - EmailForwardingEnabled: true
-
+  # Add support email
+  # Add signals email 
   UIBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -124,6 +124,33 @@ Resources:
       HostedZoneId: !Ref HostedZone
       Name: !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
       Type: A
+  SESRecord1:
+    Type: AWS::Route53::RecordSet
+    DependsOn: DomainIdentity
+    Properties:
+      Name: !GetAtt DomainIdentity.DkimDNSTokenName1
+      ResourceRecords:
+        - !GetAtt DomainIdentity.DkimDNSTokenValue1
+      HostedZoneId: !Ref HostedZone
+      Type: CNAME
+  SESRecord2:
+    Type: AWS::Route53::RecordSet
+    DependsOn: DomainIdentity
+    Properties:
+      Name: !GetAtt DomainIdentity.DkimDNSTokenName2
+      ResourceRecords:
+        - !GetAtt DomainIdentity.DkimDNSTokenValue2
+      HostedZoneId: !Ref HostedZone
+      Type: CNAME
+  SESRecord3:
+    Type: AWS::Route53::RecordSet
+    DependsOn: DomainIdentity
+    Properties:
+      Name: !GetAtt DomainIdentity.DkimDNSTokenName3
+      ResourceRecords:
+        - !GetAtt DomainIdentity.DkimDNSTokenValue3
+      HostedZoneId: !Ref HostedZone
+      Type: CNAME
   WebSocketApi:
       Type: AWS::ApiGatewayV2::Api
       Properties:
