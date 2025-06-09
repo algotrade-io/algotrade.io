@@ -84,7 +84,25 @@ Resources:
       FeedbackAttributes: 
         - EmailForwardingEnabled: true
   # Add support email
-  # Add signals email 
+  SupportIdentity:
+    Type: AWS::SES::EmailIdentity
+    DependsOn: HostedZone
+    Properties:
+      DkimAttributes: 
+        SigningEnabled: true
+      EmailIdentity: !Join [ "", [!Ref EmailUser, "@", !If [IsProd, "", "dev."], !Ref Domain ] ]
+      FeedbackAttributes: 
+        - EmailForwardingEnabled: true
+  # Add signals email
+  SignalsIdentity:
+    Type: AWS::SES::EmailIdentity
+    DependsOn: HostedZone
+    Properties:
+      DkimAttributes: 
+        SigningEnabled: true
+      EmailIdentity: !Join [ "", [!Ref SignalEmail, "@", !If [IsProd, "", "dev."], !Ref Domain ] ]
+      FeedbackAttributes: 
+        - EmailForwardingEnabled: true
   UIBucket:
     Type: AWS::S3::Bucket
     Properties:
