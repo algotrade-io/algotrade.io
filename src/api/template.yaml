@@ -151,6 +151,7 @@ Resources:
         - !GetAtt DomainIdentity.DkimDNSTokenValue1
       HostedZoneId: !Ref HostedZone
       Type: CNAME
+      TTL: 300
   SESRecord2:
     Type: AWS::Route53::RecordSet
     DependsOn: DomainIdentity
@@ -160,6 +161,7 @@ Resources:
         - !GetAtt DomainIdentity.DkimDNSTokenValue2
       HostedZoneId: !Ref HostedZone
       Type: CNAME
+      TTL: 300
   SESRecord3:
     Type: AWS::Route53::RecordSet
     DependsOn: DomainIdentity
@@ -169,6 +171,7 @@ Resources:
         - !GetAtt DomainIdentity.DkimDNSTokenValue3
       HostedZoneId: !Ref HostedZone
       Type: CNAME
+      TTL: 300
   WebSocketApi:
       Type: AWS::ApiGatewayV2::Api
       Properties:
