@@ -82,7 +82,7 @@ Resources:
         SigningEnabled: true
       EmailIdentity: !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
       FeedbackAttributes: 
-        - EmailForwardingEnabled: true
+        EmailForwardingEnabled: true
   # Add support email
   SupportIdentity:
     Type: AWS::SES::EmailIdentity
@@ -92,7 +92,7 @@ Resources:
         SigningEnabled: true
       EmailIdentity: !Join [ "", [!Ref EmailUser, "@", !If [IsProd, "", "dev."], !Ref Domain ] ]
       FeedbackAttributes: 
-        - EmailForwardingEnabled: true
+        EmailForwardingEnabled: true
   # Add signals email
   SignalsIdentity:
     Type: AWS::SES::EmailIdentity
@@ -102,7 +102,7 @@ Resources:
         SigningEnabled: true
       EmailIdentity: !Join [ "", [!Ref SignalEmail, "@", !If [IsProd, "", "dev."], !Ref Domain ] ]
       FeedbackAttributes: 
-        - EmailForwardingEnabled: true
+        EmailForwardingEnabled: true
   UIBucket:
     Type: AWS::S3::Bucket
     Properties:
