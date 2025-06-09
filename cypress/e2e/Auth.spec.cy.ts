@@ -1,3 +1,5 @@
+import { domain } from "../support/e2e";
+
 describe('Auth', () => {
     beforeEach(() => {
       cy.visit('/')
