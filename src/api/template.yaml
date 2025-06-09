@@ -77,17 +77,13 @@ Resources:
   DomainIdentity:
     Type: AWS::SES::EmailIdentity
     Properties:
-      ConfigurationSetAttributes: 
-        ConfigurationSetAttributes
       DkimAttributes: 
-        DkimAttributes
-      DkimSigningAttributes: 
-        DkimSigningAttributes
-      EmailIdentity: String
+        SigningEnabled: true
+      # DkimSigningAttributes: 
+      #   DkimSigningAttributes
+      EmailIdentity: !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
       FeedbackAttributes: 
-        FeedbackAttributes
-      MailFromAttributes: 
-        MailFromAttributes
+        - EmailForwardingEnabled: true
 
   UIBucket:
     Type: AWS::S3::Bucket
