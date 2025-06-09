@@ -7,7 +7,7 @@ describe('Docs', () => {
     it('Trigger Signals API', () => {
         const notification = '.ant-notification';
         cy.login();
-        cy.intercept('GET', `https://api.dev.${domain}/account`).as('getAccount');
+        cy.intercept('GET', `https://api.${domain}/account`).as('getAccount');
         cy.get('input[type="password"]').invoke('val').should('have.length', 86);
         // Try API without access
         cy.get('.opblock').click();
@@ -18,7 +18,7 @@ describe('Docs', () => {
         // Get access
         cy.wait('@getAccount').then(({ request }) => {
           const auth = request.headers['authorization'];
-          cy.request({method: 'POST', url: `https://api.dev.${domain}/account`, headers: {Authorization: auth}, body: {in_beta: 1}});
+          cy.request({method: 'POST', url: `https://api.${domain}/account`, headers: {Authorization: auth}, body: {in_beta: 1}});
         });
         // Try again
         cy.contains('button', 'Execute').click();

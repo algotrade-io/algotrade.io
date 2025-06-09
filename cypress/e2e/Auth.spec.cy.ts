@@ -8,10 +8,10 @@ describe('Auth', () => {
         cy.login();
 
         // Reset account
-        cy.intercept('GET', `https://api.dev.${domain}/account`).as('getAccount');
+        cy.intercept('GET', `https://api.${domain}/account`).as('getAccount');
         cy.wait('@getAccount').then(({ request }) => {
             const auth = request.headers['authorization'];
-            cy.request({method: 'DELETE', url: `https://api.dev.${domain}/account`, headers: {Authorization: auth}});
+            cy.request({method: 'DELETE', url: `https://api.${domain}/account`, headers: {Authorization: auth}});
         });
         cy.reload()
 

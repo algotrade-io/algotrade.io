@@ -18,7 +18,7 @@ Cypress.Commands.add('login', () => {
     let selector = '.ant-layout-header';
     cy.get(selector).find('button').contains('Get started').first().click();
     selector = '.ant-modal-body';
-    cy.get(selector).find('input[name="username"]').last().type(`${Cypress.env('SIGNAL_EMAIL')}@dev.${domain}`);
+    cy.get(selector).find('input[name="username"]').last().type(`${Cypress.env('SIGNAL_EMAIL')}@${domain}`);
     cy.get(selector).find('input[name="password"]').last().type(Cypress.env('EMAIL_PASS'), {log: false});
     cy.get(selector).find('button[type="submit"]').contains('Sign in').click();
 });

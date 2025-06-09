@@ -55,6 +55,6 @@ describe('Subscription', () => {
         
         // Try contact us link
         cy.get('a').contains('Contact us!').click();
-        cy.url().should('eq', `https://dev.${domain}/contact`);
+        cy.url().should('eq', `https://${domain}/contact`);
     })
   })
