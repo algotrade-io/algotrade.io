@@ -13,7 +13,7 @@ describe('Subscription', () => {
         cy.origin('https://checkout.stripe.com', () => {
           cy.on('uncaught:exception', (e) => {
             const { name } = e;
-            if (name === 'IntegrationError' || name == 'TypeError') {
+            if (name === 'IntegrationError' || name === 'TypeError') {
               return false;
             }
             return true;
