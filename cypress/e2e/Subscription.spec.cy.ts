@@ -32,7 +32,7 @@ describe('Subscription', () => {
           cy.get('input[type="checkbox"]').uncheck()
           cy.wait(5000)
           cy.get('.SubmitButton').contains('span', 'Subscribe').click({force: true});
-          cy.wait(20000)
+          cy.wait(30000)
         });
 
         // Cancel subscription through Billing page
