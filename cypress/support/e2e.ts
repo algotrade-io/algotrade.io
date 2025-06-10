@@ -30,7 +30,7 @@ export const handleException = (err) => {
     if (name === 'IntegrationError' || name === 'TypeError') {
         return false;
     }
-    return true;
+    return false;
 }
 
 Cypress.on('uncaught:exception', handleException)
