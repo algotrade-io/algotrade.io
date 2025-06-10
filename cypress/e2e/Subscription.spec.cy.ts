@@ -10,7 +10,7 @@ describe('Subscription', () => {
         cy.login();
         cy.get(card).contains('/ month').parent().invoke('text').should('match', /^\$\d+\.?\d+ \/ month$/);
         cy.contains('button', 'Subscribe').click();
-        cy.origin('https://checkout.stripe.com', () => {
+        cy.origin('https://checkout.stripe.com', { args: { handleException } }, ({ handleException }) => {
           cy.on('uncaught:exception', handleException)
 
           cy.get('input[name="cardNumber"]').type('4242424242424242');
