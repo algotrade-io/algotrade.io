@@ -1,4 +1,4 @@
-import { domain } from "../support/e2e";
+import { domain, handleException } from "../support/e2e";
 
 describe('Subscription', () => {
     beforeEach(() => {
@@ -11,13 +11,7 @@ describe('Subscription', () => {
         cy.get(card).contains('/ month').parent().invoke('text').should('match', /^\$\d+\.?\d+ \/ month$/);
         cy.contains('button', 'Subscribe').click();
         cy.origin('https://checkout.stripe.com', () => {
-          cy.on('uncaught:exception', (e) => {
-            const { name } = e;
-            if (name === 'IntegrationError' || name === 'TypeError') {
-              return false;
-            }
-            return true;
-          })
+          cy.on('uncaught:exception', handleException)
 
           cy.get('input[name="cardNumber"]').type('4242424242424242');
           const expiryYear = String(new Date().getFullYear() + 4).slice(-2);
