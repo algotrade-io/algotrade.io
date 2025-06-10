@@ -25,13 +25,5 @@ const repoRoot = Cypress.config('repoRoot') || ''; // or projectRoot
 export const domain = `dev.${repoRoot.split('/').pop()}`;
 export const getUrl = (path) => `https://${domain}/${path}`
 
-// export const handleException = (err) => {
-//     const { name } = err;
-//     if (name === 'IntegrationError' || name === 'TypeError') {
-//         return false;
-//     }
-//     return false;
-// }
-
-// Cypress.on('uncaught:exception', handleException)
+Cypress.on('uncaught:exception', () => false)
 

@@ -11,13 +11,7 @@ describe('Subscription', () => {
         cy.get(card).contains('/ month').parent().invoke('text').should('match', /^\$\d+\.?\d+ \/ month$/);
         cy.contains('button', 'Subscribe').click();
         cy.origin('https://checkout.stripe.com', () => {
-          cy.on('uncaught:exception', (err) => {
-            const { name } = err;
-            if (name === 'IntegrationError' || name === 'TypeError') {
-                return false;
-            }
-            return false;
-          })
+          cy.on('uncaught:exception', () => false)
           cy.get('input[name="cardNumber"]').type('4242424242424242');
           const expiryYear = String(new Date().getFullYear() + 4).slice(-2);
           const expiryMonth = '01'
@@ -29,10 +23,10 @@ describe('Subscription', () => {
           cy.get('input[name="billingLocality"]').type('Cupertino');
           cy.get('input[name="billingPostalCode"]').type('95014');
           cy.get('select[name="billingAdministrativeArea"').select('CA')
-          cy.get('input[type="checkbox"]').uncheck()
+          // cy.get('input[type="checkbox"]').uncheck()
           cy.wait(5000)
           cy.get('.SubmitButton').contains('span', 'Subscribe').click({force: true});
-          cy.wait(30000)
+          cy.wait(15000)
         });
 
         // Cancel subscription through Billing page
