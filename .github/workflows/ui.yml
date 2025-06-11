@@ -92,13 +92,13 @@ jobs:
           STACK_NAME: ${{ fromJSON(format('["{0}","{1}"]', 'api-dev', 'api'))[github.ref_name == 'master'] }}
       
       - name: Deploy UI
-        run: aws s3 sync dist s3://${{ env.AWS_S3_BUCKET }} --follow-symlinks --delete
+        run: aws s3 sync dist "s3://${AWS_S3_BUCKET}" --follow-symlinks --delete
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Invalidate cache
-        run: aws cloudfront create-invalidation --distribution-id "${CF_DISTRO_ID}" --paths "*"
+        run: aws cloudfront create-invalidation --distribution-id "${CF_DISTRO_ID}" --paths "/*"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
