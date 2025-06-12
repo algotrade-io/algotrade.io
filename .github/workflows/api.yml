@@ -52,6 +52,10 @@ jobs:
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --ignore=F405,W503,W504,E721 --max-complexity=10 --max-line-length=127 --statistics
+      
+      - name: Write env var
+        run: |
+          echo "DOMAIN=$(basename ${GITHUB_REPOSITORY})" >> $GITHUB_ENV
 
       - name: Run all unit tests
         env:
@@ -78,6 +82,7 @@ jobs:
           EmailUser: ${{ secrets.EMAIL_USER }}
           SignalEmail: ${{ secrets.SIGNAL_EMAIL }}
           EmailPass: ${{ secrets.EMAIL_PASS }}
+          Domain: ${{ env.DOMAIN }}
           StripePriceId: ${{ fromJSON(format('["{0}","{1}"]', secrets.DEV_STRIPE_PRICE_ID, secrets.STRIPE_PRICE_ID))[github.ref_name == 'master'] }}
           StripeSecretKey: ${{ fromJSON(format('["{0}","{1}"]', secrets.DEV_STRIPE_SECRET_KEY, secrets.STRIPE_SECRET_KEY))[github.ref_name == 'master'] }}
           # Webhook signing key secret for endpoint (not for CLI)
@@ -98,7 +103,7 @@ jobs:
           FILE_PREFIX: ${{ fromJSON('["dev-",""]')[github.ref_name == 'master'] }}
         run: |
           echo "
-          Domain=$(basename ${GITHUB_REPOSITORY})
+          Domain=${Domain}
           EmailUser=${EmailUser}
           SignalEmail=${SignalEmail}
           EmailPass=${EmailPass}
