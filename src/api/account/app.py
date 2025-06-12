@@ -6,6 +6,7 @@ from models import UserModel, ATTRS_LOOKUP, ALERTS_LOOKUP
 from utils import options, verify_user
 
 stripe.api_key = os.environ['STRIPE_SECRET_KEY']
+domain = os.environ['DOMAIN']
 
 
 def handle_account(event, _):
@@ -78,7 +79,7 @@ def post_account(event):
 
         if 'in_beta' in req_body:
             in_beta = int(req_body['in_beta'])
-            pattern = r'^.*@(dev\.)?forcepu\.sh$'
+            pattern = fr'^.*@(dev\.)?{re.escape(domain)}$'
             if re.match(pattern, email):
                 actions.append(UserModel.in_beta.set(in_beta))
 

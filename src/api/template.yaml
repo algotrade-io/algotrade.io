@@ -401,6 +401,7 @@ Resources:
         Variables:
           TABLE_NAME: !Ref UsersTable
           STRIPE_SECRET_KEY: !Ref StripeSecretKey
+          DOMAIN: !Ref Domain
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
