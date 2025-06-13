@@ -52,6 +52,10 @@ jobs:
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
           flake8 . --count --ignore=F405,W503,W504,E721 --max-complexity=10 --max-line-length=127 --statistics
+      
+      - name: Write env var
+        run: |
+          echo "DOMAIN=$(basename ${GITHUB_REPOSITORY})" >> $GITHUB_ENV
 
       - name: Run all unit tests
         env:
@@ -78,14 +82,13 @@ jobs:
           EmailUser: ${{ secrets.EMAIL_USER }}
           SignalEmail: ${{ secrets.SIGNAL_EMAIL }}
           EmailPass: ${{ secrets.EMAIL_PASS }}
+          Domain: ${{ env.DOMAIN }}
           StripePriceId: ${{ fromJSON(format('["{0}","{1}"]', secrets.DEV_STRIPE_PRICE_ID, secrets.STRIPE_PRICE_ID))[github.ref_name == 'master'] }}
           StripeSecretKey: ${{ fromJSON(format('["{0}","{1}"]', secrets.DEV_STRIPE_SECRET_KEY, secrets.STRIPE_SECRET_KEY))[github.ref_name == 'master'] }}
           # Webhook signing key secret for endpoint (not for CLI)
           StripeWebhookSecret: ${{ fromJSON(format('["{0}","{1}"]', secrets.DEV_STRIPE_WEBHOOK_SECRET, secrets.STRIPE_WEBHOOK_SECRET))[github.ref_name == 'master'] }}
           S3Bucket: ${{ fromJSON(format('["{0}","{1}"]', secrets.HYPERDRIVE_DEV_BUCKET, secrets.HYPERDRIVE_BUCKET))[github.ref_name == 'master'] }}
           Stage: ${{ fromJSON(format('["{0}","{1}"]', 'dev', 'prod'))[github.ref_name == 'master'] }}
-          CertArn: ${{ fromJSON(format('["{0}","{1}"]', secrets.DEV_CERT_ARN, secrets.CERT_ARN))[github.ref_name == 'master'] }}
-          HostedZoneId: ${{ secrets.HOSTED_ZONE_ID }}
           UserPoolArn: ${{ fromJSON(format('["{0}","{1}"]', secrets.DEV_USER_POOL_ARN, secrets.USER_POOL_ARN))[github.ref_name == 'master'] }}
           UserPoolId: ${{ fromJSON(format('["{0}","{1}"]', secrets.DEV_USER_POOL_ID, secrets.USER_POOL_ID))[github.ref_name == 'master'] }}
           WebClientId: ${{ fromJSON(format('["{0}","{1}"]', secrets.DEV_WEB_CLIENT_ID, secrets.WEB_CLIENT_ID))[github.ref_name == 'master'] }}
@@ -100,7 +103,7 @@ jobs:
           FILE_PREFIX: ${{ fromJSON('["dev-",""]')[github.ref_name == 'master'] }}
         run: |
           echo "
-          Domain=$(basename ${GITHUB_REPOSITORY})
+          Domain=${Domain}
           EmailUser=${EmailUser}
           SignalEmail=${SignalEmail}
           EmailPass=${EmailPass}
@@ -109,8 +112,6 @@ jobs:
           StripeWebhookSecret=${StripeWebhookSecret}
           S3Bucket=${S3Bucket}
           Stage=${Stage}
-          CertArn=${CertArn}
-          HostedZoneId=${HostedZoneId}
           UserPoolId=${UserPoolId}
           WebClientId=${WebClientId}
           UserPoolArn=${UserPoolArn}

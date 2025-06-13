@@ -1,3 +1,5 @@
+import { domain } from "../support/e2e";
+
 describe('Auth', () => {
     beforeEach(() => {
       cy.visit('/')
@@ -8,10 +10,10 @@ describe('Auth', () => {
         cy.login();
 
         // Reset account
-        cy.intercept('GET', 'https://api.dev.forcepu.sh/account').as('getAccount');
+        cy.intercept('GET', `https://api.${domain}/account`).as('getAccount');
         cy.wait('@getAccount').then(({ request }) => {
             const auth = request.headers['authorization'];
-            cy.request({method: 'DELETE', url: 'https://api.dev.forcepu.sh/account', headers: {Authorization: auth}});
+            cy.request({method: 'DELETE', url: `https://api.${domain}/account`, headers: {Authorization: auth}});
         });
         cy.reload()
 

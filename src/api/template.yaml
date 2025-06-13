@@ -1,73 +1,67 @@
-AWSTemplateFormatVersion: "2010-09-09"
+AWSTemplateFormatVersion: 2010-09-09
 Transform: AWS::Serverless-2016-10-31
 
 Parameters:
   Domain:
-    Type: "String"
+    Type: String
   S3Bucket:
-    Type: "String"
+    Type: String
     NoEcho: true
   Stage:
-    Type: "String"
+    Type: String
     AllowedValues:
       - dev
       - prod
-  CertArn:
-    Type: "String"
-    NoEcho: true
   UserPoolArn:
-    Type: "String"
+    Type: String
     NoEcho: true
   UserPoolId:
-    Type: "String"
+    Type: String
     NoEcho: true
   WebClientId:
-    Type: "String"
+    Type: String
     NoEcho: true
   StripeSecretKey:
-    Type: "String"
+    Type: String
     NoEcho: true
   StripeWebhookSecret:
-    Type: "String"
+    Type: String
     NoEcho: true
   StripePriceId:
-    Type: "String"
+    Type: String
     NoEcho: true
   EmailUser:
-    Type: "String"
+    Type: String
     NoEcho: true
   EmailPass:
-    Type: "String"
+    Type: String
     NoEcho: true
   Salt:
-    Type: "String"
+    Type: String
     NoEcho: true
   EmitSecret:
-    Type: "String"
+    Type: String
     NoEcho: true
   SignalEmail:
-    Type: "String"
+    Type: String
     NoEcho: true
   RHUsername:
-    Type: "String"
+    Type: String
     NoEcho: true
   RHPassword:
-    Type: "String"
+    Type: String
     NoEcho: true
   RH2FA:
-    Type: "String"
+    Type: String
     NoEcho: true
   RHUsername2:
-    Type: "String"
+    Type: String
     NoEcho: true
   RHPassword2:
-    Type: "String"
+    Type: String
     NoEcho: true
   RH2FA2:
-    Type: "String"
-    NoEcho: true
-  HostedZoneId:
-    Type: "String"
+    Type: String
     NoEcho: true
 
 Globals:
@@ -80,10 +74,104 @@ Conditions:
     !Equals [!Ref Stage, prod]
 
 Resources:
+  DomainIdentity:
+    Type: AWS::SES::EmailIdentity
+    DependsOn: HostedZone
+    Properties:
+      DkimAttributes: 
+        SigningEnabled: true
+      EmailIdentity: !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
+      FeedbackAttributes: 
+        EmailForwardingEnabled: true
+  # Add support email
+  SupportIdentity:
+    Type: AWS::SES::EmailIdentity
+    DependsOn: HostedZone
+    Properties:
+      DkimAttributes: 
+        SigningEnabled: true
+      EmailIdentity: !Join [ "", [!Ref EmailUser, "@", !If [IsProd, "", "dev."], !Ref Domain ] ]
+      FeedbackAttributes: 
+        EmailForwardingEnabled: true
+  # Add signals email
+  SignalsIdentity:
+    Type: AWS::SES::EmailIdentity
+    DependsOn: HostedZone
+    Properties:
+      DkimAttributes: 
+        SigningEnabled: true
+      EmailIdentity: !Join [ "", [!Ref SignalEmail, "@", !If [IsProd, "", "dev."], !Ref Domain ] ]
+      FeedbackAttributes: 
+        EmailForwardingEnabled: true
+  UIBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      BucketName: !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
+      WebsiteConfiguration:
+        IndexDocument: index.html
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    DependsOn: UIBucket
+    Properties:
+      Bucket: !Ref UIBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - s3:GetObject
+            Effect: Allow
+            Resource: !Sub arn:aws:s3:::${UIBucket}/*
+            Principal: '*'
+            Sid: PublicReadGetObject
   HostedZone: 
-    Type: "AWS::Route53::HostedZone"
+    Type: AWS::Route53::HostedZone
     Properties: 
       Name: !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
+  RecordSet:
+    Type: AWS::Route53::RecordSet
+    DependsOn: HostedZone
+    Properties:
+      AliasTarget: 
+        DNSName: !GetAtt UIDistro.DomainName
+        HostedZoneId: Z2FDTNDATAQYW2 # hosted zone for all CloudFront distros
+      HostedZoneId: !Ref HostedZone
+      Name: !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
+      Type: A
+  SESRecord1:
+    Type: AWS::Route53::RecordSet
+    DependsOn: DomainIdentity
+    Properties:
+      Name: !GetAtt DomainIdentity.DkimDNSTokenName1
+      ResourceRecords:
+        - !GetAtt DomainIdentity.DkimDNSTokenValue1
+      HostedZoneId: !Ref HostedZone
+      Type: CNAME
+      TTL: 300
+  SESRecord2:
+    Type: AWS::Route53::RecordSet
+    DependsOn: DomainIdentity
+    Properties:
+      Name: !GetAtt DomainIdentity.DkimDNSTokenName2
+      ResourceRecords:
+        - !GetAtt DomainIdentity.DkimDNSTokenValue2
+      HostedZoneId: !Ref HostedZone
+      Type: CNAME
+      TTL: 300
+  SESRecord3:
+    Type: AWS::Route53::RecordSet
+    DependsOn: DomainIdentity
+    Properties:
+      Name: !GetAtt DomainIdentity.DkimDNSTokenName3
+      ResourceRecords:
+        - !GetAtt DomainIdentity.DkimDNSTokenValue3
+      HostedZoneId: !Ref HostedZone
+      Type: CNAME
+      TTL: 300
   WebSocketApi:
       Type: AWS::ApiGatewayV2::Api
       Properties:
@@ -101,6 +189,41 @@ Resources:
         - DomainName: !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
           HostedZoneId: !Ref HostedZone
       ValidationMethod: DNS
+  UIDistro:
+    Type: AWS::CloudFront::Distribution
+    DependsOn: 
+    - Certificate
+    - UIBucket
+    Properties:
+      DistributionConfig: 
+        Aliases: 
+          - !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
+        CustomErrorResponses: 
+          - ErrorCachingMinTTL: 60
+            ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: "/index.html"
+        DefaultCacheBehavior: 
+            # AllowedMethods: 
+            #   - String
+            # CachedMethods: 
+            #   - String
+            CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6 # CachingOptimized
+            Compress: true
+            TargetOriginId: x
+            ViewerProtocolPolicy: redirect-to-https
+        Enabled: true
+        HttpVersion: http3
+        IPV6Enabled: true
+        Origins:
+          - CustomOriginConfig: 
+              OriginProtocolPolicy: http-only
+            DomainName: !Select [1, !Split [ "//", !GetAtt UIBucket.WebsiteURL ]] 
+            Id: x
+        ViewerCertificate: 
+          AcmCertificateArn: !Ref Certificate
+          MinimumProtocolVersion: TLSv1.2_2021
+          SslSupportMethod: sni-only
   # WebSocketAuth:
   #   Type: AWS::ApiGatewayV2::Authorizer
   #   Properties:
@@ -132,9 +255,7 @@ Resources:
     Properties:
       ApiId: !Ref WebSocketApi
       IntegrationType: AWS_PROXY
-      IntegrationUri: 
-        Fn::Sub:
-            arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebSocketFunction.Arn}/invocations
+      IntegrationUri: !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${WebSocketFunction.Arn}/invocations
   WebSocketDeployment:
     Type: AWS::ApiGatewayV2::Deployment
     DependsOn: WebSocketRoute
@@ -156,34 +277,27 @@ Resources:
   WebSocketDomain:
     Type: AWS::ApiGatewayV2::DomainName
     Properties:
-      DomainName: !Join [ "", ["api2.", !If [IsProd, "", "dev."], forcepu.sh ] ]
-      # DomainName: !Join [ "", ["api2.", !If [IsProd, "", "dev."], !Ref Domain ] ]
+      DomainName: !Join [ "", ["api2.", !If [IsProd, "", "dev."], !Ref Domain ] ]
       DomainNameConfigurations:
-      # replace with cf gen cert
-        - CertificateArn: !Ref CertArn
-        # - CertificateArn: !Ref Certificate
+        - CertificateArn: !Ref Certificate
           EndpointType: REGIONAL
   WebSocketRecord:
     Type: AWS::Route53::RecordSet
     DependsOn: HostedZone
     Properties:
       Type: A
-      Name: !Join [ "", ["api2.", !If [IsProd, "", "dev."], forcepu.sh ] ]
-      # Name: !Join [ "", ["api2.", !If [IsProd, "", "dev."], !Ref Domain ] ]
+      Name: !Join [ "", ["api2.", !If [IsProd, "", "dev."], !Ref Domain ] ]
       AliasTarget:
         DNSName: !GetAtt WebSocketDomain.RegionalDomainName
         # EvaluateTargetHealth: Boolean
         HostedZoneId: !GetAtt WebSocketDomain.RegionalHostedZoneId
-        # replace w cf gen hostedzone
-      # HostedZoneId: !Ref HostedZone
-      HostedZoneId: !Ref HostedZoneId
+      HostedZoneId: !Ref HostedZone
   WebSocketMapping:
     Type: AWS::ApiGatewayV2::ApiMapping
     DependsOn: WebSocketDomain
     Properties:
       ApiId: !Ref WebSocketApi
-      DomainName: !Join [ "", ["api2.", !If [IsProd, "", "dev."], forcepu.sh ] ]
-      # DomainName: !Join [ "", ["api2.", !If [IsProd, "", "dev."], !Ref Domain ] ]
+      DomainName: !Join [ "", ["api2.", !If [IsProd, "", "dev."], !Ref Domain ] ]
       Stage: !Ref WebSocketStage
   WebSocketFunction:
     Type: AWS::Serverless::Function
@@ -264,16 +378,11 @@ Resources:
     Properties:
       StageName: !Ref Stage
       Domain:
-        DomainName: !Join [ "", ["api.", !If [IsProd, "", "dev."], forcepu.sh ] ]
-        # DomainName: !Join [ "", ["api.", !If [IsProd, "", "dev."], !Ref Domain ] ]
-        # replace with cf gen cert
-        CertificateArn: !Ref CertArn
-        # CertificateArn: !Ref Certificate
+        DomainName: !Join [ "", ["api.", !If [IsProd, "", "dev."], !Ref Domain ] ]
+        CertificateArn: !Ref Certificate
         EndpointConfiguration: EDGE
         Route53:
-        # replace with cf gen hostedzone
-          # HostedZoneId: !Ref HostedZone
-          HostedZoneId: !Ref HostedZoneId
+          HostedZoneId: !Ref HostedZone
       Auth:
         Authorizers:
           CognitoAuth:
@@ -292,6 +401,7 @@ Resources:
         Variables:
           TABLE_NAME: !Ref UsersTable
           STRIPE_SECRET_KEY: !Ref StripeSecretKey
+          DOMAIN: !Ref Domain
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
@@ -645,6 +755,7 @@ Resources:
           TABLE_NAME: !Ref UsersTable
           STRIPE_PRICE_ID: !Ref StripePriceId
           STAGE: !Ref Stage
+          DOMAIN: !Ref Domain
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
@@ -678,6 +789,7 @@ Resources:
           STRIPE_SECRET_KEY: !Ref StripeSecretKey
           TABLE_NAME: !Ref UsersTable
           STAGE: !Ref Stage
+          DOMAIN: !Ref Domain
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
@@ -705,6 +817,7 @@ Resources:
             RestApiId: !Ref ApiGatewayApi
   UsersTable:
     Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
     Properties:
       TableName: !Sub "users-${Stage}"
       BillingMode: PAY_PER_REQUEST
@@ -749,3 +862,8 @@ Resources:
             ProjectionType: ALL
       PointInTimeRecoverySpecification:
         PointInTimeRecoveryEnabled: true
+Outputs:
+  UIBucketName:
+    Value: !Ref UIBucket
+  UIDistroId:
+    Value: !Ref UIDistro

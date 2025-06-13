@@ -1,12 +1,14 @@
 import { Segmented } from "antd";
 import styled from "styled-components";
 
+const domain = import.meta.env.VITE_APP_DOMAIN;
+
 export const getEnvironment = () => {
   const hostname = window.location.hostname;
   switch (hostname) {
     case "localhost":
       return "local";
-    case "dev.forcepu.sh":
+    case `dev.${domain}`:
       return "dev";
     default:
       return "prod";
@@ -18,9 +20,9 @@ export const getHostname = (env: string | boolean) => {
     case "local":
       return "localhost";
     case "dev":
-      return "dev.forcepu.sh";
+      return `dev.${domain}`;
     case "prod":
-      return "forcepu.sh";
+      return domain;
     default:
       return window.location.hostname;
   }

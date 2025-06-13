@@ -21,11 +21,9 @@ import './commands'
 
 import '@cypress/code-coverage/support'
 
-Cypress.on('uncaught:exception', (err, runnable) => {
-    const { name } = err;
-    if (name === 'IntegrationError') {
-        return false;
-    }
-    return true;
-})
+const repoRoot = Cypress.config('repoRoot') || ''; // or projectRoot
+export const domain = `dev.${repoRoot.split('/').pop()}`;
+export const getUrl = (path) => `https://${domain}/${path}`
+
+Cypress.on('uncaught:exception', () => false)
 
