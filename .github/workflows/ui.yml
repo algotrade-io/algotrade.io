@@ -82,8 +82,8 @@ jobs:
 
       - name: Get CloudFormation Outputs
         run: |
-          AWS_S3_BUCKET=$(aws cloudformation describe-stacks --stack-name api-dev --query 'Stacks[0].Outputs[?OutputKey==`UIBucketName`].OutputValue' --output text)
-          CF_DISTRO_ID=$(aws cloudformation describe-stacks --stack-name api-dev --query 'Stacks[0].Outputs[?OutputKey==`UIDistroId`].OutputValue' --output text)
+          AWS_S3_BUCKET=$(aws cloudformation describe-stacks --stack-name "${STACK_NAME}" --query 'Stacks[0].Outputs[?OutputKey==`UIBucketName`].OutputValue' --output text)
+          CF_DISTRO_ID=$(aws cloudformation describe-stacks --stack-name "${STACK_NAME}" --query 'Stacks[0].Outputs[?OutputKey==`UIDistroId`].OutputValue' --output text)
           echo "AWS_S3_BUCKET=${AWS_S3_BUCKET}" >> $GITHUB_ENV
           echo "CF_DISTRO_ID=${CF_DISTRO_ID}" >> $GITHUB_ENV
         env:
