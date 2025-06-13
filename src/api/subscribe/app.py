@@ -71,8 +71,9 @@ def post_checkout(event):
     env = os.environ['STAGE']
     email = verified['email']
     req_headers = event['headers']
+    domain = os.environ['DOMAIN']
     origin = req_headers.get(
-        'origin') or f"https://{'dev.' if env == 'dev' else ''}forcepu.sh"
+        'origin') or f"https://{'dev.' if env == 'dev' else ''}{domain}"
 
     # Get customerId from user.stripe {} obj
     user = UserModel.get(email)
@@ -174,8 +175,9 @@ def post_billing(event):
     env = os.environ['STAGE']
     email = verified['email']
     req_headers = event['headers']
+    domain = os.environ['DOMAIN']
     origin = req_headers.get(
-        'origin') or f"https://{'dev.' if env == 'dev' else ''}forcepu.sh"
+        'origin') or f"https://{'dev.' if env == 'dev' else ''}{domain}"
 
     # Get customerId from user.stripe {} obj
     user = UserModel.get(email)
