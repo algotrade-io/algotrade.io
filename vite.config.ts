@@ -18,6 +18,7 @@ export default defineConfig({
     }
   },
   build: {
+    sourcemap: 'inline',
     target: 'esnext',
     rollupOptions: {
       output: {
