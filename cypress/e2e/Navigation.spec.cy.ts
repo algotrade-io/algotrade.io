@@ -8,7 +8,7 @@ describe('Navigation', () => {
     // Test that links exist
     cy.get(selector).should(el => {
       const element = el[0];
-      expect(element.innerText).to.include('FORCEPU.SH');
+      expect(element.innerText).to.include('Algotrade.io');
       pages.forEach(page => expect(element.innerText).to.include(page));
     })
     // Navigate to each page

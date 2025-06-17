@@ -1,4 +1,4 @@
-# FORCEPU.SH
+# Algotrade.io
 
 ## Development
 
