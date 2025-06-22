@@ -60,8 +60,8 @@ def send_email(user, subject, message):
     msg['Subject'] = subject
 
     try:
-        # change this to purelymail server
         server = SMTP('smtp.purelymail.com', 587)
+        server.ehlo()
         server.starttls()
         server.ehlo()
         server.login(sender, os.environ['EMAIL_PASS'])
