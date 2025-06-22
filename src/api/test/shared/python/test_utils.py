@@ -1,3 +1,4 @@
+import os
 import sys
 sys.path.append('src/api')  # noqa
 from shared.python.utils import *  # noqa
@@ -5,8 +6,8 @@ from datetime import datetime, timedelta  # noqa
 
 
 def test_get_email():
-    assert get_email('test', 'dev') == 'test@dev.forcepu.sh'
-    assert get_email('test', 'prod') == 'test@forcepu.sh'
+    assert get_email('test', 'dev') == f"test@dev.{os.environ['DOMAIN']}"
+    assert get_email('test', 'prod') == f"test@{os.environ['DOMAIN']}"
 
 
 def test_transform_signal():
