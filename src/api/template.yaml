@@ -453,6 +453,7 @@ Resources:
           EMAIL_USER: !Ref EmailUser
           EMAIL_PASS: !Ref EmailPass
           STAGE: !Ref Stage
+          DOMAIN: !Ref Domain
       #     TABLE_NAME: !Ref UsersTable
       # Policies:
       #   - DynamoDBCrudPolicy:
@@ -718,6 +719,7 @@ Resources:
           STAGE: !Ref Stage
           SIGNAL_EMAIL: !Ref SignalEmail
           S3_BUCKET: !Ref S3Bucket
+          DOMAIN: !Ref Domain
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
