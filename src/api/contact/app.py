@@ -61,6 +61,7 @@ def send_email(user, subject, message):
 
     try:
         server = SMTP('smtp.purelymail.com', 587)
+        server.starttls()
         server.ehlo()
         server.login(sender, os.environ['EMAIL_PASS'])
         # sender email must be same as login email - error otherwise

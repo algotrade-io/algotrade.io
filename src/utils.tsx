@@ -1,7 +1,7 @@
 import { Segmented } from "antd";
 import styled from "styled-components";
 
-const domain = import.meta.env.VITE_APP_DOMAIN;
+export const domain = import.meta.env.VITE_APP_DOMAIN;
 
 export const getEnvironment = () => {
   const hostname = window.location.hostname;
