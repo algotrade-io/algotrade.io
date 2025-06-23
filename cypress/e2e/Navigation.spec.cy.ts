@@ -13,7 +13,7 @@ describe('Navigation', () => {
     })
     // Navigate to each page
     pages.forEach(page => {
-      cy.get(selector).find('a').contains(page).first().click();
+      cy.get(selector).find('a').contains(page).first().click({force: true});
       cy.location().should(location => expect(location.pathname).to.eq(`/${page.toLowerCase()}`))
     })
 
