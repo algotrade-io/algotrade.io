@@ -1,11 +1,15 @@
 import os
+import ssl
 import json
 import logging
-from smtplib import SMTP_SSL as SMTP
+from smtplib import SMTP
 from email.mime.text import MIMEText
 from utils import \
     verify_user, options, \
     error, RES_HEADERS, get_email, TEST
+
+
+context = ssl.create_default_context()
 
 
 def handle_contact(event, _):
@@ -60,7 +64,9 @@ def send_email(user, subject, message):
     msg['Subject'] = subject
 
     try:
-        server = SMTP('smtp.mail.us-east-1.awsapps.com', 465)
+        server = SMTP('smtp.purelymail.com', 587)
+        server.ehlo()
+        server.starttls(context=context)
         server.ehlo()
         server.login(sender, os.environ['EMAIL_PASS'])
         # sender email must be same as login email - error otherwise

@@ -10,6 +10,7 @@ import layoutStyles from "@/layouts/index.module.less";
 import subStyles from "@/pages/subscription/index.module.less";
 import tradeStyles from "./index.module.less";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import { getHostname } from "../../utils";
 
 
 const isLocal = getEnvironment() === "local";
@@ -60,7 +61,7 @@ const TradePage = () => {
     }, sort)));
   // can add route cache=random to end to force new connections?
   // and set share=false
-  const socketUrl = 'wss://api2.dev.forcepu.sh';
+  const socketUrl = `wss://api2.${getHostname(false)}`;
   const { sendJsonMessage: sendMessage, lastJsonMessage: message } = useWebSocket(socketUrl);
 
   useEffect(() => {

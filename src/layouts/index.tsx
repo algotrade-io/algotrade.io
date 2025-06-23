@@ -34,6 +34,7 @@ import Home from "@/pages/home";
 import Alerts from "@/pages/alerts";
 import Template from "@/pages/template";
 import Trade from "@/pages/trade";
+import { domain } from "../utils";
 
 const { darkAlgorithm } = theme;
 
@@ -130,16 +131,14 @@ const pages: string[] = [
 // split gym, art/gallery to right side of nav
 
 const capitalize = (s: string | any[]) => s[0].toUpperCase() + s.slice(1);
-
+const [prefix, suffix] = domain.split('.');
 const routes = [
   {
     text: (
       <>
         <div className={overrides.home}>
-          {/* consider making capital FORCEPU.SH */}
-          {/* use "force" to find and replace accordingly */}
-          <span className={overrides.white}>FORCE</span>
-          <span>PU.SH</span>
+          <span style={{ textTransform: 'capitalize' }} className={overrides.white}>{prefix}</span>
+          <span>{`.${suffix}`}</span>
         </div>
       </>
     ),

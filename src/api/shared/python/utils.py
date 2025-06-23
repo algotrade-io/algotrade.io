@@ -16,7 +16,7 @@ TEST = str_to_bool(str(os.environ.get('TEST')))
 
 
 def get_email(user, env):
-    return f"{user}@{'dev.' if env == 'dev' else ''}forcepu.sh"
+    return f"{user}@{'dev.' if env == 'dev' else ''}{os.environ['DOMAIN']}"
 
 
 def transform_signal(raw_signal):
