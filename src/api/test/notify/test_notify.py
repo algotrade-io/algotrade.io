@@ -1,24 +1,31 @@
 import sys
 import json
 from math import pow
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 sys.path.append('src/api')  # noqa
 from notify.app import *  # noqa
 from shared.python.models import UserModel  # noqa
 from shared.python.utils import transform_signal  # noqa
 
 
-keeper = Cryptographer(
-    'password'.encode('UTF-8'), 'salt'.encode('UTF-8'))
+crypt = Cryptographer('password', 'salt')
 
 
 class TestCryptographer:
     def test_init(self):
-        assert hasattr(keeper, 'f')
+        assert hasattr(crypt, 'key')
+        assert isinstance(crypt.key, bytes)
+        assert hasattr(crypt, 'aesgcm')
+        assert isinstance(crypt.aesgcm, AESGCM)
+        assert hasattr(crypt, 'nonce_size')
+        assert isinstance(crypt.nonce_size, int)
 
     def test_encrypt_and_decrypt(self):
-        ciphertext = keeper.encrypt('secret'.encode('UTF-8'))
-        plaintext = keeper.decrypt(ciphertext).decode('UTF-8')
-        assert plaintext == 'secret'
+        secret = 'secret'
+        ciphertext = crypt.encrypt(secret)
+        assert ciphertext != secret
+        plaintext = crypt.decrypt(ciphertext)
+        assert plaintext == secret
 
 
 class TestProcessor:
@@ -33,13 +40,13 @@ def test_post_notify():
     body = {'Time': '2020-01-01', 'Sig': True}
     event = {
         'headers': {
-            'emit_secret': keeper.encrypt('wrong'.encode('UTF-8'))
+            'emit_secret': crypt.encrypt('wrong')
         },
         'body': json.dumps(body)
     }
     res = post_notify(event, None)
     assert res['statusCode'] == 401
-    event['headers']['emit_secret'] = keeper.encrypt('secret'.encode('UTF-8'))
+    event['headers']['emit_secret'] = crypt.encrypt('secret')
     user = UserModel.get('test_user@example.com')
     alerts = user.alerts
     alerts['email'] = True
