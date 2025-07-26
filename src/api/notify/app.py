@@ -1,6 +1,7 @@
 import os
 import json
 import boto3
+import base64
 import logging
 import requests
 from time import sleep
@@ -50,7 +51,7 @@ class Cryptographer:
             p=2,
         )
         # Store the key for encryption/decryption operations
-        self.key = kdf.derive(password)
+        self.key = base64.urlsafe_b64encode(kdf.derive(password))
         # AES-GCM is the recommended AEAD cipher
         self.aesgcm = AESGCM(self.key)
         # Define nonce size for AES-GCM
