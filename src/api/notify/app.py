@@ -202,15 +202,15 @@ def skip_users(users, to_skip):
 
 
 def post_notify(event, _):
-    salt = os.environ['SALT'].encode('UTF-8')
-    password = os.environ['CRYPT_PASS'].encode('UTF-8')
+    salt = os.environ['SALT']
+    password = os.environ['CRYPT_PASS']
     emit_secret = os.environ['EMIT_SECRET']
 
     req_headers = event['headers']
     header = 'emit_secret'
     encrypted = req_headers[header] if header in req_headers else ''
     cryptographer = Cryptographer(password, salt)
-    decrypted = cryptographer.decrypt(encrypted).decode('UTF-8')
+    decrypted = cryptographer.decrypt(encrypted)
     if not decrypted == emit_secret:
         sleep(0 if TEST else 10)
         print('Incorrect emit secret provided.')
