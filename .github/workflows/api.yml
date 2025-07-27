@@ -112,7 +112,6 @@ jobs:
           UserPoolId=${UserPoolId}
           WebClientId=${WebClientId}
           UserPoolArn=${UserPoolArn}
-          Salt=${Salt}
           RHUsername=${RHUsername}
           RHPassword=${RHPassword}
           RH2FA=${RH2FA}

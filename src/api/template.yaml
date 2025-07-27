@@ -36,9 +36,6 @@ Parameters:
   EmailPass:
     Type: String
     NoEcho: true
-  Salt:
-    Type: String
-    NoEcho: true
   EmitSecret:
     Type: String
     NoEcho: true
