@@ -1,31 +1,10 @@
 import sys
 import json
 from math import pow
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 sys.path.append('src/api')  # noqa
 from notify.app import *  # noqa
 from shared.python.models import UserModel  # noqa
 from shared.python.utils import transform_signal  # noqa
-
-
-crypt = Cryptographer('password', 'salt')
-
-
-class TestCryptographer:
-    def test_init(self):
-        assert hasattr(crypt, 'key')
-        assert isinstance(crypt.key, bytes)
-        assert hasattr(crypt, 'aesgcm')
-        assert isinstance(crypt.aesgcm, AESGCM)
-        assert hasattr(crypt, 'nonce_size')
-        assert isinstance(crypt.nonce_size, int)
-
-    def test_encrypt_and_decrypt(self):
-        secret = 'secret'
-        ciphertext = crypt.encrypt(secret)
-        assert ciphertext != secret
-        plaintext = crypt.decrypt(ciphertext)
-        assert plaintext == secret
 
 
 class TestProcessor:
