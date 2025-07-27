@@ -40,13 +40,13 @@ def test_post_notify():
     body = {'Time': '2020-01-01', 'Sig': True}
     event = {
         'headers': {
-            'emit_secret': crypt.encrypt('wrong')
+            'emit_secret': 'wrong'
         },
         'body': json.dumps(body)
     }
     res = post_notify(event, None)
     assert res['statusCode'] == 401
-    event['headers']['emit_secret'] = crypt.encrypt('secret')
+    event['headers']['emit_secret'] = 'secret'
     user = UserModel.get('test_user@example.com')
     alerts = user.alerts
     alerts['email'] = True

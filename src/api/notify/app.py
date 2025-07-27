@@ -198,16 +198,10 @@ def skip_users(users, to_skip):
 
 
 def post_notify(event, _):
-    salt = os.environ['SALT']
-    password = os.environ['CRYPT_PASS']
     emit_secret = os.environ['EMIT_SECRET']
-
     req_headers = event['headers']
     header = 'emit_secret'
-    encrypted = req_headers[header] if header in req_headers else ''
-    cryptographer = Cryptographer(password, salt)
-    decrypted = cryptographer.decrypt(encrypted)
-    if not decrypted == emit_secret:
+    if not req_headers.get(header) == emit_secret:
         sleep(0 if TEST else 10)
         print('Incorrect emit secret provided.')
         return error(401, 'Provide a valid emit secret.')
