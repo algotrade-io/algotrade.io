@@ -712,8 +712,6 @@ Resources:
       Timeout: 900 # 15 min
       Environment:
         Variables:
-          SALT: !Ref Salt
-          CRYPT_PASS: !Ref RHPassword
           EMIT_SECRET: !Ref EmitSecret
           TABLE_NAME: !Ref UsersTable
           STAGE: !Ref Stage
