@@ -68,8 +68,6 @@ jobs:
           STAGE: dev
           EMAIL_USER: ${{ secrets.EMAIL_USER }}
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
-          SALT: salt
-          CRYPT_PASS: password
           EMIT_SECRET: secret
           SIGNAL_EMAIL: ${{ secrets.SIGNAL_EMAIL }}
           STRIPE_WEBHOOK_SECRET: secret
@@ -92,7 +90,6 @@ jobs:
           UserPoolArn: ${{ fromJSON(format('["{0}","{1}"]', secrets.DEV_USER_POOL_ARN, secrets.USER_POOL_ARN))[github.ref_name == 'master'] }}
           UserPoolId: ${{ fromJSON(format('["{0}","{1}"]', secrets.DEV_USER_POOL_ID, secrets.USER_POOL_ID))[github.ref_name == 'master'] }}
           WebClientId: ${{ fromJSON(format('["{0}","{1}"]', secrets.DEV_WEB_CLIENT_ID, secrets.WEB_CLIENT_ID))[github.ref_name == 'master'] }}
-          Salt: ${{ secrets.SALT }}
           RHUsername: ${{ secrets.RH_USERNAME }}
           RHPassword: ${{ secrets.CRYPT_PASS }}
           RH2FA: ${{ secrets.RH_2FA}}
@@ -115,7 +112,6 @@ jobs:
           UserPoolId=${UserPoolId}
           WebClientId=${WebClientId}
           UserPoolArn=${UserPoolArn}
-          Salt=${Salt}
           RHUsername=${RHUsername}
           RHPassword=${RHPassword}
           RH2FA=${RH2FA}

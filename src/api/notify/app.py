@@ -1,41 +1,19 @@
 import os
 import json
 import boto3
-import base64
 import logging
 import requests
 from time import sleep
 from jinja2 import Template
-from cryptography.fernet import Fernet
 from multiprocessing import Process, Pipe
 from botocore.exceptions import ClientError
 from datetime import datetime, timedelta, timezone
 from pynamodb.attributes import UTCDateTimeAttribute
-from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
 from models import UserModel
 from utils import \
     transform_signal, \
     error, enough_time_has_passed, \
     RES_HEADERS, get_email, TEST
-
-
-class Cryptographer:
-    def __init__(self, password, salt):
-        kdf = Scrypt(
-            salt=salt,
-            length=32,
-            n=2**14,
-            r=8,
-            p=1,
-        )
-        key = base64.urlsafe_b64encode(kdf.derive(password))
-        self.f = Fernet(key)
-
-    def encrypt(self, plaintext):
-        return self.f.encrypt(plaintext)
-
-    def decrypt(self, ciphertext):
-        return self.f.decrypt(ciphertext)
 
 
 class Processor:
@@ -123,16 +101,10 @@ def skip_users(users, to_skip):
 
 
 def post_notify(event, _):
-    salt = os.environ['SALT'].encode('UTF-8')
-    password = os.environ['CRYPT_PASS'].encode('UTF-8')
     emit_secret = os.environ['EMIT_SECRET']
-
     req_headers = event['headers']
     header = 'emit_secret'
-    encrypted = req_headers[header] if header in req_headers else ''
-    cryptographer = Cryptographer(password, salt)
-    decrypted = cryptographer.decrypt(encrypted).decode('UTF-8')
-    if not decrypted == emit_secret:
+    if not req_headers.get(header) == emit_secret:
         sleep(0 if TEST else 10)
         print('Incorrect emit secret provided.')
         return error(401, 'Provide a valid emit secret.')
