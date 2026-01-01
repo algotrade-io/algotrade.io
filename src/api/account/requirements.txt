@@ -1,2 +1,2 @@
-stripe == 5.0.0
+stripe == 14.1.0
 pynamodb == 5.5.1
