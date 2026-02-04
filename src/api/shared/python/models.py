@@ -25,18 +25,22 @@ def get_default_access_queue():
 
 
 ATTRS_LOOKUP = {UnicodeAttribute: str, BooleanAttribute: bool}
-ALERTS_LOOKUP = {
-    'email': {'attr': BooleanAttribute, 'default': False},
-    'sms': {'attr': BooleanAttribute, 'default': False},
-    'webhook': {'attr': UnicodeAttribute, 'default': ""}
-}
 
 
 class Alerts(MapAttribute):
-    for key, val in ALERTS_LOOKUP.items():
-        vars()[key] = val['attr'](default=val['default'])
+    email = BooleanAttribute(default=False)
+    sms = BooleanAttribute(default=False)
+    webhook = UnicodeAttribute(default="")
     last_sent = UTCDateTimeAttribute(
         default=UTCDateTimeAttribute().serialize(PAST_DATE))
+
+
+# Derive ALERTS_LOOKUP from class introspection - single source of truth
+ALERTS_LOOKUP = {
+    name: {'attr': type(attr), 'default': attr.default}
+    for name, attr in Alerts.get_attributes().items()
+    if name not in set(['last_sent'])
+}
 
 
 class Permissions(MapAttribute):
