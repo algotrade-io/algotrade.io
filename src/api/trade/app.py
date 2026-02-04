@@ -105,14 +105,30 @@ def login(variant=False):
             print('Loaded auth file from S3.')
     except ClientError:
         print('Could not load auth file from S3.')
-        os.remove(auth_path)
+        if os.path.exists(auth_path):
+            os.remove(auth_path)
+
     username = os.environ[f'RH_USERNAME{postfix}']
     password = os.environ[f'RH_PASSWORD{postfix}']
     mfa_code = pyotp.TOTP(os.environ[f'RH_2FA{postfix}']).now()
-    rh.login(username, password, mfa_code=mfa_code)
-    if os.path.exists(auth_path):
-        bucket.upload_file(auth_path, key)
-        print('Saved auth file to S3.')
+
+    try:
+        rh.login(username, password, mfa_code=mfa_code)
+    except Exception as e:
+        # Log the error for debugging but don't expose credentials in error message
+        print(f'Robinhood login failed: {type(e).__name__}: {e}')
+        raise RuntimeError(
+            'Failed to authenticate with Robinhood. '
+            'Check credentials and 2FA configuration.'
+        ) from e
+
+    try:
+        if os.path.exists(auth_path):
+            bucket.upload_file(auth_path, key)
+            print('Saved auth file to S3.')
+    except Exception as e:
+        # Non-fatal: login succeeded but couldn't cache tokens
+        print(f'Warning: Could not save auth file to S3: {e}')
 
 
 def get_trade():
