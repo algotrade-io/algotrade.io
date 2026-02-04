@@ -215,40 +215,31 @@ export const get3DCircle = (
   return circle;
 };
 
-export const signalColors = {
-  BUY: "lime",
-  SELL: "red",
-  HODL: "#F7931A",
-};
-
-export const signalEmojis = {
-  BUY: "🚀",
-  SELL: "💥",
-};
-
-const toggleGray = 'rgba(255, 255, 255, 0.3)';
+// Re-export from centralized tokens
+export { signalColors, signalEmojis, toggleColors } from './tokens';
+import { toggleColors, colors } from './tokens';
 
 export const Toggle = styled(Segmented)`
 
   .ant-segmented-item-selected {
-    background-color: ${(props: { var: string, val: boolean }) => (props.var == 'home' ? (props.val ? '#F7931A' : toggleGray) : 'unset')};
-    outline: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? "unset" : "1px solid " + (props.val ? "#52e5ff" : "magenta"))};
-    color: rgba(255, 255, 255, 0.85);
+    background-color: ${(props: { var: string, val: boolean }) => (props.var == 'home' ? (props.val ? colors.bitcoin : toggleColors.gray) : 'unset')};
+    outline: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? "unset" : "1px solid " + (props.val ? toggleColors.outlineActive : toggleColors.outlineInactive))};
+    color: ${toggleColors.text};
   }
 
   .ant-segmented-item:hover,
   .ant-segmented-item:focus {
-    color: rgba(255, 255, 255, 0.85);
+    color: ${toggleColors.text};
   }
 
   .ant-segmented-thumb {
-    background-color: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? 'transparent' : (props.val ? "magenta" : "#52e5ff"))};
+    background-color: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? colors.transparent : (props.val ? toggleColors.thumbActive : toggleColors.thumbInactive))};
     border-width: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? '1px' : 'unset')};
     border-style: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? 'solid' : 'unset')};
-    border-left-color: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? (props.val ? toggleGray : "#F7931A") : 'unset')};
-    border-top-color: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? (props.val ? toggleGray : "#F7931A") : 'unset')};
-    border-right-color: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? (props.val ? toggleGray : "#F7931A") : 'unset')};
-    border-bottom-color: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? (props.val ? toggleGray : "#F7931A") : 'unset')};
+    border-left-color: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? (props.val ? toggleColors.gray : colors.bitcoin) : 'unset')};
+    border-top-color: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? (props.val ? toggleColors.gray : colors.bitcoin) : 'unset')};
+    border-right-color: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? (props.val ? toggleColors.gray : colors.bitcoin) : 'unset')};
+    border-bottom-color: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? (props.val ? toggleColors.gray : colors.bitcoin) : 'unset')};
   }
 `;
 
