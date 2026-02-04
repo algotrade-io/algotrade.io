@@ -22,13 +22,13 @@ def get_email(user, env):
 def transform_signal(raw_signal):
     signal = {}
     date = raw_signal['Time']
-    if type(date) == list:
+    if isinstance(date, list):
         date = date[0]
 
     sig = raw_signal['Sig']
-    if type(sig) == list:
+    if isinstance(sig, list):
         sig = sig[0]
-    if type(sig) == str:
+    if isinstance(sig, str):
         sig = str_to_bool(sig)
     sig = 'BUY' if sig else 'SELL'
 

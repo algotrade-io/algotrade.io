@@ -63,7 +63,7 @@ def post_account(event):
                 # type(getattr(Alerts, 'sms')) == BooleanAttribute
                 expected_attr = ALERTS_LOOKUP[key]['attr']
                 expected_type = ATTRS_LOOKUP[expected_attr]
-                if type(val) == expected_type:
+                if isinstance(val, expected_type):
                     alerts[key] = val
         user.alerts = alerts
         actions.append(UserModel.alerts.set(user.alerts))

@@ -96,7 +96,7 @@ def notify_user(user, signal):
     reset_duration = timedelta(hours=12)
     success = True
     last_sent = user.alerts['last_sent'] if 'last_sent' in user.alerts else None
-    if type(last_sent) == str:
+    if isinstance(last_sent, str):
         last_sent = UTCDateTimeAttribute().deserialize(last_sent)
     if not last_sent or enough_time_has_passed(last_sent, now, reset_duration):
         for alert in alerts:
