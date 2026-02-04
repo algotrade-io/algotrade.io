@@ -198,7 +198,16 @@ def get_mid_price(opt):
     return (float(opt['ask_price']) + float(opt['bid_price'])) / 2
 
 
-def round(n, decimals=0, dir='UP'):
+def round_to_tick(n, decimals=0, dir='UP'):
+    """Round a number to specified decimal places, ceiling or floor based on direction.
+    
+    Used for rounding option prices to valid tick increments.
+    
+    Args:
+        n: Number to round
+        decimals: Number of decimal places
+        dir: 'UP' for ceiling, 'DOWN' for floor
+    """
     fx = ceil if dir.upper() == 'UP' else floor
     multiplier = 10**decimals
     return fx(n * multiplier) / multiplier
@@ -335,14 +344,14 @@ class Sell(Trade):
     def get_price(self, contract, offset):
         mid_price = get_mid_price(contract)
         # get mid price to two decimal places
-        price = round(mid_price, 2, 'UP')
+        price = round_to_tick(mid_price, 2, 'UP')
         # option price increment/step (e.g. 0.01 per contract or 0.05)
         min_tick = float(contract['min_ticks']['below_tick'])
         # round price up to tick
         price = ceil(price / min_tick) * min_tick
         # lower price based on attempt
         price -= min_tick * offset
-        return round(price, 2, 'UP')
+        return round_to_tick(price, 2, 'UP')
 
     def adjust_option(self, symbol, lookup, results):
         option = lookup[symbol]
@@ -495,7 +504,7 @@ class Buy(Trade):
         # need to make sure contract has bid prices and ticks - DONE
         mid_price = get_mid_price(contract)
         # get mid price to two decimal places
-        price = round(mid_price, 2, 'DOWN')  # CONVERTED
+        price = round_to_tick(mid_price, 2, 'DOWN')  # CONVERTED
         # option price increment/step (e.g. 0.01 per contract or 0.05)
         # use instrument_data_by_id fx in init_chain to get this? - DONE
         min_tick = float(contract['min_ticks']['above_tick'])
@@ -504,7 +513,7 @@ class Buy(Trade):
         price = floor(price / min_tick) * min_tick
         # lower price based on attempt
         price += min_tick * offset  # this should be plus? - DONE
-        return round(price, 2, 'DOWN')
+        return round_to_tick(price, 2, 'DOWN')
 
     def adjust_option(self, symbol, lookup, _):
         option = lookup[symbol]
