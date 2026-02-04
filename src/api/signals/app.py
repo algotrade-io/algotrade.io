@@ -7,8 +7,11 @@ from utils import options, error, enough_time_has_passed, RES_HEADERS, transform
 
 s3 = boto3.client('s3')
 
-max_accesses = 5
-duration_days = 1
+# Rate limiting configuration for signal access
+# MAX_ACCESSES: Number of signal requests allowed per rate limit window
+# RATE_LIMIT_DAYS: Duration of the rate limit window in days
+MAX_ACCESSES = int(os.environ.get('SIGNAL_MAX_ACCESSES', 5))
+RATE_LIMIT_DAYS = int(os.environ.get('SIGNAL_RATE_LIMIT_DAYS', 1))
 
 
 def handle_signals(event, _):
@@ -25,17 +28,17 @@ def update_access_queue(user):
     # store list of last 5 access times
     access_queue = user.access_queue
 
-    reset_duration = timedelta(days=duration_days)
+    reset_duration = timedelta(days=RATE_LIMIT_DAYS)
     now = datetime.now(timezone.utc)
     quota_reached = False
 
     # Update access queue
-    if len(user.access_queue) >= max_accesses:
-        start = access_queue[-max_accesses]
+    if len(user.access_queue) >= MAX_ACCESSES:
+        start = access_queue[-MAX_ACCESSES]
         if enough_time_has_passed(start, now, reset_duration):
-            access_queue = access_queue[-max_accesses + 1:] + [now]
+            access_queue = access_queue[-MAX_ACCESSES + 1:] + [now]
         else:
-            access_queue = access_queue[-max_accesses:]
+            access_queue = access_queue[-MAX_ACCESSES:]
             quota_reached = True
     else:
         access_queue += [now]
@@ -53,7 +56,7 @@ def update_access_queue(user):
         else:
             break
     # This is to cover the case that len(access_queue) < max_accesses
-    remaining += max_accesses - len(access_queue)
+    remaining += MAX_ACCESSES - len(access_queue)
     return remaining
 
 
@@ -102,7 +105,7 @@ def get_signals(event):
     # 1 week - 7 items
     # each item {Date: 2022-06-23, Day: Mon, Tue, (3 letter slice) Signal: BUY or SELL}
     # obj['Body'].read()
-    response['message'] = f'You have {remaining} requests left / {duration_days} day(s).'
+    response['message'] = f'You have {remaining} requests left / {RATE_LIMIT_DAYS} day(s).'
     return success(response)
 
 
