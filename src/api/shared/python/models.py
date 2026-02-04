@@ -23,6 +23,19 @@ def get_api_key():
 def get_default_access_queue():
     return [PAST_DATE] * 5
 
+class Alerts(MapAttribute):
+    email = BooleanAttribute(default=False)
+    sms = BooleanAttribute(default=False)
+    webhook = UnicodeAttribute(default="")
+    last_sent = UTCDateTimeAttribute(...)
+# Derive lookup from class attributes - no duplication!
+ALERTS_LOOKUP = {
+    name: {
+        'attr': type(getattr(Alerts, name)),
+        'default': getattr(Alerts, name).default
+    }
+    for name in ['email', 'sms', 'webhook']
+}
 
 ATTRS_LOOKUP = {UnicodeAttribute: str, BooleanAttribute: bool}
 ALERTS_LOOKUP = {
