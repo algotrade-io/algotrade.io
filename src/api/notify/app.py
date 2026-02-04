@@ -16,7 +16,7 @@ from models import UserModel
 from utils import \
     transform_signal, \
     error, enough_time_has_passed, \
-    RES_HEADERS, get_email, TEST
+    RES_HEADERS, get_email, TEST, success
 
 
 class Cryptographer:
@@ -184,12 +184,7 @@ def post_notify(event, _):
 
     status_code = 200
     response = {'message': 'Notifications delivered.'}
-    body = json.dumps(response)
-    return {
-        "statusCode": status_code,
-        "body": body,
-        "headers": RES_HEADERS
-    }
+    return success(response)
 
 
 def notify_email(user, signal):

@@ -3,7 +3,7 @@ import json
 import boto3
 from datetime import datetime, timedelta, timezone
 from models import query_by_api_key, UserModel
-from utils import options, error, enough_time_has_passed, RES_HEADERS, transform_signal
+from utils import options, error, enough_time_has_passed, RES_HEADERS, transform_signal, success
 
 s3 = boto3.client('s3')
 
@@ -102,14 +102,8 @@ def get_signals(event):
     # 1 week - 7 items
     # each item {Date: 2022-06-23, Day: Mon, Tue, (3 letter slice) Signal: BUY or SELL}
     # obj['Body'].read()
-    status_code = 200
     response['message'] = f'You have {remaining} requests left / {duration_days} day(s).'
-    body = json.dumps(response)
-    return {
-        "statusCode": status_code,
-        "body": body,
-        "headers": RES_HEADERS
-    }
+    return success(response)
 
 
 # client.create_usage_plan_key(

@@ -53,6 +53,26 @@ def error(status, message):
     }
 
 
+def success(body, status=200):
+    """
+    Construct a successful API response.
+    
+    Args:
+        body: Response body - will be JSON serialized if not already a string
+        status: HTTP status code (default 200)
+    
+    Returns:
+        dict: Lambda response with statusCode, body, and headers
+    """
+    if not isinstance(body, str):
+        body = json.dumps(body)
+    return {
+        "statusCode": status,
+        "body": body,
+        "headers": RES_HEADERS
+    }
+
+
 def options():
     return {
         "statusCode": 200,

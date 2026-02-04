@@ -6,7 +6,7 @@ from smtplib import SMTP
 from email.mime.text import MIMEText
 from utils import \
     verify_user, options, \
-    error, RES_HEADERS, get_email, TEST
+    error, RES_HEADERS, get_email, TEST, success
 
 
 context = ssl.create_default_context()
@@ -45,13 +45,7 @@ def post_contact(event):
     if not email_sent:
         return error(500, 'Server could not deliver message.')
 
-    body = json.dumps({'message': message})
-
-    return {
-        "statusCode": status_code,
-        "body": body,
-        "headers": RES_HEADERS
-    }
+    return success({'message': message})
 
 
 def send_email(user, subject, message):

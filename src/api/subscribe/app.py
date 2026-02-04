@@ -8,20 +8,14 @@ from pynamodb.attributes import UTCDateTimeAttribute
 from utils import \
     verify_user, options, \
     error, enough_time_has_passed, \
-    PAST_DATE, RES_HEADERS, TEST
+    PAST_DATE, RES_HEADERS, TEST, success
 
 stripe.api_key = os.environ['STRIPE_SECRET_KEY']
 
 
 def get_price(price_id):
     price = stripe.Price.retrieve(price_id)
-    status_code = 200
-    body = json.dumps(price)
-    return {
-        "statusCode": status_code,
-        "body": body,
-        "headers": RES_HEADERS
-    }
+    return success(price)
 
 
 def get_plans(*_):
@@ -144,14 +138,7 @@ def post_checkout(event):
         user.update(actions=[UserModel.stripe.set(stripe_lookup)])
 
     url = checkout['url']
-    status_code = 200
-    body = json.dumps(url)
-
-    return {
-        "statusCode": status_code,
-        "body": body,
-        "headers": RES_HEADERS
-    }
+    return success(url)
 
 
 def handle_billing(event, _):
@@ -188,14 +175,7 @@ def post_billing(event):
     )
 
     url = session.url
-    status_code = 200
-    body = json.dumps(url)
-
-    return {
-        "statusCode": status_code,
-        "body": body,
-        "headers": RES_HEADERS
-    }
+    return success(url)
 
 
 def post_subscribe(event, _):
@@ -220,12 +200,7 @@ def post_subscribe(event, _):
             logging.exception(e)
             raise e
 
-    body = json.dumps({'status': 'success'})
-    response = {
-        "statusCode": 200,
-        "body": body,
-        "headers": RES_HEADERS
-    }
+    response = success({'status': 'success'})
     # ONLY events approved in Stripe Dashboard Settings > Webhooks
     # will come through
     event_type = event['type']
