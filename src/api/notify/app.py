@@ -138,10 +138,17 @@ def post_notify(event, _):
         return error(401, 'Provide a valid emit secret.')
     req_body = json.loads(event['body'])
     signal = transform_signal(req_body)
+    # NOTE: PynamoDB requires explicit `== True` comparisons for BooleanAttribute
+    # filter conditions. Using just `UserModel.alerts['email']` doesn't work because
+    # PynamoDB needs to construct a DynamoDB ConditionExpression, which requires
+    # an explicit comparison operator. The `# noqa: E712` suppresses the flake8
+    # warning about comparing to True using == (normally should use `is True` or
+    # just the truthiness check in Python, but that's not supported here).
+    # See: https://pynamodb.readthedocs.io/en/stable/conditional.html
     cond = (
-        UserModel.alerts['email'] == True  # noqa
+        UserModel.alerts['email'] == True  # noqa: E712
     ) | (
-        UserModel.alerts['sms'] == True  # noqa
+        UserModel.alerts['sms'] == True  # noqa: E712
     ) | (
         (UserModel.alerts['webhook'].exists()) &
         (UserModel.alerts['webhook'] != '')
