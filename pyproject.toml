@@ -1,0 +1,23 @@
+[project]
+name = "algotrade-api"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = []
+
+[dependency-groups]
+dev = ["flake8", "pytest", "coverage"]
+
+[tool.uv.workspace]
+members = [
+    "src/api/shared-core",
+    "src/api/shared-db",
+    "src/api/account",
+    "src/api/contact",
+    "src/api/gym",
+    "src/api/model",
+    "src/api/notify",
+    "src/api/preview",
+    "src/api/signals",
+    "src/api/subscribe",
+    "src/api/trade",
+]

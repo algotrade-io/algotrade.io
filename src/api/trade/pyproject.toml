@@ -1,0 +1,13 @@
+[project]
+name = "trade-lambda"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "shared-core",
+    "robin-stocks>=3.4.0",
+    "python-jose>=3.3.0",
+    "requests>=2.28.1",
+]
+
+[tool.uv.sources]
+shared-core = { workspace = true }
