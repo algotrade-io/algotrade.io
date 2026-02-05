@@ -126,13 +126,6 @@ jobs:
           EmitSecret=${EmitSecret}
           " >> src/api/${FILE_PREFIX}parameters.env
 
-      - name: Export Lambda requirements from UV
-        run: |
-          cd src/api
-          for pkg in account contact gym model notify preview signals subscribe trade; do
-            uv export --package ${pkg}-lambda --no-hashes --no-dev > ${pkg}/requirements.txt
-          done
-
       - name: Build API
         run: npm run build:api
 
