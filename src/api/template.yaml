@@ -68,6 +68,13 @@ Globals:
   Function:
     Timeout: 30
     MemorySize: 10240
+    Runtime: python3.14
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref UsersTable
+        S3_BUCKET: !Ref S3Bucket
+        STAGE: !Ref Stage
+        DOMAIN: !Ref Domain
 
 Conditions:
   IsProd:
@@ -306,7 +313,6 @@ Resources:
       Timeout: 900 # 15 min
       Environment:
         Variables:
-          S3_BUCKET: !Ref S3Bucket
           RH_USERNAME: !Ref RHUsername
           RH_PASSWORD: !Ref RHPassword
           RH_2FA: !Ref RH2FA
@@ -333,9 +339,7 @@ Resources:
                 - execute-api:ManageConnections
               # Resource: !Sub "arn:aws:execute-api:::${S3Bucket}/data/robinhood*.pickle"
               Resource: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebSocketApi}/*'
-      PackageType: Zip
       CodeUri: trade
-      Runtime: python3.9 
       Handler: app.handle_ws
       Layers:
       - !Ref SharedLayer
@@ -399,15 +403,11 @@ Resources:
     Properties:
       Environment:
         Variables:
-          TABLE_NAME: !Ref UsersTable
           STRIPE_SECRET_KEY: !Ref StripeSecretKey
-          DOMAIN: !Ref Domain
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
-      PackageType: Zip
       CodeUri: account
-      Runtime: python3.8 
       Handler: app.handle_account
       Layers:
       - !Ref SharedLayer
@@ -452,15 +452,11 @@ Resources:
         Variables:
           EMAIL_USER: !Ref EmailUser
           EMAIL_PASS: !Ref EmailPass
-          STAGE: !Ref Stage
-          DOMAIN: !Ref Domain
       #     TABLE_NAME: !Ref UsersTable
       # Policies:
       #   - DynamoDBCrudPolicy:
       #       TableName: !Ref UsersTable
-      PackageType: Zip
       CodeUri: contact
-      Runtime: python3.8 
       Handler: app.handle_contact
       Layers:
       - !Ref SharedLayer
@@ -483,9 +479,7 @@ Resources:
   ExerciseLogFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      PackageType: Zip
       CodeUri: gym
-      Runtime: python3.8 
       Handler: app.get_exercise_log
       Events:
         ExerciseLog:
@@ -497,9 +491,6 @@ Resources:
   PreviewFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      Environment:
-        Variables:
-          S3_BUCKET: !Ref S3Bucket
       Policies:
         - Statement:
             - Sid: S3ReadPolicy
@@ -507,9 +498,7 @@ Resources:
               Action:
                 - s3:GetObject
               Resource: !Sub "arn:aws:s3:::${S3Bucket}/data/api/*"
-      PackageType: Zip
       CodeUri: preview
-      Runtime: python3.8 
       Handler: app.get_preview
       Events:
         Preview:
@@ -525,7 +514,6 @@ Resources:
       Timeout: 900 # 15 min
       Environment:
         Variables:
-          S3_BUCKET: !Ref S3Bucket
           RH_USERNAME: !Ref RHUsername
           RH_PASSWORD: !Ref RHPassword
           RH_2FA: !Ref RH2FA
@@ -544,9 +532,7 @@ Resources:
                 - s3:GetObject
                 - s3:PutObject
               Resource: !Sub "arn:aws:s3:::${S3Bucket}/data/robinhood*.pickle"
-      PackageType: Zip
       CodeUri: trade
-      Runtime: python3.9 
       Handler: app.handle_trade
       Layers:
       - !Ref SharedLayer
@@ -576,9 +562,6 @@ Resources:
   ModelFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      Environment:
-        Variables:
-          S3_BUCKET: !Ref S3Bucket
       Policies:
         - Statement:
             - Sid: S3ReadPolicy
@@ -586,9 +569,7 @@ Resources:
               Action:
                 - s3:GetObject
               Resource: !Sub "arn:aws:s3:::${S3Bucket}/models/latest/metadata.json"
-      PackageType: Zip
       CodeUri: model
-      Runtime: python3.8 
       Handler: app.get_model
       Events:
         Model:
@@ -600,9 +581,6 @@ Resources:
   VisualizationFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      Environment:
-        Variables:
-          S3_BUCKET: !Ref S3Bucket
       Policies:
         - Statement:
             - Sid: S3ReadPolicy
@@ -614,9 +592,7 @@ Resources:
                   !Sub "arn:aws:s3:::${S3Bucket}/models/latest/2D/*",
                   !Sub "arn:aws:s3:::${S3Bucket}/models/latest/3D/*",
                 ]
-      PackageType: Zip
       CodeUri: model
-      Runtime: python3.8 
       Handler: app.get_visualization
       Events:
         Model:
@@ -628,10 +604,6 @@ Resources:
   SignalsFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      Environment:
-        Variables:
-          S3_BUCKET: !Ref S3Bucket
-          TABLE_NAME: !Ref UsersTable
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
@@ -641,9 +613,7 @@ Resources:
               Action:
                 - s3:GetObject
               Resource: !Sub "arn:aws:s3:::${S3Bucket}/models/latest/signals.csv"
-      PackageType: Zip
       CodeUri: signals
-      Runtime: python3.8 
       Handler: app.handle_signals
       Layers:
       - !Ref SharedLayer
@@ -666,11 +636,8 @@ Resources:
       Environment:
         Variables:
           STRIPE_SECRET_KEY: !Ref StripeSecretKey
-          TABLE_NAME: !Ref UsersTable
           STRIPE_PRICE_ID: !Ref StripePriceId
-      PackageType: Zip
       CodeUri: subscribe
-      Runtime: python3.8 
       Handler: app.get_plans
       Layers:
       - !Ref SharedLayer
@@ -688,13 +655,10 @@ Resources:
         Variables:
           STRIPE_SECRET_KEY: !Ref StripeSecretKey
           STRIPE_WEBHOOK_SECRET: !Ref StripeWebhookSecret
-          TABLE_NAME: !Ref UsersTable
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
-      PackageType: Zip
       CodeUri: subscribe
-      Runtime: python3.8 
       Handler: app.post_subscribe
       Layers:
       - !Ref SharedLayer
@@ -715,11 +679,7 @@ Resources:
           SALT: !Ref Salt
           CRYPT_PASS: !Ref RHPassword
           EMIT_SECRET: !Ref EmitSecret
-          TABLE_NAME: !Ref UsersTable
-          STAGE: !Ref Stage
           SIGNAL_EMAIL: !Ref SignalEmail
-          S3_BUCKET: !Ref S3Bucket
-          DOMAIN: !Ref Domain
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
@@ -735,9 +695,7 @@ Resources:
               Action:
                 - ses:SendEmail
               Resource: "*"
-      PackageType: Zip
       CodeUri: notify
-      Runtime: python3.8 
       Handler: app.post_notify
       Layers:
       - !Ref SharedLayer
@@ -754,16 +712,11 @@ Resources:
       Environment:
         Variables:
           STRIPE_SECRET_KEY: !Ref StripeSecretKey
-          TABLE_NAME: !Ref UsersTable
           STRIPE_PRICE_ID: !Ref StripePriceId
-          STAGE: !Ref Stage
-          DOMAIN: !Ref Domain
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
-      PackageType: Zip
       CodeUri: subscribe
-      Runtime: python3.8 
       Handler: app.handle_checkout
       Layers:
       - !Ref SharedLayer
@@ -789,15 +742,10 @@ Resources:
       Environment:
         Variables:
           STRIPE_SECRET_KEY: !Ref StripeSecretKey
-          TABLE_NAME: !Ref UsersTable
-          STAGE: !Ref Stage
-          DOMAIN: !Ref Domain
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
-      PackageType: Zip
       CodeUri: subscribe
-      Runtime: python3.8 
       Handler: app.handle_billing
       Layers:
       - !Ref SharedLayer
