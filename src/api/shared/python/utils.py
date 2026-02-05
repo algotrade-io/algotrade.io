@@ -1,108 +1,157 @@
-import os
+"""Utility functions for API Lambda handlers."""
+
 import json
-from datetime import datetime, timezone
+import os
+from datetime import UTC, datetime, timedelta
+from typing import Any
 
 RES_HEADERS = {"Access-Control-Allow-Origin": "*"}
 
-PAST_DATE = datetime(2020, 1, 1, tzinfo=timezone.utc)
-DATE_FMT = '%Y-%m-%d'
+PAST_DATE = datetime(2020, 1, 1, tzinfo=UTC)
+DATE_FMT = "%Y-%m-%d"
 
 
-def str_to_bool(s):
-    return s.lower() == 'true'
+def str_to_bool(s: str) -> bool:
+    """Convert string to boolean.
+
+    Args:
+        s: String to convert (case-insensitive).
+
+    Returns:
+        True if string is 'true', False otherwise.
+    """
+    return s.lower() == "true"
 
 
-TEST = str_to_bool(str(os.environ.get('TEST')))
+TEST = str_to_bool(str(os.environ.get("TEST")))
 
 
-def get_email(user, env):
+def get_email(user: str, env: str) -> str:
+    """Construct email address for environment.
+
+    Args:
+        user: Email username.
+        env: Environment ('dev' or 'prod').
+
+    Returns:
+        Full email address.
+    """
     return f"{user}@{'dev.' if env == 'dev' else ''}{os.environ['DOMAIN']}"
 
 
-def transform_signal(raw_signal):
-    signal = {}
-    date = raw_signal['Time']
+def transform_signal(raw_signal: dict[str, Any]) -> dict[str, Any]:
+    """Transform raw signal data to API format.
+
+    Args:
+        raw_signal: Raw signal dict with Time and Sig fields.
+
+    Returns:
+        Formatted signal dict with Date, Signal, Day, Asset.
+    """
+    signal: dict[str, Any] = {}
+    date = raw_signal["Time"]
     if isinstance(date, list):
         date = date[0]
 
-    sig = raw_signal['Sig']
+    sig = raw_signal["Sig"]
     if isinstance(sig, list):
         sig = sig[0]
     if isinstance(sig, str):
         sig = str_to_bool(sig)
-    sig = 'BUY' if sig else 'SELL'
+    sig = "BUY" if sig else "SELL"
 
-    signal['Date'] = date
-    signal['Signal'] = sig
-    signal['Day'] = datetime.strptime(date, DATE_FMT).strftime('%A')[:3]
-    signal['Asset'] = 'BTC'
+    signal["Date"] = date
+    signal["Signal"] = sig
+    signal["Day"] = datetime.strptime(date, DATE_FMT).strftime("%A")[:3]
+    signal["Asset"] = "BTC"
     return signal
 
 
-def enough_time_has_passed(start, end, delta):
+def enough_time_has_passed(
+    start: datetime, end: datetime, delta: timedelta
+) -> bool:
+    """Check if enough time has elapsed between two datetimes.
+
+    Args:
+        start: Start datetime.
+        end: End datetime.
+        delta: Required time difference.
+
+    Returns:
+        True if end - start >= delta.
+    """
     return end - start >= delta
 
 
-def error(status, message):
+def error(status: int, message: str) -> dict[str, Any]:
+    """Construct an error API response.
+
+    Args:
+        status: HTTP status code.
+        message: Error message.
+
+    Returns:
+        Lambda response dict with statusCode, body, and headers.
+    """
     return {
         "statusCode": status,
-        "body": json.dumps(
-            {'message': message}
-        ),
-        "headers": RES_HEADERS
+        "body": json.dumps({"message": message}),
+        "headers": RES_HEADERS,
     }
 
 
-def success(body, status=200):
-    """
-    Construct a successful API response.
-    
+def success(body: Any, status: int = 200) -> dict[str, Any]:
+    """Construct a successful API response.
+
     Args:
-        body: Response body - will be JSON serialized if not already a string
-        status: HTTP status code (default 200)
-    
+        body: Response body - will be JSON serialized if not already a string.
+        status: HTTP status code (default 200).
+
     Returns:
-        dict: Lambda response with statusCode, body, and headers
+        Lambda response dict with statusCode, body, and headers.
     """
     if not isinstance(body, str):
         body = json.dumps(body)
-    return {
-        "statusCode": status,
-        "body": body,
-        "headers": RES_HEADERS
-    }
+    return {"statusCode": status, "body": body, "headers": RES_HEADERS}
 
 
-def options():
+def options() -> dict[str, Any]:
+    """Construct CORS preflight response.
+
+    Returns:
+        Lambda response dict with CORS headers.
+    """
     return {
         "statusCode": 200,
         "headers": {
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Credentials": "true",
             "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS,POST,PUT,DELETE",
-            "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-API-Key"
-        }
+            "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-API-Key",
+        },
     }
 
 
-def verify_user(event):
+def verify_user(event: dict[str, Any]) -> dict[str, Any] | bool:
+    """Verify user from API Gateway authorizer claims.
+
+    Args:
+        event: API Gateway event with requestContext.
+
+    Returns:
+        User claims dict if verified, False otherwise.
+    """
     claims = (
-        event['requestContext']['authorizer']['claims']
-        if 'requestContext' in event else event
+        event["requestContext"]["authorizer"]["claims"]
+        if "requestContext" in event
+        else event
     )
-    # email_verified value comes back as str, so explicitly casting as str
-    # in case it comes back as bool in the future
-    verified = str_to_bool(str(claims['email_verified']))
-    # ['email']
-    # ['email_verified']
-    # ['name']
-    providers = ['Google', 'Facebook', 'LoginWithAmazon']
+    verified = str_to_bool(str(claims["email_verified"]))
+    providers = ["Google", "Facebook", "LoginWithAmazon"]
     if not verified:
-        if 'identities' in claims:
-            identities = json.loads(claims['identities'])
-            # => ['providerName'] == 'Google'
-            # => ['providerType'] == 'Google'
-            if 'providerName' in identities:
-                if identities['providerName'] in providers:
+        if "identities" in claims:
+            identities = json.loads(claims["identities"])
+            if "providerName" in identities:
+                if identities["providerName"] in providers:
                     verified = True
     return verified and claims

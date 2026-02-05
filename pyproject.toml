@@ -5,7 +5,7 @@ requires-python = ">=3.14"
 dependencies = []
 
 [dependency-groups]
-dev = ["flake8", "pytest", "coverage"]
+dev = ["ruff", "pytest", "pytest-xdist", "pytest-cov"]
 
 [tool.uv.workspace]
 members = [
@@ -21,3 +21,51 @@ members = [
     "src/api/subscribe",
     "src/api/trade",
 ]
+
+[tool.pytest.ini_options]
+addopts = "-n auto"
+testpaths = ["src/api/test"]
+
+[tool.coverage.run]
+source = ["src/api"]
+omit = ["**/test/*", ".venv/*"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+
+[tool.ruff]
+target-version = "py314"
+line-length = 88
+exclude = [".aws-sam", ".venv", "*.ipynb"]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "UP",     # pyupgrade
+    "ANN",    # flake8-annotations (type hints)
+    "D",      # pydocstyle (docstrings)
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "ANN401", # dynamically typed expressions (Any)
+    "D100",   # missing docstring in public module
+    "D104",   # missing docstring in public package
+    "D203",   # 1 blank line required before class docstring (conflicts with D211)
+    "D213",   # multi-line docstring summary should start at second line (conflicts with D212)
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"**/test/*" = ["ANN", "D", "F405", "F403", "E721", "B007"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

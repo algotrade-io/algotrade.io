@@ -1,13 +1,25 @@
+"""Preview Lambda handler for fetching preview data from S3."""
+
 import os
+from typing import Any
+
 import boto3
-s3 = boto3.client('s3')
+
+s3 = boto3.client("s3")
 
 
-def get_preview(*_):
-    obj = s3.get_object(
-        Bucket=os.environ['S3_BUCKET'], Key='data/api/preview.json')
+def get_preview(*_: Any) -> dict[str, Any]:
+    """Get preview data from S3.
+
+    Args:
+        *_: Unused arguments (event, context).
+
+    Returns:
+        API response with preview JSON data.
+    """
+    obj = s3.get_object(Bucket=os.environ["S3_BUCKET"], Key="data/api/preview.json")
     return {
         "statusCode": 200,
-        "body": obj['Body'].read(),
-        "headers": {"Access-Control-Allow-Origin": "*"}
+        "body": obj["Body"].read(),
+        "headers": {"Access-Control-Allow-Origin": "*"},
     }

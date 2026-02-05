@@ -1,33 +1,32 @@
-import requests
-import pandas as pd
+"""Gym Lambda handler for retrieving exercise log data."""
+
 from io import BytesIO
-# from scipy.interpolate import interp1d
-# import numpy as np
+from typing import Any
+
+import pandas as pd
+import requests
 
 
-# make one function which handles 2 params
-# 1. smooth or spiky curves
-# 2. individual exercises or splits
-# make sure you follow format of [{date: yyyy-mm-dd, volume or value: xxxx, exercise,split,category: 'Bench'}]
-# use this example:
-# https://g2plot.antv.vision/en/examples/line/multiple
-# https://gw.alipayobjects.com/os/bmw-prod/55424a73-7cb8-4f79-b60d-3ab627ac5698.json
+def get_exercise_log(*_: Any) -> dict[str, Any]:
+    """Fetch exercise log from Google Sheets.
 
+    Args:
+        *_: Unused arguments (event, context).
 
-def get_exercise_log(*_):
+    Returns:
+        API response with exercise log records as JSON.
+    """
     res = requests.get(
-        (
-            'https://docs.google.com/spreadsheets/d/'
-            '1Pu6T67VpIl049GGIyoe_OARejxuXSl-aWK5x2ORaCcY/'
-            'gviz/tq?tqx=out:csv&sheet=Workouts'
-        )
+        "https://docs.google.com/spreadsheets/d/"
+        "1Pu6T67VpIl049GGIyoe_OARejxuXSl-aWK5x2ORaCcY/"
+        "gviz/tq?tqx=out:csv&sheet=Workouts"
     )
     df = pd.read_csv(BytesIO(res.content))
-    df = df[df['Exercise'] != 'Exercise']
-    df = df[['Date', 'Id', 'Weight', 'Reps', 'Exercise', 'Volume', '1RM']]
-    records = df.to_json(orient='records')
+    df = df[df["Exercise"] != "Exercise"]
+    df = df[["Date", "Id", "Weight", "Reps", "Exercise", "Volume", "1RM"]]
+    records = df.to_json(orient="records")
     return {
         "statusCode": 200,
         "body": records,
-        "headers": {"Access-Control-Allow-Origin": "*"}
+        "headers": {"Access-Control-Allow-Origin": "*"},
     }

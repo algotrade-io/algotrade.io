@@ -1,72 +1,107 @@
-import os
+"""Model Lambda handler for ML model metadata and visualizations."""
+
 import json
-import boto3
+import os
 import pickle
+from typing import Any
+
+import boto3
 import numpy as np
-s3 = boto3.client('s3')
+
+s3 = boto3.client("s3")
 
 
-def get_model(*_):
+def get_model(*_: Any) -> dict[str, Any]:
+    """Get ML model metadata.
+
+    Args:
+        *_: Unused arguments (event, context).
+
+    Returns:
+        API response with model metadata (created, start, end, features, accuracy).
+    """
     obj = s3.get_object(
-        Bucket=os.environ['S3_BUCKET'], Key='models/latest/metadata.json')
-    metadata = json.loads(obj['Body'].read())
-    metadata['num_features'] = len(metadata['features'])
-    allowed_fields = ['created', 'start', 'end', 'num_features', 'accuracy']
+        Bucket=os.environ["S3_BUCKET"], Key="models/latest/metadata.json"
+    )
+    metadata = json.loads(obj["Body"].read())
+    metadata["num_features"] = len(metadata["features"])
+    allowed_fields = ["created", "start", "end", "num_features", "accuracy"]
     metadata = {key: metadata[key] for key in allowed_fields}
     return {
         "statusCode": 200,
         "body": json.dumps(metadata),
-        "headers": {"Access-Control-Allow-Origin": "*"}
+        "headers": {"Access-Control-Allow-Origin": "*"},
     }
 
-# In case read() can't read entire preview json
-# bytes_buffer = io.BytesIO()
-# s3.download_fileobj(Bucket=bucket_name,
-#                     Key='models/latest/metadata.json', Fileobj=bytes_buffer)
-# value = json.loads(bytes_buffer.getvalue())
 
+def get_visualization(event: dict[str, Any], _: Any) -> dict[str, Any]:
+    """Get ML model visualization data (2D or 3D).
 
-def get_visualization(event, _):
+    Args:
+        event: API Gateway event with optional dims query parameter.
+        _: Lambda context (unused).
+
+    Returns:
+        API response with visualization data (actual, centroid, radius, grid, preds).
+    """
     params = event["queryStringParameters"]
-    dims = '2D'
-    supported_dims = set(['2D', '3D'])
-    if params and 'dims' in params and params['dims'] in supported_dims:
-        dims = params['dims']
+    dims = "2D"
+    supported_dims = {"2D", "3D"}
+    if params and "dims" in params and params["dims"] in supported_dims:
+        dims = params["dims"]
 
-    data_labels = ['actual', 'centroid', 'radius', 'grid', 'preds']
+    data_labels = ["actual", "centroid", "radius", "grid", "preds"]
 
     data = {
-        label:
-        # (float if label == 'radius' else list)(
-            pickle.loads(
-                s3.get_object(
-                    Bucket=os.environ['S3_BUCKET'],
-                    Key=f'models/latest/{dims}/{label}.pkl')['Body'].read()
-                # )
-            ) for label in data_labels
+        label: pickle.loads(
+            s3.get_object(
+                Bucket=os.environ["S3_BUCKET"], Key=f"models/latest/{dims}/{label}.pkl"
+            )["Body"].read()
+        )
+        for label in data_labels
     }
     return {
         "statusCode": 200,
         "body": json.dumps(data, cls=NumpyEncoder),
-        "headers": {"Access-Control-Allow-Origin": "*"}
+        "headers": {"Access-Control-Allow-Origin": "*"},
     }
 
 
 class NumpyEncoder(json.JSONEncoder):
-    """ Custom encoder for numpy data types """
+    """Custom JSON encoder for numpy data types."""
 
-    def default(self, obj):
-        if isinstance(obj, (np.int_, np.intc, np.intp, np.int8,
-                            np.int16, np.int32, np.int64, np.uint8,
-                            np.uint16, np.uint32, np.uint64)):
+    def default(self, obj: Any) -> Any:
+        """Convert numpy types to JSON-serializable Python types.
 
+        Args:
+            obj: Object to encode.
+
+        Returns:
+            JSON-serializable representation of the object.
+        """
+        if isinstance(
+            obj,
+            (
+                np.int_,
+                np.intc,
+                np.intp,
+                np.int8,
+                np.int16,
+                np.int32,
+                np.int64,
+                np.uint8,
+                np.uint16,
+                np.uint32,
+                np.uint64,
+            ),
+        ):
             return int(obj)
 
         elif isinstance(obj, (np.float_, np.float16, np.float32, np.float64)):
             return float(obj)
 
         elif isinstance(obj, (np.complex_, np.complex64, np.complex128)):
-            return {'real': float(obj.real), 'imag': float(obj.imag)}
+            return {"real": float(obj.real), "imag": float(obj.imag)}
 
         elif isinstance(obj, (np.ndarray,)):
             return obj.tolist()

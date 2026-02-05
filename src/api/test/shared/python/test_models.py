@@ -1,12 +1,13 @@
 import sys
 from datetime import datetime
-sys.path.append('src/api')  # noqa
+
+sys.path.append("src/api")  # noqa
 from shared.python.models import *  # noqa
 from shared.python.utils import PAST_DATE  # noqa
 
 
 def test_query_by_api_key():
-    assert query_by_api_key('test_api_key')[0].email == 'test_user@example.com'
+    assert query_by_api_key("test_api_key")[0].email == "test_user@example.com"
 
 
 def test_get_api_key():
@@ -28,7 +29,7 @@ def verify_alerts(alerts):
     assert alerts.last_sent == UTCDateTimeAttribute().serialize(PAST_DATE)
 
 
-class TestAlerts():
+class TestAlerts:
     alerts = Alerts()
     verify_alerts(alerts)
 
@@ -40,7 +41,7 @@ def verify_permissions(perms):
     assert not perms.read_disclaimer
 
 
-class TestPermissions():
+class TestPermissions:
     perms = Permissions()
     verify_permissions(perms)
 
@@ -52,7 +53,7 @@ def verify_checkout(checkout):
     assert checkout.created == PAST_DATE
 
 
-class TestCheckout():
+class TestCheckout:
     checkout = Checkout()
     verify_checkout(checkout)
 
@@ -62,35 +63,35 @@ def verify_stripe(stripe):
     verify_checkout(stripe.checkout)
 
 
-class TestStripe():
+class TestStripe:
     stripe = Stripe()
     verify_stripe(stripe)
 
 
-class TestAPIKeyIndex():
+class TestAPIKeyIndex:
     api_key_index = APIKeyIndex()
-    assert 'api_key' in dir(api_key_index)
+    assert "api_key" in dir(api_key_index)
 
 
-class TestInBetaIndex():
+class TestInBetaIndex:
     in_beta_index = InBetaIndex()
-    assert 'in_beta' in dir(in_beta_index)
+    assert "in_beta" in dir(in_beta_index)
 
 
-class TestCustomerIdIndex():
+class TestCustomerIdIndex:
     customer_id_index = CustomerIdIndex()
-    assert 'customer_id' in dir(customer_id_index)
+    assert "customer_id" in dir(customer_id_index)
 
 
-class TestSubscribedIndex():
+class TestSubscribedIndex:
     subscribed_index = SubscribedIndex()
-    assert 'subscribed' in dir(subscribed_index)
+    assert "subscribed" in dir(subscribed_index)
 
 
-class TestUserModel():
-    user = UserModel('test_user@example.com')
+class TestUserModel:
+    user = UserModel("test_user@example.com")
     assert type(user.email) == str
-    assert user.email == 'test_user@example.com'
+    assert user.email == "test_user@example.com"
     assert type(user.api_key) == str
     assert len(user.api_key) == 86
     assert type(user.alerts) == Alerts
