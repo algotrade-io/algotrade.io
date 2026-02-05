@@ -14,11 +14,11 @@ from datetime import datetime, timedelta
 from botocore.exceptions import ClientError
 if str(os.environ.get("LOCAL")).lower() == "true":
     from src.api.shared.python.utils import (
-        verify_user, options, error, str_to_bool)
+        verify_user, options, error, success, str_to_bool)
     from src.api.shared.python.auth import verify_token
 else:
     from utils import \
-        verify_user, options, error, str_to_bool
+        verify_user, options, error, success, str_to_bool
     from auth import verify_token
 
 s3 = boto3.resource('s3')
@@ -76,9 +76,9 @@ def handle_ws(event, _):
     variant = bool(req_body.get('variant'))
     login(variant)
     response = post_trade(event)
-    # convert response to bytes
-    data = json.dumps(response).encode('utf-8')
-    client.post_to_connection(Data=data, ConnectionId=connection)
+    # Extract results from JSON response body
+    data = response['body']  # Already JSON string from success()
+    client.post_to_connection(Data=data.encode('utf-8'), ConnectionId=connection)
     client.delete_connection(ConnectionId=connection)
     client.close()
 
@@ -177,14 +177,7 @@ def post_trade(event):
     symbols = req_body['symbols']
     trade = Buy() if trade_type.upper() == 'BUY' else Sell()
     results = trade.execute(symbols)
-    return results
-    status_code = 200
-
-    return {
-        "statusCode": status_code,
-        "body": json.dumps(results),
-        "headers": {"Access-Control-Allow-Origin": "*"}
-    }
+    return success(results)
 
 
 def get_week(date):
