@@ -11,7 +11,7 @@ const { Title } = Typography;
 const antIcon = <LoadingOutlined style={{ fontSize: 50 }} spin />;
 const nftWidth = 400;
 const metadataWidth = nftWidth / 3;
-const nftCard = (contract, token) => (
+const nftCard = (contract: string, token: string) => (
   <NFTE contract={contract} tokenId={token} darkMode={true}>
     {({ data, className, style, darkMode, autoPlay }) => {
       return (
@@ -61,7 +61,7 @@ const nftCard = (contract, token) => (
             <span style={{ width: metadataWidth }}>{data?.tokenId}</span>
             <span style={{ width: metadataWidth }}>
               {data?.timestamp &&
-                new Date(data?.timestamp * 1000).toISOString()}
+                new Date(Number(data?.timestamp) * 1000).toISOString()}
             </span>
           </div>
         </Card>

@@ -38,7 +38,7 @@ import { domain } from "../utils";
 
 const { darkAlgorithm } = theme;
 
-let config;
+let config: any;
 const isLocal = getEnvironment() === "local";
 const protocol = isLocal ? "http" : "https";
 const hostname = getHostname(false);
@@ -156,8 +156,8 @@ const footerHeight = headerHeight;
 export const AccountContext = createContext({});
 
 interface LayoutProps {
-  route: any;
-  children: any;
+  route?: any;
+  children?: any;
 }
 const Layout = ({ children }: LayoutProps) => {
   const [showLogin, setShowLogin] = useState(false);
@@ -165,7 +165,7 @@ const Layout = ({ children }: LayoutProps) => {
   const { user: loggedIn, signOut } = useAuthenticator((context) => [
     context.user,
   ]);
-  const [account, setAccount] = useState();
+  const [account, setAccount] = useState<any>();
   const [accountLoading, setAccountLoading] = useState(false);
   const showModal = !loggedIn && showLogin;
   const dummy = <Authenticator className={overrides.invisible} />;
@@ -188,7 +188,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   const onAcknowledge = () => {
     setAcknowledgeLoading(true);
-    const jwtToken = loggedIn?.signInUserSession?.idToken?.jwtToken;
+    const jwtToken = (loggedIn as any)?.signInUserSession?.idToken?.jwtToken;
     const url = `${getApiUrl()}/account`;
     fetch(url, {
       method: "POST",
@@ -364,7 +364,7 @@ const Layout = ({ children }: LayoutProps) => {
             <Route path="/contact" element={<Contact />} />
             <Route path="/art" element={<Art />} />
             <Route path="/gym" element={<Gym />} />
-            <Route path="/tos" element={<TOS />} />
+            <Route path="/tos" element={<TOS modal={false} />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/alerts" element={<Alerts />} />
             <Route path="/template" element={<Template />} />
@@ -404,12 +404,8 @@ export default ({ route, children }: LayoutProps) => (
     token: {
       // rounded edges
       borderRadius: 2,
-      // card box shadow
-      boxShadowCard: "0 1px 2px -2px rgb(0 0 0 / 64%), 0 3px 6px 0 rgb(0 0 0 / 48%), 0 5px 12px 4px rgb(0 0 0 / 36%)",
-      // button box shadow
-      controlTmpOutline: '0 2px 0 rgb(0 0 0 / 2%)',
-      // borderRadiusLG: 2,
-      // borderRadiusSM: 2,
+      // Use boxShadow instead of boxShadowCard for antd 5
+      boxShadow: "0 1px 2px -2px rgb(0 0 0 / 64%), 0 3px 6px 0 rgb(0 0 0 / 48%), 0 5px 12px 4px rgb(0 0 0 / 36%)",
       fontFamily: 'Syne Mono, "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"'
     },
     components: {

@@ -41,8 +41,8 @@ const TradePage = () => {
   // this fixes too many requests issue and websocket issue
 
 
-  const format = (prefix = '', suffix = '', mult = 1, color = (_: any) => 'inherit', arrow = false) => (toRound: string) => {
-    let num = parseFloat(toRound) * mult;
+  const format = (prefix = '', suffix = '', mult = 1, color = (_: number) => 'inherit', arrow = false) => (toRound: unknown): React.ReactNode => {
+    let num = parseFloat(String(toRound)) * mult;
     return num ? (
       <>
         <span style={{ color: color(num) }}>{`${prefix}${num % 1 ? num.toFixed(2) : num}${suffix}`}</span>
@@ -50,15 +50,19 @@ const TradePage = () => {
       </>) : '';
   }
 
-  const createColumn = ({ dataName = '', displayName = '', render = (s: string) => s, sort = null }) => (
+  // Helper type guard
+  const isTradeResult = (val: unknown): val is TradeResult =>
+    typeof val === 'object' && val !== null && 'direction' in val;
+
+  const createColumn = ({ dataName = '', displayName = '', render = (s: unknown): React.ReactNode => String(s), sort = null as any }) => (
     Object.assign({
       title: (displayName || dataName).toLowerCase().replace(/(^| )(\w)/g, (s: string) => s.toUpperCase()),
       dataIndex: dataName,
       key: dataName,
-      align: 'center',
+      align: 'center' as const,
       render
     }, sort && Object.assign({
-      sorter: { compare: (a: { [x: string]: any; }, b: { [x: string]: any; }) => a[dataName] - b[dataName] }
+      sorter: { compare: (a: Holding, b: Holding) => Number(a[dataName as keyof Holding]) - Number(b[dataName as keyof Holding]) }
     }, sort)));
   // can add route cache=random to end to force new connections?
   // and set share=false
@@ -80,36 +84,42 @@ const TradePage = () => {
         return;
       }
       Object.keys(message).forEach(symbol => {
-        if ('error' in message[symbol]) {
+        if (symbol === 'message') return; // Skip the error message key
+        const result = message[symbol];
+        if (!isTradeResult(result)) return;
+
+        if (result.error) {
           notification.error({
             duration: 10,
             message: "Failure",
             description: `Failed to execute order for ${symbol}.`,
           });
         } else {
-          const { direction } = message[symbol];
+          const { direction } = result;
           notification.success({
             duration: 10,
-            message: <span style={{ display: 'flex', justifyContent: 'space-between' }}><span>Success</span><span style={{ color: direction === 'credit' ? 'lime' : 'red', fontWeight: 'bold' }}>{direction === 'credit' ? '+' : '-'} ${(parseFloat(message[symbol].premium) * parseFloat(message[symbol].quantity)).toFixed(0)}</span></span>,
+            message: <span style={{ display: 'flex', justifyContent: 'space-between' }}><span>Success</span><span style={{ color: direction === 'credit' ? 'lime' : 'red', fontWeight: 'bold' }}>{direction === 'credit' ? '+' : '-'} ${(parseFloat(result.premium) * parseFloat(result.quantity)).toFixed(0)}</span></span>,
             description: `Executed order for ${symbol}!`,
           });
-          setPortfolio(prev => [
-            ...(prev.slice(0, variant).length === 1 ? [prev.slice(0, variant)] : prev.slice(0, variant)),
-            prev[variant].map(p =>
-              p.symbol === symbol ?
-                ({
+          setPortfolio(prev => {
+            const updated = [...prev];
+            updated[variant] = prev[variant].map(p =>
+              p.symbol === symbol
+                ? {
                   ...p,
-                  ...{
-                    open_contracts: p.open_contracts + (direction === 'credit' ? -1 : 1) * parseInt(message[symbol].quantity),
-                    expiration: message[symbol].legs[0].expiration_date,
-                    strike: parseFloat(message[symbol].legs[0].strike_price),
-                    chance: 0.88
-                  }
-                }) : p
-            ),
-            ...(prev.slice(variant + 1).length === 1 ? [prev.slice(variant + 1)] : prev.slice(variant + 1))
-          ])
-          setTradeLoading(prev => prev[selector].delete(symbol) ? prev : prev);
+                  open_contracts: p.open_contracts + (direction === 'credit' ? -1 : 1) * parseInt(result.quantity),
+                  expiration: result.legs[0]?.expiration_date,
+                  strike: parseFloat(result.legs[0]?.strike_price || '0'),
+                  chance: 0.88
+                }
+                : p
+            );
+            return updated;
+          });
+          setTradeLoading(prev => {
+            prev[selector].delete(symbol);
+            return { ...prev };
+          });
         }
       })
     }
@@ -137,7 +147,7 @@ const TradePage = () => {
       message: "Failure",
       description: `Failed to execute order for [${symbols.join(', ')}].`,
     });
-    const token = loggedIn?.signInUserSession?.idToken?.jwtToken;
+    const token = (loggedIn as any)?.signInUserSession?.idToken?.jwtToken;
     // const url = `${getApiUrl({ localOverride: "dev" })}/trade?variant=${Boolean(variant)}`;
     try {
       sendMessage({ token, type: direction ? 'BUY' : 'SELL', symbols: symbols, variant });
@@ -206,24 +216,23 @@ const TradePage = () => {
     createColumn({ dataName: 'percentage', render: format('', '%'), sort: true })
   ] : [
     createColumn({ dataName: 'symbol' }),
-    createColumn({ dataName: 'open_contracts', displayName: 'Contracts', sort: { sorter: { compare: (a, b) => a.open_contracts - b.open_contracts } } }),
+    createColumn({ dataName: 'open_contracts', displayName: 'Contracts', sort: { sorter: { compare: (a: Holding, b: Holding) => a.open_contracts - b.open_contracts } } }),
     createColumn({ dataName: 'strike', render: format('$') }),
     createColumn({ dataName: 'chance', render: format('', '%', 100, (num) => num >= 80 ? 'cyan' : 'magenta'), sort: true }),
     createColumn({
       dataName: 'expiration', sort: {
         defaultSortOrder: 'ascend', sorter: {
-          compare: (a, b) => {
-            let { expiration: d1 } = a;
-            let { expiration: d2 } = b;
-            d1 = d1 ? Date.parse(d1) : Date.now()
-            d2 = d2 ? Date.parse(d2) : Date.now()
+          compare: (a: Holding, b: Holding) => {
+            let d1 = a.expiration ? Date.parse(a.expiration) : Date.now();
+            let d2 = b.expiration ? Date.parse(b.expiration) : Date.now();
             return d1 - d2;
           }
         }
       }
     }),
     createColumn({
-      displayName: 'Action', render: (holding) => {
+      displayName: 'Action', render: (val: unknown) => {
+        const holding = val as Holding;
         return <Button
           className={queue[selector].has(holding.symbol) ? tradeStyles.selected : (holding.open_contracts ? layoutStyles.start : subStyles.subscribe)}
           onClick={() => handleQueue(holding)}
@@ -243,7 +252,7 @@ const TradePage = () => {
     if (loggedIn) {
       (async () => {
         setLoading(true);
-        const jwtToken = loggedIn?.signInUserSession?.idToken?.jwtToken;
+        const jwtToken = (loggedIn as any)?.signInUserSession?.idToken?.jwtToken;
         const variants = [0, 1];
         try {
           const promises = variants.map(async v => {
@@ -303,22 +312,22 @@ const TradePage = () => {
   //   }
   // }, [lastJsonMessage]);
 
-  const data = portfolio[variant].map(holding => ({ type: holding['symbol'], value: Math.round(holding['percentage'] * 100) / 100 }))
+  const data = portfolio[variant].map(holding => ({ type: holding.symbol, value: Math.round(Number(holding.percentage) * 100) / 100 }))
 
   const config = {
     appendPadding: 10,
     data,
-    theme: 'dark',
+    theme: 'dark' as const,
     angleField: 'value',
     colorField: 'type',
     radius: 1,
     innerRadius: 0.6,
     label: {
-      type: 'inner',
+      type: 'inner' as const,
       offset: '-50%',
-      content: (content: { type: any; }) => content.type,
+      content: (d: { type?: string }) => d.type ?? '',
       style: {
-        textAlign: 'center',
+        textAlign: 'center' as const,
         fontSize: 14,
       },
     },
@@ -331,7 +340,7 @@ const TradePage = () => {
       },
     ],
     statistic: {
-      title: false,
+      title: false as const,
       content: {
         style: {
           whiteSpace: 'pre-wrap',
@@ -384,7 +393,7 @@ const TradePage = () => {
       </span>
       <Table loading={loading} dataSource={toggle ? portfolio[variant] : portfolio[variant].filter(holding => parseFloat(holding?.quantity) >= 100)} columns={columns} />
       {toggle && <Pie {...config} />}
-      {toggle && <span>Loose Change: ${portfolio[variant].map(holding => holding?.loose).reduce((x, y) => x + y, 0).toFixed(2)}</span>}
+      {toggle && <span>Loose Change: ${portfolio[variant].map(holding => holding?.loose ?? 0).reduce((x, y) => x + y, 0).toFixed(2)}</span>}
     </>
   );
 };

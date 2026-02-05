@@ -69,7 +69,7 @@ const AlertsPage = () => {
   const { user: loggedIn } = useAuthenticator((context) => [context.user]);
   const { account, setShowLogin, setAccount, accountLoading } = useContext(
     AccountContext
-  );
+  ) as { account: any; setShowLogin: (show: boolean) => void; setAccount: (account: any) => void; accountLoading: boolean };
   const [alertsLoading, setLoading] = useState(false);
   // may need useEffect to set webhook url
   const [url, setUrl] = useState(account?.alerts?.webhook || "")
@@ -96,22 +96,18 @@ const AlertsPage = () => {
 
   }, [account])
 
-  const postAccount = (alerts) => {
+  const postAccount = (alerts: { alerts: { webhook?: string; email?: boolean } }) => {
     setLoading(true);
-    const jwtToken = loggedIn?.signInUserSession?.idToken?.jwtToken;
+    const jwtToken = (loggedIn as any)?.signInUserSession?.idToken?.jwtToken;
     const url = `${getApiUrl()}/account`;
     fetch(url, {
       method: "POST",
       headers: { Authorization: jwtToken },
       body: JSON.stringify(alerts),
     })
-      .then((response) => {
-        const data = response.json();
+      .then(async (response) => {
+        const data = await response.json();
         if (response.ok) {
-          // notification.success({
-          //   duration: 5,
-          //   message: "Settings saved!",
-          // });
           return data;
         }
 

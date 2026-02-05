@@ -31,10 +31,10 @@ const SubscriptionPage = () => {
   const { user: loggedIn } = useAuthenticator((context) => [context.user]);
   const { account, accountLoading, loginLoading, setShowLogin } = useContext(
     AccountContext
-  );
+  ) as { account: any; accountLoading: boolean; loginLoading: boolean; setShowLogin: (show: boolean) => void };
   const loading = loginLoading || accountLoading;
-  const [minInvestment, setMinInvestment] = useState();
-  const [price, setPrice] = useState();
+  const [minInvestment, setMinInvestment] = useState<string>();
+  const [price, setPrice] = useState<any>();
   const [priceLoading, setPriceLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [billingLoading, setBillingLoading] = useState(false);
@@ -51,7 +51,7 @@ const SubscriptionPage = () => {
       return;
     }
     setCheckoutLoading(true);
-    const jwtToken = loggedIn?.signInUserSession?.idToken?.jwtToken;
+    const jwtToken = (loggedIn as any)?.signInUserSession?.idToken?.jwtToken;
     const url = `${getApiUrl()}/checkout`;
     fetch(url, {
       method: "POST",
@@ -70,7 +70,7 @@ const SubscriptionPage = () => {
 
   const onBilling = () => {
     setBillingLoading(true);
-    const jwtToken = loggedIn?.signInUserSession?.idToken?.jwtToken;
+    const jwtToken = (loggedIn as any)?.signInUserSession?.idToken?.jwtToken;
     const url = `${getApiUrl()}/billing`;
     fetch(url, {
       method: "POST",

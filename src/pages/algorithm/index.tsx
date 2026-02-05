@@ -7,6 +7,7 @@ import pageStyles from "../home/index.module.less";
 import { LoadingOutlined } from "@ant-design/icons";
 import overrides from "./index.module.less";
 import "./index.module.less";
+import type { MetadataItem, Viz2DData, Viz3DData } from "./types";
 
 const Plot = createPlotlyComponent(Plotly);
 const { Title } = Typography;
@@ -22,11 +23,11 @@ const antIcon = <LoadingOutlined style={{ fontSize: 50 }} spin />;
 const spinner = <Spin style={{ width: "100%" }} indicator={antIcon} />;
 
 const AlgorithmPage = () => {
-  const [viz2D, setViz2D] = useState();
-  const [viz3D, setViz3D] = useState();
+  const [viz2D, setViz2D] = useState<Viz2DData>();
+  const [viz3D, setViz3D] = useState<Viz3DData>();
   const default2DToggle = false;
   const [toggle2D, setToggle2D] = useState(default2DToggle);
-  const [metadata, setMetadata] = useState([]);
+  const [metadata, setMetadata] = useState<MetadataItem[]>([]);
   // const loading = !(metadata.length && viz2D && viz3D);
   const size = 0.4999;
   const [eyeIdx, setEyeIdx] = useState(0);

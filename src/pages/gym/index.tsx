@@ -4,7 +4,7 @@ import { LoadingOutlined, SearchOutlined } from "@ant-design/icons";
 import { getApiUrl } from "@/utils";
 const { Title, Text } = Typography;
 
-const columns = [
+const columns: any[] = [
   {
     title: "Date",
     dataIndex: "Date",
@@ -77,7 +77,7 @@ const GymPage = () => {
         columns={columns}
         dataSource={log}
         pagination={{ position: ["topRight", "bottomRight"] }}
-        // sticky
+      // sticky
       />
     </>
   );

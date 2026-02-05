@@ -19,16 +19,16 @@ const ContactPage = () => {
   const { user: loggedIn } = useAuthenticator((context) => [context.user]);
   const { account, setShowLogin } = useContext(
     AccountContext
-  );
+  ) as { account: any; setShowLogin: (show: boolean) => void };
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [contactLoading, setContactLoading] = useState(false);
-  const [subjectStatus, setSubjectStatus] = useState('');
-  const [messageStatus, setMessageStatus] = useState('');
+  const [subjectStatus, setSubjectStatus] = useState<'' | 'error' | 'warning'>('');
+  const [messageStatus, setMessageStatus] = useState<'' | 'error' | 'warning'>('');
   const [resultProps, setResultProps] = useState({});
   const [sentMessages, setSentMessages] = useState(new Set());
 
-  const contentStyle = {
+  const contentStyle: React.CSSProperties = {
     height: `calc(100% - ${headerHeight + 1}px)`,
     width: '100%',
     display: 'flex',
@@ -83,7 +83,7 @@ const ContactPage = () => {
     setSubjectStatus('')
     setMessageStatus('')
     setContactLoading(true);
-    const jwtToken = loggedIn?.signInUserSession?.idToken?.jwtToken;
+    const jwtToken = (loggedIn as any)?.signInUserSession?.idToken?.jwtToken;
     const url = `${getApiUrl()}/contact`;
     if (sentMessages.has(message)) {
       onSuccess();
@@ -165,17 +165,18 @@ const ContactPage = () => {
   </div>;
   if (!(account && loggedIn)) {
     form =
-      <Popover
-        onClick={() => !loggedIn && setShowLogin(true)}
-        title="🔒 Action Needed"
-        content={loggedIn ? "Verify your email to send a message." : <Button onClick={() => setShowLogin(true)} className={layoutStyles.start}>Sign in to send a message.</Button>}
-        placement="bottom"
-        align={{
-          targetOffset: ["0%", "50%"],
-        }}
-      >
-        {form}
-      </Popover>
+      <div onClick={() => !loggedIn && setShowLogin(true)}>
+        <Popover
+          title="🔒 Action Needed"
+          content={loggedIn ? "Verify your email to send a message." : <Button onClick={() => setShowLogin(true)} className={layoutStyles.start}>Sign in to send a message.</Button>}
+          placement="bottom"
+          align={{
+            targetOffset: [0, 50],
+          }}
+        >
+          {form}
+        </Popover>
+      </div>
   }
   return (
     <>

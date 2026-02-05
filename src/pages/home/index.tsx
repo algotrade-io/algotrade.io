@@ -15,7 +15,7 @@ import {
   notification,
 } from "antd";
 import styled from "styled-components";
-import { G2, Line } from "@ant-design/charts";
+import { G2, Line, LineConfig } from "@ant-design/charts";
 import {
   LoadingOutlined,
   CaretDownFilled,
@@ -132,7 +132,7 @@ const LineChart: React.FC<any> = memo(
         },
         showCrosshairs: true,
         showMarkers: false,
-        customItems: (originalItems: TooltipItem[]) => {
+        customItems: (originalItems: any[]) => {
           const hyperdriveItem = originalItems[0].name === hyperdrive ? originalItems[0] : originalItems[1];
           const signal = hyperdriveItem.data.Full_Sig;
           const signalDatum = {
@@ -151,7 +151,7 @@ const LineChart: React.FC<any> = memo(
       seriesField: "Name",
       smooth: true,
       colorField: "Name",
-      color: ({ Name }) => {
+      color: ({ Name }: { Name: string }) => {
         if (Name === HODL) {
           return "magenta";
         }
@@ -199,14 +199,14 @@ const LineChart: React.FC<any> = memo(
         shape: "breath-point",
       },
     };
-    return <Line ref={chartRef} {...config} />;
+    return <Line ref={chartRef} {...config as unknown as LineConfig} />;
   },
   (pre, next) => JSON.stringify(pre?.data) === JSON.stringify(next?.data)
 );
 
 const Page = () => {
-  const { account, accountLoading } = useContext(AccountContext);
-  const ribbonColors = {
+  const { account, accountLoading } = useContext(AccountContext) as { account: any; accountLoading: boolean };
+  const ribbonColors: Record<string, string> = {
     Sun: "red",
     Mon: "yellow",
     Tue: "blue",
@@ -215,7 +215,7 @@ const Page = () => {
     Fri: "cyan",
     Sat: "orange",
   };
-  const cardHeaderColors = {
+  const cardHeaderColors: Record<string, string> = {
     Sun: "#D32029",
     Mon: "#D8BD14",
     Tue: "#177DDC",
@@ -311,11 +311,11 @@ const Page = () => {
       .finally(() => setSignalLoading(false));
   };
   G2.registerShape("point", "breath-point", {
-    draw(cfg, container) {
-      const data = cfg.data;
+    draw(cfg: any, container: any) {
+      const data = cfg.data as { Name?: string; Sig?: boolean | null };
       const point = {
-        x: cfg.x,
-        y: cfg.y,
+        x: cfg.x as number,
+        y: cfg.y as number,
       };
       const group = container.addGroup();
 

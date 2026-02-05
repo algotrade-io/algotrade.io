@@ -9,11 +9,12 @@ declare module 'react-plotly.js/factory' {
   import { Component } from 'react';
   
   interface PlotParams {
-    data: Plotly.Data[];
-    layout?: Partial<Plotly.Layout>;
+    data: any[];
+    layout?: Partial<Plotly.Layout> | any;
     config?: Partial<Plotly.Config>;
     style?: React.CSSProperties;
     className?: string;
+    useResizeHandler?: boolean;
     onInitialized?: (figure: any, graphDiv: HTMLElement) => void;
     onUpdate?: (figure: any, graphDiv: HTMLElement) => void;
     onPurge?: (figure: any, graphDiv: HTMLElement) => void;
@@ -35,10 +36,20 @@ declare module 'swagger-ui-react' {
     displayOperationId?: boolean;
     filter?: boolean | string;
     persistAuthorization?: boolean;
+    displayRequestDuration?: boolean;
+    onComplete?: (ui: any) => void;
+    requestInterceptor?: (request: any) => any;
+    responseInterceptor?: (response: any) => any;
   }
   
   const SwaggerUI: React.ComponentType<SwaggerUIProps>;
   export default SwaggerUI;
+}
+
+declare module 'styled-components' {
+  import * as styledComponents from 'styled-components/dist/styled-components.cjs';
+  export default styledComponents.default;
+  export * from 'styled-components/dist/styled-components.cjs';
 }
 
 declare module '@/aws-exports' {

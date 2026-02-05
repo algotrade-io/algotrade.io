@@ -51,7 +51,7 @@ const DocsPage = () => {
   const { user: loggedIn } = useAuthenticator((context) => [context.user]);
   const { account, accountLoading, loginLoading, setShowLogin } = useContext(
     AccountContext
-  );
+  ) as { account: any; accountLoading: boolean; loginLoading: boolean; setShowLogin: (show: boolean) => void };
   const loading = loginLoading || accountLoading;
 
   // TODO:
@@ -138,7 +138,7 @@ const DocsPage = () => {
         }}
         responseInterceptor={(res: Response) => {
           // consider dropping this mapping and using status codes and JSON.parse(res.text).message directly
-          const errors = {
+          const errors: Record<number, { message: string; description: string }> = {
             401: {
               message: "Unauthorized",
               description: "Check your API key.",
@@ -154,7 +154,7 @@ const DocsPage = () => {
           };
           const { ok, status } = res;
           if (ok) {
-            const { data, message } = JSON.parse(res.text);
+            const { data, message } = JSON.parse((res as any).text) as { data: { Signal: keyof typeof signalColors }[]; message: string };
             const signal = data[data.length - 1].Signal;
             notification.success({
               duration: 10,

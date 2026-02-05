@@ -26,17 +26,17 @@ export const colors = {
 } as const;
 
 // Signal-specific color mapping
-export const signalColors = {
+export const signalColors: { [key: string]: string } = {
   BUY: colors.buy,
   SELL: colors.sell,
   HODL: colors.hodl,
-} as const;
+};
 
 // Signal emojis
-export const signalEmojis = {
+export const signalEmojis: { [key: string]: string } = {
   BUY: '🚀',
   SELL: '💥',
-} as const;
+};
 
 // Toggle component colors
 export const toggleColors = {
