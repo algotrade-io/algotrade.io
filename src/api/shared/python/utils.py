@@ -67,9 +67,7 @@ def transform_signal(raw_signal: dict[str, Any]) -> dict[str, Any]:
     return signal
 
 
-def enough_time_has_passed(
-    start: datetime, end: datetime, delta: timedelta
-) -> bool:
+def enough_time_has_passed(start: datetime, end: datetime, delta: timedelta) -> bool:
     """Check if enough time has elapsed between two datetimes.
 
     Args:

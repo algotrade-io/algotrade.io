@@ -200,9 +200,7 @@ def notify_user(user: UserModel, signal: dict[str, Any]) -> str | None:
     return None
 
 
-def skip_users(
-    users: Any, to_skip: set[str | None]
-) -> Any:
+def skip_users(users: Any, to_skip: set[str | None]) -> Any:
     """Filter out users that have already been notified.
 
     Args:

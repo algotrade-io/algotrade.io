@@ -347,7 +347,7 @@ def get_expirations(expirations: list[str], num: int = 2) -> list[str]:
     today = datetime.now()
     week = {datetime.strftime(day, "%Y-%m-%d") for day in get_week(today)}
     idx = 0
-    for idx, exp in enumerate(expirations):  # noqa: B007
+    for _, exp in enumerate(expirations):
         if exp not in week:
             break
     offset = int(bool(idx))

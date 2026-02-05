@@ -14,22 +14,20 @@ def test_get_model():
     res = get_model()
     assert res["statusCode"] == 200
     data = json.loads(res["body"])
-    assert {"created", "start", "end", "num_features", "accuracy"}.issubset(
-        data.keys()
-    )
+    assert {"created", "start", "end", "num_features", "accuracy"}.issubset(data.keys())
     created = datetime.strptime(data["created"], DATE_FMT)
     start = datetime.strptime(data["start"], DATE_FMT)
     end = datetime.strptime(data["end"], DATE_FMT)
     assert end > start
     assert start < created
-    assert type(data["num_features"]) == int
-    assert type(data["accuracy"]) == float
+    assert isinstance(data["num_features"], int)
+    assert isinstance(data["accuracy"], float)
     assert data["accuracy"] <= 1.0
     assert res["headers"]["Access-Control-Allow-Origin"] == "*"
 
 
 def verify_visualization(data, dims):
-    if type(dims) == str:
+    if isinstance(dims, str):
         dims = int(dims[0])
     assert len(data["centroid"]) == dims
     assert len(data["grid"]) == dims
@@ -39,7 +37,7 @@ def verify_visualization(data, dims):
         assert "SELL" in datum
         assert len(datum["BUY"])
         assert len(datum["SELL"])
-    assert type(data["radius"]) == float
+    assert isinstance(data["radius"], float)
     assert len(data["preds"])
     assert set(data["preds"]) == {0, 1}
 
@@ -50,9 +48,7 @@ def test_get_visualization():
         res = get_visualization(event, None)
         assert res["statusCode"] == 200
         data = json.loads(res["body"])
-        assert {"actual", "centroid", "radius", "grid", "preds"}.issubset(
-            data.keys()
-        )
+        assert {"actual", "centroid", "radius", "grid", "preds"}.issubset(data.keys())
         verify_visualization(data, dims)
         assert res["headers"]["Access-Control-Allow-Origin"] == "*"
 

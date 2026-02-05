@@ -14,20 +14,20 @@ def test_get_preview():
     assert {"Bal", "Name", "Time"}.issubset(data["USD"]["data"][0].keys())
 
     assert {
-            "Total Return [%]",
-            "Max Drawdown [%]",
-            "Win Rate [%]",
-            "Profit Factor",
-            "Total Fees Paid",
-            "Profitable Time [%]",
-        }.issubset({datum["metric"] for datum in data["BTC"]["stats"]})
+        "Total Return [%]",
+        "Max Drawdown [%]",
+        "Win Rate [%]",
+        "Profit Factor",
+        "Total Fees Paid",
+        "Profitable Time [%]",
+    }.issubset({datum["metric"] for datum in data["BTC"]["stats"]})
     assert {
-            "Total Return [%]",
-            "Max Drawdown [%]",
-            "Win Rate [%]",
-            "Profit Factor",
-            "Sharpe Ratio",
-            "Sortino Ratio",
-        }.issubset({datum["metric"] for datum in data["USD"]["stats"]})
+        "Total Return [%]",
+        "Max Drawdown [%]",
+        "Win Rate [%]",
+        "Profit Factor",
+        "Sharpe Ratio",
+        "Sortino Ratio",
+    }.issubset({datum["metric"] for datum in data["USD"]["stats"]})
 
     assert res["headers"]["Access-Control-Allow-Origin"] == "*"

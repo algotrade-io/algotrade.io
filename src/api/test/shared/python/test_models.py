@@ -19,13 +19,13 @@ def test_get_default_access_queue():
 
 
 def verify_alerts(alerts):
-    assert type(alerts.email) == bool
+    assert isinstance(alerts.email, bool)
     assert not alerts.email
-    assert type(alerts.sms) == bool
+    assert isinstance(alerts.sms, bool)
     assert not alerts.sms
-    assert type(alerts.webhook) == str
+    assert isinstance(alerts.webhook, str)
     assert not alerts.webhook
-    assert type(alerts.last_sent) == str
+    assert isinstance(alerts.last_sent, str)
     assert alerts.last_sent == UTCDateTimeAttribute().serialize(PAST_DATE)
 
 
@@ -35,9 +35,9 @@ class TestAlerts:
 
 
 def verify_permissions(perms):
-    assert type(perms.is_admin) == bool
+    assert isinstance(perms.is_admin, bool)
     assert not perms.is_admin
-    assert type(perms.read_disclaimer) == bool
+    assert isinstance(perms.read_disclaimer, bool)
     assert not perms.read_disclaimer
 
 
@@ -47,9 +47,9 @@ class TestPermissions:
 
 
 def verify_checkout(checkout):
-    assert type(checkout.url) == str
+    assert isinstance(checkout.url, str)
     assert not checkout.url
-    assert type(checkout.created) == datetime
+    assert isinstance(checkout.created, datetime)
     assert checkout.created == PAST_DATE
 
 
@@ -59,7 +59,7 @@ class TestCheckout:
 
 
 def verify_stripe(stripe):
-    assert type(stripe.checkout) == Checkout
+    assert isinstance(stripe.checkout, Checkout)
     verify_checkout(stripe.checkout)
 
 
@@ -90,23 +90,23 @@ class TestSubscribedIndex:
 
 class TestUserModel:
     user = UserModel("test_user@example.com")
-    assert type(user.email) == str
+    assert isinstance(user.email, str)
     assert user.email == "test_user@example.com"
-    assert type(user.api_key) == str
+    assert isinstance(user.api_key, str)
     assert len(user.api_key) == 86
-    assert type(user.alerts) == Alerts
+    assert isinstance(user.alerts, Alerts)
     verify_alerts(user.alerts)
-    assert type(user.permissions) == Permissions
+    assert isinstance(user.permissions, Permissions)
     verify_permissions(user.permissions)
-    assert type(user.in_beta) == int
+    assert isinstance(user.in_beta, int)
     assert user.in_beta == 0
-    assert type(user.subscribed) == int
+    assert isinstance(user.subscribed, int)
     assert user.subscribed == 0
-    assert type(user.stripe) == Stripe
+    assert isinstance(user.stripe, Stripe)
     verify_stripe(user.stripe)
-    assert type(user.access_queue) == list
+    assert isinstance(user.access_queue, list)
     assert user.access_queue == [PAST_DATE] * 5
-    assert type(user.api_key_index) == APIKeyIndex
-    assert type(user.customer_id_index) == CustomerIdIndex
-    assert type(user.in_beta_index) == InBetaIndex
-    assert type(user.subscribed_index) == SubscribedIndex
+    assert isinstance(user.api_key_index, APIKeyIndex)
+    assert isinstance(user.customer_id_index, CustomerIdIndex)
+    assert isinstance(user.in_beta_index, InBetaIndex)
+    assert isinstance(user.subscribed_index, SubscribedIndex)
