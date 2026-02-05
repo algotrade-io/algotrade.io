@@ -5,29 +5,30 @@ import { useAuthenticator } from "@aws-amplify/ui-react";
 const { Title } = Typography;
 import { getApiUrl, Toggle, getEnvironment, isEmpty } from "@/utils";
 import { Pie } from '@ant-design/charts';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
+import useWebSocket from 'react-use-websocket';
 import layoutStyles from "@/layouts/index.module.less";
 import subStyles from "@/pages/subscription/index.module.less";
 import tradeStyles from "./index.module.less";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
-import { getHostname } from "../../utils";
+import { getHostname } from "@/utils/env";
+import type { Holding, TradeMessage, TradeResult, TradeLoadingState, QueueState } from "./types";
 
 
 const isLocal = getEnvironment() === "local";
-let mockData: Array<object> = [];
+let mockData: Holding[] = [];
 if (isLocal) {
-  mockData = (await import("@/pages/trade/fixtures.tsx")).default;
+  mockData = (await import("@/pages/trade/fixtures")).default as Holding[];
 }
 const TradePage = () => {
 
   const { user: loggedIn } = useAuthenticator((context) => [context.user]);
-  const [portfolio, setPortfolio] = useState([[], []]);
+  const [portfolio, setPortfolio] = useState<Holding[][]>([[], []]);
   const [loading, setLoading] = useState(true);
   const variantLabels = { DEF: "DEFAULT", VAR: "VARIANT" };
-  const [tradeLoading, setTradeLoading] = useState({ [variantLabels.DEF]: new Set(), [variantLabels.VAR]: new Set() });
+  const [tradeLoading, setTradeLoading] = useState<TradeLoadingState>({ [variantLabels.DEF]: new Set(), [variantLabels.VAR]: new Set() });
   const [toggle, setToggle] = useState(false);
   const [variant, setVariant] = useState(0);
-  const [queue, setQueue] = useState({ [variantLabels.DEF]: new Set(), [variantLabels.VAR]: new Set() });
+  const [queue, setQueue] = useState<QueueState>({ [variantLabels.DEF]: new Set(), [variantLabels.VAR]: new Set() });
   const [direction, setDirection] = useState(false);
   const toggleLabels = { OPTIONS: "OPT", STOCKS: "STX" };
   const [, forceUpdate] = useReducer(x => x + 1, 0);
@@ -62,7 +63,7 @@ const TradePage = () => {
   // can add route cache=random to end to force new connections?
   // and set share=false
   const socketUrl = `wss://api2.${getHostname(false)}`;
-  const { sendJsonMessage: sendMessage, lastJsonMessage: message } = useWebSocket(socketUrl);
+  const { sendJsonMessage: sendMessage, lastJsonMessage: message } = useWebSocket<TradeMessage>(socketUrl);
 
   useEffect(() => {
     if (!isEmpty(message)) {
@@ -113,7 +114,7 @@ const TradePage = () => {
       })
     }
   }, [message]);
-  const handleQueue = (holding: object) => {
+  const handleQueue = (holding: Holding) => {
     const holdingDir = Boolean(holding.open_contracts);
     const queueIsEmpty = queue[selector].size === 0;
     if (queue[selector].has(holding.symbol)) {
@@ -127,7 +128,10 @@ const TradePage = () => {
   };
   const trade = async (symbols: Array<string>) => {
     // TODO: change direction name (overlap with response) and change to be dual (account for both variants)
-    setTradeLoading(prev => symbols.forEach((symbol: string) => prev[selector].add(symbol)) || prev);
+    setTradeLoading(prev => {
+      symbols.forEach((symbol: string) => prev[selector].add(symbol));
+      return { ...prev };
+    });
     const renderError = () => notification.error({
       duration: 10,
       message: "Failure",
