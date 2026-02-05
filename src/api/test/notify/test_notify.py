@@ -8,19 +8,6 @@ from shared.python.models import UserModel  # noqa
 from shared.python.utils import transform_signal  # noqa
 
 
-keeper = Cryptographer(b"password", b"salt")
-
-
-class TestCryptographer:
-    def test_init(self):
-        assert hasattr(keeper, "f")
-
-    def test_encrypt_and_decrypt(self):
-        ciphertext = keeper.encrypt(b"secret")
-        plaintext = keeper.decrypt(ciphertext).decode("UTF-8")
-        assert plaintext == "secret"
-
-
 class TestProcessor:
     def test_run(self):
         processor = Processor(pow, 2)
@@ -31,12 +18,12 @@ class TestProcessor:
 def test_post_notify():
     body = {"Time": "2020-01-01", "Sig": True}
     event = {
-        "headers": {"emit_secret": keeper.encrypt(b"wrong")},
+        "headers": {"emit_secret": "wrong"},
         "body": json.dumps(body),
     }
     res = post_notify(event, None)
     assert res["statusCode"] == 401
-    event["headers"]["emit_secret"] = keeper.encrypt(b"secret")
+    event["headers"]["emit_secret"] = "secret"
     user = UserModel.get("test_user@example.com")
     alerts = user.alerts
     alerts["email"] = True

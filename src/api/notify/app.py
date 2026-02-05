@@ -1,6 +1,5 @@
 """Notify Lambda handler for sending signal alerts via email, SMS, and webhook."""
 
-import base64
 import json
 import logging
 import os
@@ -13,8 +12,6 @@ from typing import Any
 import boto3
 import requests
 from botocore.exceptions import ClientError
-from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
 from jinja2 import Template
 from models import UserModel
 from pynamodb.attributes import UTCDateTimeAttribute
@@ -27,50 +24,6 @@ from utils import (
     success,
     transform_signal,
 )
-
-
-class Cryptographer:
-    """Encrypt and decrypt data using Fernet symmetric encryption."""
-
-    def __init__(self, password: bytes, salt: bytes) -> None:
-        """Initialize cryptographer with password and salt.
-
-        Args:
-            password: Password for key derivation.
-            salt: Salt for key derivation.
-        """
-        kdf = Scrypt(
-            salt=salt,
-            length=32,
-            n=2**14,
-            r=8,
-            p=1,
-        )
-        key = base64.urlsafe_b64encode(kdf.derive(password))
-        self.f = Fernet(key)
-
-    def encrypt(self, plaintext: bytes) -> bytes:
-        """Encrypt plaintext data.
-
-        Args:
-            plaintext: Data to encrypt.
-
-        Returns:
-            Encrypted bytes.
-        """
-        return self.f.encrypt(plaintext)
-
-    def decrypt(self, ciphertext: bytes | str) -> bytes:
-        """Decrypt ciphertext data.
-
-        Args:
-            ciphertext: Data to decrypt.
-
-        Returns:
-            Decrypted bytes.
-        """
-        return self.f.decrypt(ciphertext)
-
 
 class Processor:
     """Parallel processor for running jobs across multiple processes."""
@@ -225,16 +178,10 @@ def post_notify(event: dict[str, Any], _: Any) -> dict[str, Any]:
     Returns:
         Success response or error if authentication fails.
     """
-    salt = os.environ["SALT"].encode("UTF-8")
-    password = os.environ["CRYPT_PASS"].encode("UTF-8")
     emit_secret = os.environ["EMIT_SECRET"]
-
     req_headers = event["headers"]
     header = "emit_secret"
-    encrypted = req_headers[header] if header in req_headers else ""
-    cryptographer = Cryptographer(password, salt)
-    decrypted = cryptographer.decrypt(encrypted).decode("UTF-8")
-    if not decrypted == emit_secret:
+    if not req_headers.get(header) == emit_secret:
         sleep(0 if TEST else 10)
         print("Incorrect emit secret provided.")
         return error(401, "Provide a valid emit secret.")

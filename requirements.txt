@@ -8,7 +8,6 @@ pynamodb == 5.5.1
 stripe
 jinja2
 numpy >= 1.26.0
-cryptography
 pyotp
 robin-stocks
 python-jose
