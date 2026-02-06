@@ -57,7 +57,7 @@ def get_account(event: dict[str, Any]) -> dict[str, Any]:
         user = UserModel(email)
         user.save()
 
-    return success(user.to_json())
+    return success(user.to_simple_dict())
 
 
 def post_account(event: dict[str, Any]) -> dict[str, Any]:
@@ -87,7 +87,7 @@ def post_account(event: dict[str, Any]) -> dict[str, Any]:
         actions.append(UserModel.permissions.set(user.permissions))
 
     if "alerts" in req_body:
-        alerts = json.loads(user.to_json())["alerts"]
+        alerts = json.loads(user.to_simple_dict())["alerts"]
         updated_alerts = req_body["alerts"]
         for key, val in updated_alerts.items():
             if key in ALERTS_LOOKUP:
@@ -110,7 +110,7 @@ def post_account(event: dict[str, Any]) -> dict[str, Any]:
     if actions:
         user.update(actions=actions)
 
-    return success(user.to_json())
+    return success(user.to_simple_dict())
 
 
 def delete_account(event: dict[str, Any]) -> dict[str, Any]:
