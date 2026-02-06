@@ -30,10 +30,10 @@ format:
 	uv run ruff format .
 
 test:
-	uv run python -m pytest --ignore=src/api/trade --ignore=src/api/shared/python/auth.py
+	uv run python -m pytest
 
 cov:
-	uv run python -m pytest --cov --ignore=src/api/trade --ignore=src/api/shared/python/auth.py
+	uv run python -m pytest --cov
 
 clean:
 	rm -rf .coverage coverage.xml .pytest_cache .ruff_cache
