@@ -25,6 +25,7 @@ from utils import (
     transform_signal,
 )
 
+
 class Processor:
     """Parallel processor for running jobs across multiple processes."""
 

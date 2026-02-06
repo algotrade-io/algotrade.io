@@ -389,7 +389,6 @@ name = "notify-lambda"
 version = "0.1.0"
 source = { virtual = "src/api/notify" }
 dependencies = [
-    { name = "cryptography" },
     { name = "jinja2" },
     { name = "requests" },
     { name = "shared-db" },
@@ -397,7 +396,6 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "cryptography", specifier = ">=41.0.0" },
     { name = "jinja2", specifier = ">=3.1.2" },
     { name = "requests", specifier = ">=2.28.1" },
     { name = "shared-db", editable = "src/api/shared-db" },
