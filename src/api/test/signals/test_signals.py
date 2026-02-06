@@ -45,7 +45,7 @@ def test_get_signals():
         assert datum["Signal"] == "BUY" or datum["Signal"] == "SELL"
         assert datum["Day"] in {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"}
         assert datum["Asset"] == "BTC"
-    for _ in range(max_accesses):
+    for _ in range(MAX_ACCESSES):
         remaining = update_access_queue(user)
 
     assert not remaining
