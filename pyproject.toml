@@ -2,10 +2,31 @@
 name = "algotrade-api"
 version = "0.1.0"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "account-lambda",
+    "contact-lambda",
+    "gym-lambda",
+    "model-lambda",
+    "notify-lambda",
+    "preview-lambda",
+    "signals-lambda",
+    "subscribe-lambda",
+    "trade-lambda",
+]
 
 [dependency-groups]
 dev = ["ruff", "pytest", "pytest-xdist", "pytest-cov"]
+
+[tool.uv.sources]
+account-lambda = { workspace = true }
+contact-lambda = { workspace = true }
+gym-lambda = { workspace = true }
+model-lambda = { workspace = true }
+notify-lambda = { workspace = true }
+preview-lambda = { workspace = true }
+signals-lambda = { workspace = true }
+subscribe-lambda = { workspace = true }
+trade-lambda = { workspace = true }
 
 [tool.uv.workspace]
 members = [
