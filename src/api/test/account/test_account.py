@@ -29,7 +29,7 @@ def test_handle_account():
 
 def test_get_account():
     user = UserModel.get("test_user@example.com")
-    user_data = json.loads(user.to_simple_dict())
+    user_data = user.to_simple_dict()
     event = {
         "httpMethod": "GET",
         "requestContext": {
@@ -48,7 +48,7 @@ def test_get_account():
     event["requestContext"]["authorizer"]["claims"]["email"] = "new_user"
     res = get_account(event)
     user = UserModel.get("new_user")
-    user_data = json.loads(user.to_simple_dict())
+    user_data = user.to_simple_dict()
     assert res["statusCode"] == 200
     body = json.loads(res["body"])
     assert body == user_data
@@ -74,7 +74,7 @@ def test_post_account():
     res = post_account(event)
     assert res["statusCode"] == 200
     user = UserModel.get("new_user")
-    user_data = json.loads(user.to_simple_dict())
+    user_data = user.to_simple_dict()
     assert res["statusCode"] == 200
     body = json.loads(res["body"])
     assert body == user_data
