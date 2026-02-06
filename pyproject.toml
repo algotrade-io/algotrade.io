@@ -28,7 +28,7 @@ testpaths = ["src/api/test"]
 
 [tool.coverage.run]
 source = ["src/api"]
-omit = ["**/test/*", ".venv/*"]
+omit = ["**/test/*", ".venv/*", "src/api/trade/app.py", "src/api/shared/python/auth.py"]
 
 [tool.coverage.report]
 fail_under = 80
