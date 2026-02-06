@@ -68,39 +68,28 @@ def get_visualization(event: dict[str, Any], _: Any) -> dict[str, Any]:
 
 
 class NumpyEncoder(json.JSONEncoder):
-    """Custom JSON encoder for numpy data types."""
+    """Custom JSON encoder for numpy data types.
+
+    Converts numpy types to native Python types for JSON serialization.
+    Handles integers, floats, complex numbers, arrays, booleans, and void types.
+    """
 
     def default(self, obj: Any) -> Any:
         """Convert numpy types to JSON-serializable Python types.
 
         Args:
-            obj: Object to encode.
+            obj: Object to encode. If a numpy type, converts to Python equivalent.
 
         Returns:
-            JSON-serializable representation of the object.
+            JSON-serializable Python object.
         """
-        if isinstance(
-            obj,
-            (
-                np.int_,
-                np.intc,
-                np.intp,
-                np.int8,
-                np.int16,
-                np.int32,
-                np.int64,
-                np.uint8,
-                np.uint16,
-                np.uint32,
-                np.uint64,
-            ),
-        ):
+        if isinstance(obj, np.integer):
             return int(obj)
 
-        elif isinstance(obj, (np.float_, np.float16, np.float32, np.float64)):
+        elif isinstance(obj, np.floating):
             return float(obj)
 
-        elif isinstance(obj, (np.complex_, np.complex64, np.complex128)):
+        elif isinstance(obj, np.complexfloating):
             return {"real": float(obj.real), "imag": float(obj.imag)}
 
         elif isinstance(obj, (np.ndarray,)):
