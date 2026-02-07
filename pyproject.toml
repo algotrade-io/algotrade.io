@@ -44,7 +44,8 @@ members = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "-n auto"
+# Parallel execution disabled - tests have sequential dependencies
+# addopts = "-n auto"
 testpaths = ["src/api/test"]
 
 [tool.coverage.run]
