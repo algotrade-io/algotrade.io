@@ -4,9 +4,11 @@ import json
 import os
 import pickle
 from typing import Any
-from utils import success
+
 import boto3
 import numpy as np
+
+from utils import success
 
 s3 = boto3.client("s3")
 

@@ -118,7 +118,11 @@ def success(body: Any, status: int = 200) -> dict[str, Any]:
         except json.decoder.JSONDecodeError:
             dump = True
 
-    return {"statusCode": status, "body": json.dumps(body) if dump else body, "headers": RES_HEADERS}
+    return {
+        "statusCode": status,
+        "body": json.dumps(body) if dump else body,
+        "headers": RES_HEADERS,
+    }
 
 
 def options() -> dict[str, Any]:

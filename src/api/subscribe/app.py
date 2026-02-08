@@ -12,7 +12,6 @@ from pynamodb.attributes import UTCDateTimeAttribute
 
 from utils import (
     PAST_DATE,
-    RES_HEADERS,
     TEST,
     enough_time_has_passed,
     error,

@@ -2,8 +2,10 @@
 
 import os
 from typing import Any
-from utils import success
+
 import boto3
+
+from utils import success
 
 s3 = boto3.client("s3")
 
