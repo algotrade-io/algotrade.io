@@ -117,7 +117,7 @@ def get_signals(event: dict[str, Any]) -> dict[str, Any]:
     obj = s3.get_object(Bucket=os.environ["S3_BUCKET"], Key="models/latest/signals.csv")
 
     days_in_a_week = 7
-    lines = [line.decode("utf-8") for line in list(obj["Body"].iter_lines())]
+    lines = [line.decode() for line in list(obj["Body"].iter_lines())]
     header = lines[0]
     rows = lines[-days_in_a_week:]
     keys = header.split(",")

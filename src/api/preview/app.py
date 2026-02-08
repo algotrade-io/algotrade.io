@@ -20,4 +20,4 @@ def get_preview(*_: Any) -> dict[str, Any]:
         API response with preview JSON data.
     """
     obj = s3.get_object(Bucket=os.environ["S3_BUCKET"], Key="data/api/preview.json")
-    return success(obj["Body"].read())
+    return success(obj["Body"].read().decode())
