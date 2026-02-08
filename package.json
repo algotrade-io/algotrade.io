@@ -1,7 +1,7 @@
 {
   "name": "Algotrade.io",
   "private": true,
-  "version": "0.6.2",
+  "version": "1.0.0",
   "description": "Vite app for Algotrade.io",
   "type": "module",
   "scripts": {
