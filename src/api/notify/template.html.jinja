@@ -7,7 +7,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
-    <title>{{ Domain|upper }} {{ 'Buy' if Signal else 'Sell' }} Signal</title>
+    <title>{{ Domain|capitalize }} {{ 'Buy' if Signal else 'Sell' }} Signal</title>
     <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter"> -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne+Mono">
 </head>
@@ -35,8 +35,8 @@
                         src="https://{{ Prefix }}{{ Domain }}/assets/logo.png" width="24px">
                     <span
                         style='vertical-align:text-bottom;font-size:20px;font-weight:600;font-family:"Helvetica Neue", -apple-system, BlinkMacSystemFont'>
-                        <span style="color:rgba(255, 255, 255, 0.85)">{{ Domain.split('.')[0]|upper }}</span><span
-                            style="color:#52e5ff">.{{ Domain.split('.')[1]|upper }}</span>
+                        <span style="color:rgba(255, 255, 255, 0.85)">{{ Domain.split('.')[0]|capitalize }}</span><span
+                            style="color:#52e5ff">.{{ Domain.split('.')[1]|lower }}</span>
                     </span>
                 </a>
             </th>
