@@ -4,7 +4,7 @@ import json
 import os
 import pickle
 from typing import Any
-
+from utils import success
 import boto3
 import numpy as np
 
@@ -27,11 +27,7 @@ def get_model(*_: Any) -> dict[str, Any]:
     metadata["num_features"] = len(metadata["features"])
     allowed_fields = ["created", "start", "end", "num_features", "accuracy"]
     metadata = {key: metadata[key] for key in allowed_fields}
-    return {
-        "statusCode": 200,
-        "body": json.dumps(metadata),
-        "headers": {"Access-Control-Allow-Origin": "*"},
-    }
+    return success(metadata)
 
 
 def get_visualization(event: dict[str, Any], _: Any) -> dict[str, Any]:
@@ -60,11 +56,7 @@ def get_visualization(event: dict[str, Any], _: Any) -> dict[str, Any]:
         )
         for label in data_labels
     }
-    return {
-        "statusCode": 200,
-        "body": json.dumps(data, cls=NumpyEncoder),
-        "headers": {"Access-Control-Allow-Origin": "*"},
-    }
+    return success(json.dumps(data, cls=NumpyEncoder))
 
 
 class NumpyEncoder(json.JSONEncoder):

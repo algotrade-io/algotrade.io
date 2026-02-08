@@ -2,7 +2,7 @@
 
 import os
 from typing import Any
-
+from utils import success
 import boto3
 
 s3 = boto3.client("s3")
@@ -18,8 +18,4 @@ def get_preview(*_: Any) -> dict[str, Any]:
         API response with preview JSON data.
     """
     obj = s3.get_object(Bucket=os.environ["S3_BUCKET"], Key="data/api/preview.json")
-    return {
-        "statusCode": 200,
-        "body": obj["Body"].read(),
-        "headers": {"Access-Control-Allow-Origin": "*"},
-    }
+    return success(obj["Body"].read())

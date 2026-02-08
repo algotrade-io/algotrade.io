@@ -509,6 +509,8 @@ Resources:
               Resource: !Sub "arn:aws:s3:::${S3Bucket}/data/api/*"
       CodeUri: preview
       Handler: app.get_preview
+      Layers:
+      - !Ref SharedLayer
       Events:
         Preview:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -584,6 +586,8 @@ Resources:
               Resource: !Sub "arn:aws:s3:::${S3Bucket}/models/latest/metadata.json"
       CodeUri: model
       Handler: app.get_model
+      Layers:
+      - !Ref SharedLayer
       Events:
         Model:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -609,6 +613,8 @@ Resources:
                 ]
       CodeUri: model
       Handler: app.get_visualization
+      Layers:
+      - !Ref SharedLayer
       Events:
         Model:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api

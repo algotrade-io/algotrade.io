@@ -5,7 +5,7 @@ import os
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-RES_HEADERS = {"Access-Control-Allow-Origin": "*"}
+RES_HEADERS = {"Access-Control-Allow-Origin": "*", "Content-Type": "application/json"}
 
 PAST_DATE = datetime(2020, 1, 1, tzinfo=UTC)
 DATE_FMT = "%Y-%m-%d"
@@ -108,6 +108,7 @@ def success(body: Any, status: int = 200) -> dict[str, Any]:
     Returns:
         Lambda response dict with statusCode, body, and headers.
     """
+    # we need to deal with non json strings and json strings and json objects
     if not isinstance(body, str):
         body = json.dumps(body)
     return {"statusCode": status, "body": body, "headers": RES_HEADERS}

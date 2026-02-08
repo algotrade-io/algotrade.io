@@ -231,7 +231,7 @@ def post_subscribe(event: dict[str, Any], _: Any) -> dict[str, Any]:
             logging.exception(e)
             raise
 
-    response = success({"status": "success"})
+    response = success("OK")
     event_type = event["type"]
     subscription_events = {
         "customer.subscription.created",

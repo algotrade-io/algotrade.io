@@ -146,11 +146,7 @@ def handle_ws(event: dict[str, Any], _: Any) -> dict[str, Any]:
     client.delete_connection(ConnectionId=connection)
     client.close()
 
-    return {
-        "statusCode": 200,
-        "body": "OK",
-        "headers": {"Access-Control-Allow-Origin": "*"},
-    }
+    return success("OK")
 
 
 def login(variant: bool = False) -> None:
