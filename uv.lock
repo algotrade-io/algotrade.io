@@ -28,13 +28,15 @@ name = "account-lambda"
 version = "0.1.0"
 source = { editable = "src/api/account" }
 dependencies = [
-    { name = "shared-db" },
+    { name = "boto3" },
+    { name = "pynamodb" },
     { name = "stripe" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "shared-db", editable = "src/api/shared-db" },
+    { name = "boto3", specifier = ">=1.34.16" },
+    { name = "pynamodb", specifier = ">=5.5.1" },
     { name = "stripe", specifier = ">=5.0.0" },
 ]
 
@@ -192,11 +194,15 @@ name = "contact-lambda"
 version = "0.1.0"
 source = { editable = "src/api/contact" }
 dependencies = [
-    { name = "shared-db" },
+    { name = "boto3" },
+    { name = "pynamodb" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "shared-db", editable = "src/api/shared-db" }]
+requires-dist = [
+    { name = "boto3", specifier = ">=1.34.16" },
+    { name = "pynamodb", specifier = ">=5.5.1" },
+]
 
 [[package]]
 name = "coverage"
@@ -312,14 +318,16 @@ name = "gym-lambda"
 version = "0.1.0"
 source = { editable = "src/api/gym" }
 dependencies = [
+    { name = "boto3" },
     { name = "pandas" },
-    { name = "shared-db" },
+    { name = "pynamodb" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "boto3", specifier = ">=1.34.16" },
     { name = "pandas" },
-    { name = "shared-db", editable = "src/api/shared-db" },
+    { name = "pynamodb", specifier = ">=5.5.1" },
 ]
 
 [[package]]
@@ -396,14 +404,14 @@ name = "model-lambda"
 version = "0.1.0"
 source = { editable = "src/api/model" }
 dependencies = [
+    { name = "boto3" },
     { name = "numpy" },
-    { name = "shared-core" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "boto3", specifier = ">=1.34.16" },
     { name = "numpy", specifier = ">=1.26.0" },
-    { name = "shared-core", editable = "src/api/shared-core" },
 ]
 
 [[package]]
@@ -411,16 +419,18 @@ name = "notify-lambda"
 version = "0.1.0"
 source = { editable = "src/api/notify" }
 dependencies = [
+    { name = "boto3" },
     { name = "jinja2" },
+    { name = "pynamodb" },
     { name = "requests" },
-    { name = "shared-db" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "boto3", specifier = ">=1.34.16" },
     { name = "jinja2", specifier = ">=3.1.2" },
+    { name = "pynamodb", specifier = ">=5.5.1" },
     { name = "requests", specifier = ">=2.28.1" },
-    { name = "shared-db", editable = "src/api/shared-db" },
 ]
 
 [[package]]
@@ -504,11 +514,15 @@ name = "preview-lambda"
 version = "0.1.0"
 source = { editable = "src/api/preview" }
 dependencies = [
-    { name = "shared-db" },
+    { name = "boto3" },
+    { name = "pynamodb" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "shared-db", editable = "src/api/shared-db" }]
+requires-dist = [
+    { name = "boto3", specifier = ">=1.34.16" },
+    { name = "pynamodb", specifier = ">=5.5.1" },
+]
 
 [[package]]
 name = "pyasn1"
@@ -729,7 +743,7 @@ requires-dist = [{ name = "boto3", specifier = ">=1.34.16" }]
 [[package]]
 name = "shared-db"
 version = "0.1.0"
-source = { editable = "src/api/shared-db" }
+source = { virtual = "src/api/shared-db" }
 dependencies = [
     { name = "pynamodb" },
     { name = "shared-core" },
@@ -746,11 +760,15 @@ name = "signals-lambda"
 version = "0.1.0"
 source = { editable = "src/api/signals" }
 dependencies = [
-    { name = "shared-db" },
+    { name = "boto3" },
+    { name = "pynamodb" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "shared-db", editable = "src/api/shared-db" }]
+requires-dist = [
+    { name = "boto3", specifier = ">=1.34.16" },
+    { name = "pynamodb", specifier = ">=5.5.1" },
+]
 
 [[package]]
 name = "six"
@@ -779,13 +797,15 @@ name = "subscribe-lambda"
 version = "0.1.0"
 source = { editable = "src/api/subscribe" }
 dependencies = [
-    { name = "shared-db" },
+    { name = "boto3" },
+    { name = "pynamodb" },
     { name = "stripe" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "shared-db", editable = "src/api/shared-db" },
+    { name = "boto3", specifier = ">=1.34.16" },
+    { name = "pynamodb", specifier = ">=5.5.1" },
     { name = "stripe", specifier = ">=5.0.0" },
 ]
 
@@ -794,18 +814,18 @@ name = "trade-lambda"
 version = "0.1.0"
 source = { editable = "src/api/trade" }
 dependencies = [
+    { name = "boto3" },
     { name = "python-jose" },
     { name = "requests" },
     { name = "robin-stocks" },
-    { name = "shared-core" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "boto3", specifier = ">=1.34.16" },
     { name = "python-jose", specifier = ">=3.3.0" },
     { name = "requests", specifier = ">=2.28.1" },
     { name = "robin-stocks", specifier = ">=3.4.0" },
-    { name = "shared-core", editable = "src/api/shared-core" },
 ]
 
 [[package]]

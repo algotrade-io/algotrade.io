@@ -9,7 +9,7 @@
     "typescript": "tsc",
     "build:ui": "pnpm run swagger && NODE_OPTIONS=--max-old-space-size=8192 vite build",
     "preview": "vite preview",
-    "build:api": "cd src/api && sam build --use-container --cached --parallel",
+    "build:api": "cd src/api && sam build --cached --parallel",
     "build+start:api": "npm run build:api && npm run start:api",
     "build+deploy:api": "npm run build:api && npm run deploy:api",
     "deploy-dev:api": "cd src/api && sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --parameter-overrides $(cat dev-parameters.env) --config-env dev",
