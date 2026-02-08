@@ -7,7 +7,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport"
         content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
-    <title>FORCEPU.SH {{ 'Buy' if Signal else 'Sell' }} Signal</title>
+    <title>{{ Domain|upper }} {{ 'Buy' if Signal else 'Sell' }} Signal</title>
     <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter"> -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne+Mono">
 </head>
@@ -30,13 +30,13 @@
         <tr>
             <th></th>
             <th>
-                <a style="text-decoration:none" href="https://{{ Prefix }}forcepu.sh" target="_blank"
+                <a style="text-decoration:none" href="https://{{ Prefix }}{{ Domain }}" target="_blank"
                     rel="noopener noreferrer"><img style="padding: 0 5px"
-                        src="https://{{ Prefix }}forcepu.sh/assets/logo.png" width="24px">
+                        src="https://{{ Prefix }}{{ Domain }}/assets/logo.png" width="24px">
                     <span
                         style='vertical-align:text-bottom;font-size:20px;font-weight:600;font-family:"Helvetica Neue", -apple-system, BlinkMacSystemFont'>
-                        <span style="color:rgba(255, 255, 255, 0.85)">FORCE</span><span
-                            style="color:#52e5ff">PU.SH</span>
+                        <span style="color:rgba(255, 255, 255, 0.85)">{{ Domain.split('.')[0]|upper }}</span><span
+                            style="color:#52e5ff">.{{ Domain.split('.')[1]|upper }}</span>
                     </span>
                 </a>
             </th>
@@ -72,7 +72,7 @@
                         Symbol, "Noto Color Emoji"'>{{
                             'BUY' if Signal else 'SELL' }}</b>
                     </div>
-                    <img src="https://{{ Prefix }}forcepu.sh/assets/{{ 'bull' if Signal else 'bear' }}.png"
+                    <img src="https://{{ Prefix }}{{ Domain }}/assets/{{ 'bull' if Signal else 'bear' }}.png"
                         width="250px">
                 </div>
             </td>
@@ -107,7 +107,7 @@
             <td></td>
             <td style="background:black;width:400px;">
                 <div style="padding:30px 0;width:100%">
-                    <a href="https://{{ Prefix }}forcepu.sh/signals" target="_blank" rel="noopener noreferrer"
+                    <a href="https://{{ Prefix }}{{ Domain }}/signals" target="_blank" rel="noopener noreferrer"
                         style="width:fit-content">
                         <button
                             style='font-family:Trebuchet MS,Helvetica Neue, Syne Mono, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
@@ -124,7 +124,7 @@
     <table style="width:100%;height:58px;border-top:rgba(255,255,255,0.25) 1px solid">
         <tr>
             <th></th>
-            <th><a style="font-weight:normal;color:#a6a6a6" href="https://{{ Prefix }}forcepu.sh/alerts" target="_blank"
+            <th><a style="font-weight:normal;color:#a6a6a6" href="https://{{ Prefix }}{{ Domain }}/alerts" target="_blank"
                     rel="noopener noreferrer">unsubscribe</a></th>
             <th></th>
         </tr>

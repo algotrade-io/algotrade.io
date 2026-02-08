@@ -35,7 +35,7 @@ const codeString =
     headers = event['headers']
     is_legit = False
     
-    # grab this from forcepu.sh/docs
+    # grab this from /docs
     my_api_key = 'this_is_a_secret'
     if headers['X-API-Key'] == my_api_key:
         is_legit = True

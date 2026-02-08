@@ -229,17 +229,19 @@ def notify_email(user: UserModel, signal: dict[str, Any]) -> None:
         ClientError: If email fails to send.
     """
     stage = os.environ["STAGE"]
+    domain = os.environ["DOMAIN"]
     sender = get_email(os.environ["SIGNAL_EMAIL"], stage)
     recipient = "success@simulator.amazonses.com" if TEST else user.email
     region = "us-east-1"
     charset = "UTF-8"
     client = boto3.client("sesv2", region_name=region)
-    subject = f"FORCEPU.SH: {signal['Asset']} (₿) Signal Alert"
-    body_text = "Visit FORCEPU.SH to view the new signal."
+    subject = f"{domain.upper()}: {signal['Asset']} (₿) Signal Alert"
+    body_text = f"Visit {domain.upper()} to view the new signal."
     with open(os.path.join(os.path.dirname(__file__), "template.html.jinja")) as file:
         content = file.read()
     template = Template(content)
     signal["Prefix"] = "dev." if stage == "dev" else ""
+    signal["Domain"] = domain
     signal["Signal"] = signal["Signal"] == "BUY"
     html = template.render(signal)
     try:
