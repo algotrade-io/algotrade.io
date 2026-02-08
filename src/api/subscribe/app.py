@@ -63,9 +63,7 @@ def get_product(event: dict[str, Any], _: Any) -> dict[str, Any]:
     params = event["queryStringParameters"]
     product_id = params["id"]
     product = stripe.Product.retrieve(product_id)
-    status_code = 200
-    body = json.dumps(product)
-    return {"statusCode": status_code, "body": body, "headers": RES_HEADERS}
+    return success(product)
 
 
 def handle_checkout(event: dict[str, Any], _: Any) -> dict[str, Any]:

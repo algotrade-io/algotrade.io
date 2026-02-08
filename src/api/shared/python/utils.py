@@ -109,6 +109,14 @@ def success(body: Any, status: int = 200) -> dict[str, Any]:
         Lambda response dict with statusCode, body, and headers.
     """
     # we need to deal with non json strings and json strings and json objects
+    # case 1: body is a string
+    # case 1a: body is a json string, then don't dumps it
+    # case 1b: body is a non json string, then dumps it
+    # case 2: body is a json object, then dumps it
+    
+    
+
+    
     if not isinstance(body, str):
         body = json.dumps(body)
     return {"statusCode": status, "body": body, "headers": RES_HEADERS}

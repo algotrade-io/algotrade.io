@@ -57,7 +57,7 @@ def get_account(event: dict[str, Any]) -> dict[str, Any]:
         user = UserModel(email)
         user.save()
 
-    return success(json.dumps(user.to_simple_dict()))
+    return success(user.to_simple_dict())
 
 
 def post_account(event: dict[str, Any]) -> dict[str, Any]:
@@ -110,7 +110,7 @@ def post_account(event: dict[str, Any]) -> dict[str, Any]:
     if actions:
         user.update(actions=actions)
 
-    return success(json.dumps(user.to_simple_dict()))
+    return success(user.to_simple_dict())
 
 
 def delete_account(event: dict[str, Any]) -> dict[str, Any]:
