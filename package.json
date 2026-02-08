@@ -13,7 +13,7 @@
     "ci": "rm -rf node_modules && pnpm install --frozen-lockfile",
     "amp": "APP_ID=\"${APP_ID}\" ENV=\"${ENV}\" amplify/pull.sh",
     "clean": "rm -rf node_modules && rm -rf src/.umi",
-    "swagger": "swagger-cli bundle -o src/api/spec/swagger.json src/api/spec/swagger.yaml",
+    "swagger": "swagger-cli bundle -o src/ui/api/spec/swagger.json src/api/spec/swagger.yaml",
     "visualize": "vite-bundle-visualizer -t treemap --open -o ${PWD}/stats.html",
     "test": "dotenv -e config.env -- npx cypress open"
   },

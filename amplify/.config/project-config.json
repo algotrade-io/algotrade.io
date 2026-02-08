@@ -8,7 +8,7 @@
   "javascript": {
     "framework": "react",
     "config": {
-      "SourceDir": "src",
+      "SourceDir": "src/ui",
       "DistributionDir": "dist",
       "BuildCommand": "pnpm run build",
       "StartCommand": "pnpm start"
