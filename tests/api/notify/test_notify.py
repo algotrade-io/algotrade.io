@@ -33,8 +33,10 @@ def test_post_notify() -> None:
     alerts["email"] = True
     alerts["sms"] = True
     alerts["webhook"] = ""
-    alerts["last_sent"] = UTCDateTimeAttribute().deserialize(alerts["last_sent"])
-    user.update(actions=[UserModel.alerts.set(alerts), UserModel.in_beta.set(1)])
+    alerts["last_sent"] = UTCDateTimeAttribute(
+    ).deserialize(alerts["last_sent"])
+    user.update(actions=[UserModel.alerts.set(
+        alerts), UserModel.in_beta.set(1)])
     res = post_notify(event, None)
     assert res["statusCode"] == 200
 
