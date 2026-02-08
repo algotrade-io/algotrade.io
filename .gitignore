@@ -39,6 +39,7 @@ screenshot
 
 # api
 src/api/.aws-sam
+src/api/*/requirements.txt
 
 build
 

@@ -149,7 +149,7 @@ const routes = [
 export const headerHeight = 64;
 const footerHeight = headerHeight;
 // add move fast; break everything to right side of header
-// add logo to forcepush div
+// add logo to domain name div
 // remove menu and menu items?
 // or at least move these pieces out
 

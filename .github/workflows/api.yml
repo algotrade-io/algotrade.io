@@ -23,11 +23,6 @@ jobs:
       - name: Set up AWS SAM
         run: util/install_sam.sh || util/upgrade_sam.sh
 
-      - name: Use Node.js 18
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
       - name: Set up Python 3.14
         uses: actions/setup-python@v5
         with:
@@ -70,7 +65,7 @@ jobs:
           STRIPE_WEBHOOK_SECRET: secret
           STRIPE_PRICE_ID: ${{ secrets.DEV_STRIPE_PRICE_ID }}
           STRIPE_SECRET_KEY: ${{ secrets.DEV_STRIPE_SECRET_KEY }}
-        run: npm run test:api+db
+        run: make test-db
 
       - name: Create parameters.env [${{ fromJSON('["dev","prod"]')[github.ref_name == 'master'] }}]
         env:
@@ -119,11 +114,10 @@ jobs:
           " >> src/api/${FILE_PREFIX}parameters.env
 
       - name: Build API
-        run: npm run build:api
+        run: make build
 
       - name: Deploy API [${{ fromJSON('["dev","prod"]')[github.ref_name == 'master'] }}]
-        run: npm run deploy${CMD_POSTFIX}:api
+        run: make deploy ${{ fromJSON('["","PROD=1"]')[github.ref_name == 'master'] }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          CMD_POSTFIX: ${{ fromJSON('["-dev",""]')[github.ref_name == 'master'] }}

@@ -1,8 +1,0 @@
-[project]
-name = "shared-db"
-version = "0.1.0"
-requires-python = ">=3.14"
-dependencies = ["shared-core", "pynamodb>=5.5.1"]
-
-[tool.uv.sources]
-shared-core = { workspace = true }

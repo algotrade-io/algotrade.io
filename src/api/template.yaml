@@ -305,8 +305,6 @@ Resources:
       Stage: !Ref WebSocketStage
   WebSocketFunction:
     Type: AWS::Serverless::Function
-    Metadata:
-      BuildMethod: makefile
     Properties:
       MemorySize: 10240 # 10GB
       Timeout: 900 # 15 min
@@ -398,9 +396,7 @@ Resources:
       ContentUri: shared
       RetentionPolicy: Delete
   AccountFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Metadata:
-      BuildMethod: makefile
+    Type: AWS::Serverless::Function
     Properties:
       Environment:
         Variables:
@@ -447,9 +443,7 @@ Resources:
             Method: options
             RestApiId: !Ref ApiGatewayApi
   ContactFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Metadata:
-      BuildMethod: makefile
+    Type: AWS::Serverless::Function
     Properties:
       Environment:
         Variables:
@@ -480,9 +474,7 @@ Resources:
             Method: options
             RestApiId: !Ref ApiGatewayApi
   ExerciseLogFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Metadata:
-      BuildMethod: makefile
+    Type: AWS::Serverless::Function
     Properties:
       CodeUri: gym
       Handler: app.get_exercise_log
@@ -496,9 +488,7 @@ Resources:
             Method: get
             RestApiId: !Ref ApiGatewayApi
   PreviewFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Metadata:
-      BuildMethod: makefile
+    Type: AWS::Serverless::Function
     Properties:
       Policies:
         - Statement:
@@ -519,9 +509,7 @@ Resources:
             Method: get
             RestApiId: !Ref ApiGatewayApi
   TradeFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Metadata:
-      BuildMethod: makefile
+    Type: AWS::Serverless::Function
     Properties:
       MemorySize: 10240 # 10GB
       Timeout: 900 # 15 min
@@ -573,9 +561,7 @@ Resources:
             Method: options
             RestApiId: !Ref ApiGatewayApi
   ModelFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Metadata:
-      BuildMethod: makefile
+    Type: AWS::Serverless::Function
     Properties:
       Policies:
         - Statement:
@@ -596,9 +582,7 @@ Resources:
             Method: get
             RestApiId: !Ref ApiGatewayApi
   VisualizationFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Metadata:
-      BuildMethod: makefile
+    Type: AWS::Serverless::Function
     Properties:
       Policies:
         - Statement:
@@ -623,9 +607,7 @@ Resources:
             Method: get
             RestApiId: !Ref ApiGatewayApi
   SignalsFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Metadata:
-      BuildMethod: makefile
+    Type: AWS::Serverless::Function
     Properties:
       Policies:
         - DynamoDBCrudPolicy:
@@ -654,9 +636,7 @@ Resources:
             Method: options
             RestApiId: !Ref ApiGatewayApi
   PlansFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Metadata:
-      BuildMethod: makefile
+    Type: AWS::Serverless::Function
     Properties:
       Environment:
         Variables:
@@ -674,9 +654,7 @@ Resources:
             Method: get
             RestApiId: !Ref ApiGatewayApi
   SubscribeFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Metadata:
-      BuildMethod: makefile
+    Type: AWS::Serverless::Function
     Properties:
       Environment:
         Variables:
@@ -697,9 +675,7 @@ Resources:
             Method: post
             RestApiId: !Ref ApiGatewayApi
   NotifyFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Metadata:
-      BuildMethod: makefile
+    Type: AWS::Serverless::Function
     Properties:
       MemorySize: 10240 # 10GB
       Timeout: 900 # 15 min
@@ -734,9 +710,7 @@ Resources:
             Method: post
             RestApiId: !Ref ApiGatewayApi
   CheckoutFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Metadata:
-      BuildMethod: makefile
+    Type: AWS::Serverless::Function
     Properties:
       Environment:
         Variables:
@@ -766,9 +740,7 @@ Resources:
             Method: options
             RestApiId: !Ref ApiGatewayApi
   BillingFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Metadata:
-      BuildMethod: makefile
+    Type: AWS::Serverless::Function
     Properties:
       Environment:
         Variables:

@@ -71,7 +71,7 @@ jobs:
           pnpm run swagger
 
       - name: Build app [${{ fromJSON('["dev","prod"]')[github.ref_name == 'master'] }}]
-        run: VITE_APP_DOMAIN="$(basename ${GITHUB_REPOSITORY})" pnpm run build:ui
+        run: VITE_APP_DOMAIN="$(basename ${GITHUB_REPOSITORY})" pnpm run build
         env:
           VITE_APP_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
           VITE_APP_IDENTITY_POOL_ID: ${{ fromJSON(format('["{0}","{1}"]', secrets.DEV_IDENTITY_POOL_ID, secrets.IDENTITY_POOL_ID))[github.ref_name == 'master'] }}

@@ -107,7 +107,7 @@ const TOSPage = ({ modal } = { modal: false }) => {
           hosted by FORCEPU.SH and/or its affiliates, is owned by or licensed to
           FORCEPU.SH. User acknowledges the Content is protected under United
           States copyright laws. Such Content includes data and prices wholly
-          owned by FORCEPU.SH and/or managed by FORCEPU.SH on behalf of a Site
+          owned by FORCEPU.SH and/or managed by  on behalf of a Site
           or Sites. You may not capture, record, publish, display, create
           derivative works of, republish the Content owned or hosted by
           FORCEPU.SH in whole or in part without consent from FORCEPU.SH or its
