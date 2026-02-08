@@ -9,7 +9,7 @@ import {
 } from "antd";
 import { getApiUrl, signalColors, signalEmojis } from "@/utils";
 import { AccountContext } from "@/layouts";
-import swaggerSpec from "@/api/spec/swagger.json";
+import swaggerSpec from "@/gen/swagger.json";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import { CopyOutlined } from "@ant-design/icons";
 import SwaggerUI from "swagger-ui-react";
