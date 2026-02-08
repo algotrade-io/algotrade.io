@@ -6,6 +6,8 @@ from typing import Any
 import pandas as pd
 import requests
 
+from utils import success
+
 
 def get_exercise_log(*_: Any) -> dict[str, Any]:
     """Fetch exercise log from Google Sheets.
@@ -25,8 +27,4 @@ def get_exercise_log(*_: Any) -> dict[str, Any]:
     df = df[df["Exercise"] != "Exercise"]
     df = df[["Date", "Id", "Weight", "Reps", "Exercise", "Volume", "1RM"]]
     records = df.to_json(orient="records")
-    return {
-        "statusCode": 200,
-        "body": records,
-        "headers": {"Access-Control-Allow-Origin": "*"},
-    }
+    return success(records)
