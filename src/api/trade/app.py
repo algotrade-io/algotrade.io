@@ -229,13 +229,7 @@ def get_trade() -> dict[str, Any]:
         key=lambda holding: holding["symbol"],
     )
     body = [holding | {"key": idx} for idx, holding in enumerate(sorted_holdings)]
-    status_code = 200
-
-    return {
-        "statusCode": status_code,
-        "body": json.dumps(body),
-        "headers": {"Access-Control-Allow-Origin": "*"},
-    }
+    return success(body)
 
 
 def post_trade(event: dict[str, Any]) -> dict[str, Any]:
