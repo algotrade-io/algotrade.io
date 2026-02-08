@@ -1,9 +1,24 @@
-import sys
+"""Tests for shared PynamoDB models."""
+
 from datetime import datetime
 
-sys.path.append("src/api")  # noqa
-from shared.python.models import *  # noqa
-from shared.python.utils import PAST_DATE  # noqa
+from pynamodb.attributes import UTCDateTimeAttribute
+
+from shared.python.models import (
+    APIKeyIndex,
+    Alerts,
+    Checkout,
+    CustomerIdIndex,
+    InBetaIndex,
+    Permissions,
+    Stripe,
+    SubscribedIndex,
+    UserModel,
+    get_api_key,
+    get_default_access_queue,
+    query_by_api_key,
+)
+from shared.python.utils import PAST_DATE
 
 
 def test_query_by_api_key():

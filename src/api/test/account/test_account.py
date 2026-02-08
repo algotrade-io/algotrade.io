@@ -1,11 +1,11 @@
+"""Tests for account Lambda handler."""
+
 import json
-import sys
 
 import pytest
 
-sys.path.append("src/api")  # noqa
-from account.app import *  # noqa
-from shared.python.models import UserModel  # noqa
+from account.app import get_account, handle_account, options, post_account
+from shared.python.models import UserModel
 
 
 def test_handle_account():

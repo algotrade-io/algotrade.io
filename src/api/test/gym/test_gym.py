@@ -1,8 +1,8 @@
-import json
-import sys
+"""Tests for gym Lambda handler."""
 
-sys.path.append("src/api")  # noqa
-from gym.app import *  # noqa
+import json
+
+from gym.app import get_exercise_log
 
 
 def test_get_exercise_log():

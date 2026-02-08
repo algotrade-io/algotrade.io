@@ -1,13 +1,13 @@
+"""Tests for model Lambda handler."""
+
 import json
-import sys
 from datetime import datetime
 
 import numpy as np
 import pytest
 
-sys.path.append("src/api")  # noqa
-from model.app import *  # noqa
-from shared.python.utils import DATE_FMT  # noqa
+from model.app import NumpyEncoder, get_model, get_visualization
+from shared.python.utils import DATE_FMT
 
 
 def test_get_model():

@@ -1,9 +1,16 @@
-import os
-import sys
+"""Tests for shared utility functions."""
 
-sys.path.append("src/api")  # noqa
-from shared.python.utils import *  # noqa
-from datetime import datetime, timedelta  # noqa
+import os
+from datetime import datetime, timedelta
+
+from shared.python.utils import (
+    enough_time_has_passed,
+    error,
+    get_email,
+    options,
+    transform_signal,
+    verify_user,
+)
 
 
 def test_get_email():

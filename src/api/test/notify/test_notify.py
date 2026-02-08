@@ -1,11 +1,11 @@
+"""Tests for notify Lambda handler."""
+
 import json
-import sys
 from math import pow
 
-sys.path.append("src/api")  # noqa
-from notify.app import *  # noqa
-from shared.python.models import UserModel  # noqa
-from shared.python.utils import transform_signal  # noqa
+from notify.app import Processor, notify_email, post_notify
+from shared.python.models import UTCDateTimeAttribute, UserModel
+from shared.python.utils import transform_signal
 
 
 class TestProcessor:

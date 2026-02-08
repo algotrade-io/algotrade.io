@@ -1,12 +1,21 @@
+"""Tests for subscribe Lambda handler."""
+
 import json
 import os
-import sys
 
 import stripe
 
-sys.path.append("src/api")  # noqa
-from subscribe.app import *  # noqa
-from shared.python.models import UserModel  # noqa
+from subscribe.app import (
+    get_plans,
+    get_product,
+    handle_billing,
+    handle_checkout,
+    options,
+    post_billing,
+    post_checkout,
+    post_subscribe,
+)
+from shared.python.models import UserModel
 
 stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
 price_id = os.environ["STRIPE_PRICE_ID"]

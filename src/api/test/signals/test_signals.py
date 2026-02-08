@@ -1,11 +1,11 @@
+"""Tests for signals Lambda handler."""
+
 import json
-import sys
 from datetime import datetime
 
-sys.path.append("src/api")  # noqa
-from signals.app import *  # noqa
-from shared.python.models import UserModel  # noqa
-from shared.python.utils import DATE_FMT  # noqa
+from signals.app import MAX_ACCESSES, get_signals, handle_signals, options, update_access_queue
+from shared.python.models import UserModel
+from shared.python.utils import DATE_FMT
 
 
 def test_handle_signals():

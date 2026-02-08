@@ -1,9 +1,9 @@
-import json
-import sys
+"""Tests for contact Lambda handler."""
 
-sys.path.append("src/api")  # noqa
-from contact.app import *  # noqa
-from shared.python.utils import options  # noqa
+import json
+
+from contact.app import handle_contact, post_contact
+from shared.python.utils import options
 
 
 def test_handle_contact():

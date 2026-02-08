@@ -1,8 +1,8 @@
-import json
-import sys
+"""Tests for preview Lambda handler."""
 
-sys.path.append("src/api")  # noqa
-from preview.app import *  # noqa
+import json
+
+from preview.app import get_preview
 
 
 def test_get_preview():

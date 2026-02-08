@@ -1,7 +1,6 @@
-import sys
+"""Tests for trade Lambda handler."""
 
-sys.path.append("src/api")  # noqa
-from trade.app import chance_of_profit  # noqa
+from trade.app import chance_of_profit
 
 
 def test_chance_of_profit():
