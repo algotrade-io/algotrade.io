@@ -108,11 +108,9 @@ def success(body: Any, status: int = 200) -> dict[str, Any]:
     Returns:
         Lambda response dict with statusCode, body, and headers.
     """
-    # we need to deal with non json strings and json strings and json objects
-    # case 1: body is a string
-    # case 1a: body is a json string, then don't dumps it
-    # case 1b: body is a non json string, then dumps it
-    # case 2: body is a json object, then dumps it
+    # Serialize to JSON if body isn't already a valid JSON string.
+    # Example: dict {"a": 1} -> '{"a": 1}', JSON string '{"a": 1}' -> unchanged,
+    # plain string "OK" -> '"OK"' (plain strings aren't valid JSON).
     dump = not isinstance(body, str)
     if not dump:
         try:
