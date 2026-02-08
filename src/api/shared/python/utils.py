@@ -113,13 +113,14 @@ def success(body: Any, status: int = 200) -> dict[str, Any]:
     # case 1a: body is a json string, then don't dumps it
     # case 1b: body is a non json string, then dumps it
     # case 2: body is a json object, then dumps it
-    
-    
+    dump = not isinstance(body, str)
+    if not dump:
+        try:
+            json.loads(body)
+        except ValueError:
+            dump = True
 
-    
-    if not isinstance(body, str):
-        body = json.dumps(body)
-    return {"statusCode": status, "body": body, "headers": RES_HEADERS}
+    return {"statusCode": status, "body": json.dumps(body) if dump else body, "headers": RES_HEADERS}
 
 
 def options() -> dict[str, Any]:
