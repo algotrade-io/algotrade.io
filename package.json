@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm run start",
-    "typescript": "tsc",
-    "build": "pnpm run swagger && NODE_OPTIONS=--max-old-space-size=8192 vite build",
+    "typescript": "tsc --noEmit",
+    "build": "pnpm run swagger && pnpm run typescript && NODE_OPTIONS=--max-old-space-size=8192 vite build",
     "preview": "vite preview",
     "start": "vite",
     "ci": "rm -rf node_modules && pnpm install --frozen-lockfile",

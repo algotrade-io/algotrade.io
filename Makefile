@@ -15,7 +15,7 @@ LAMBDAS := trade account contact gym model notify preview signals subscribe
 STAGE := $(if $(PROD),prod,dev)
 PARAMS_FILE := $(if $(PROD),parameters.env,dev-parameters.env)
 
-.PHONY: install ci lint format test cov clean help all \
+.PHONY: install ci lint format type test cov clean help all \
 	reqs build start deploy \
 	start-db stop-db seed-db test-db
 
@@ -25,10 +25,11 @@ help:
 	@echo "  ci        - Install with frozen lockfile (DEV=1 for dev deps, TRADE=1 etc for lambda groups)"
 	@echo "  lint      - Run ruff linter + format check"
 	@echo "  format    - Auto-fix and format with ruff"
+	@echo "  type      - Run type checking (ty for Python, tsc for TypeScript)"
 	@echo "  test      - Run pytest with parallelism"
 	@echo "  cov       - Run pytest with coverage"
 	@echo "  clean     - Remove build artifacts"
-	@echo "  all       - Run lint, test"
+	@echo "  all       - Run lint, type, test"
 	@echo ""
 	@echo "API targets:"
 	@echo "  reqs      - Generate requirements.txt for all lambdas"
@@ -56,6 +57,10 @@ format:
 	uv run ruff check . --fix
 	uv run ruff format .
 
+type:
+	uv run ty check src/api
+	pnpm run typescript
+
 test:
 	uv run python -m pytest
 
@@ -66,7 +71,7 @@ clean:
 	rm -rf .coverage coverage.xml .pytest_cache .ruff_cache $(API_DIR)/.aws-sam
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 
-all: lint test
+all: lint type test
 
 # Generate requirements.txt for each lambda from dependency groups
 reqs:

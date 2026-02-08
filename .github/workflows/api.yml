@@ -44,6 +44,9 @@ jobs:
 
       - name: Lint
         run: make lint
+
+      - name: Type check
+        run: uv run ty check src/api
       
       - name: Write env var
         run: |
