@@ -30,7 +30,7 @@ export default defineConfig({
   plugins: [react(), istanbul({forceBuildInstrument: VITE_COVERAGE})],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(__dirname, './src/ui'),
       './runtimeConfig': './runtimeConfig.browser',
     },
   },

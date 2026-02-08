@@ -14,7 +14,8 @@ def test_get_model():
     res = get_model()
     assert res["statusCode"] == 200
     data = json.loads(res["body"])
-    assert {"created", "start", "end", "num_features", "accuracy"}.issubset(data.keys())
+    assert {"created", "start", "end", "num_features",
+            "accuracy"}.issubset(data.keys())
     created = datetime.strptime(data["created"], DATE_FMT)
     start = datetime.strptime(data["start"], DATE_FMT)
     end = datetime.strptime(data["end"], DATE_FMT)
@@ -48,7 +49,8 @@ def test_get_visualization():
         res = get_visualization(event, None)
         assert res["statusCode"] == 200
         data = json.loads(res["body"])
-        assert {"actual", "centroid", "radius", "grid", "preds"}.issubset(data.keys())
+        assert {"actual", "centroid", "radius",
+                "grid", "preds"}.issubset(data.keys())
         verify_visualization(data, dims)
         assert res["headers"]["Access-Control-Allow-Origin"] == "*"
 
@@ -84,7 +86,8 @@ class TestNumpyEncoder:
         val = np.complex64(1 + 2j)
         with pytest.raises(TypeError):
             json.dumps(val)
-        assert json.dumps(NumpyEncoder().default(val)) == '{"real": 1.0, "imag": 2.0}'
+        assert json.dumps(NumpyEncoder().default(
+            val)) == '{"real": 1.0, "imag": 2.0}'
 
         # void
         dt = np.dtype([("x", np.int64)])

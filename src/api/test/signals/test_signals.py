@@ -43,7 +43,8 @@ def test_get_signals():
     for datum in data:
         assert isinstance(datetime.strptime(datum["Date"], DATE_FMT), datetime)
         assert datum["Signal"] == "BUY" or datum["Signal"] == "SELL"
-        assert datum["Day"] in {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"}
+        assert datum["Day"] in {"Sun", "Mon",
+                                "Tue", "Wed", "Thu", "Fri", "Sat"}
         assert datum["Asset"] == "BTC"
     for _ in range(MAX_ACCESSES):
         remaining = update_access_queue(user)
