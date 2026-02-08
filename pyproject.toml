@@ -79,7 +79,6 @@ quote-style = "double"
 indent-style = "space"
 
 [tool.ty]
-# Type checking is gradual - start with warnings to fix incrementally
 [tool.ty.environment]
 python-version = "3.14"
 extra-paths = ["src/api/shared/python"]
@@ -87,8 +86,3 @@ extra-paths = ["src/api/shared/python"]
 [tool.ty.rules]
 # Ignore third-party import errors since lambdas have different dependency groups
 unresolved-import = "ignore"
-# Start with warnings for gradual adoption - fix these incrementally
-not-subscriptable = "warn"
-invalid-method-override = "warn"
-invalid-argument-type = "warn"
-call-non-callable = "warn"

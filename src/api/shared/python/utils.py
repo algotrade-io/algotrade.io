@@ -142,14 +142,14 @@ def options() -> dict[str, Any]:
     }
 
 
-def verify_user(event: dict[str, Any]) -> dict[str, Any] | bool:
+def verify_user(event: dict[str, Any]) -> dict[str, Any] | None:
     """Verify user from API Gateway authorizer claims.
 
     Args:
         event: API Gateway event with requestContext.
 
     Returns:
-        User claims dict if verified, False otherwise.
+        User claims dict if verified, None otherwise.
     """
     claims = (
         event["requestContext"]["authorizer"]["claims"]
@@ -164,4 +164,4 @@ def verify_user(event: dict[str, Any]) -> dict[str, Any] | bool:
             if "providerName" in identities:
                 if identities["providerName"] in providers:
                     verified = True
-    return verified and claims
+    return claims if verified else None

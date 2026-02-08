@@ -17,14 +17,14 @@ if os.environ.get("TEST") != "true":
     keys = requests.get(keys_url).json()["keys"]
 
 
-def verify_token(event: dict[str, Any]) -> dict[str, Any] | bool:
+def verify_token(event: dict[str, Any]) -> dict[str, Any] | None:
     """Verify JWT token from Cognito.
 
     Args:
         event: API Gateway event with token in body.
 
     Returns:
-        Token claims dict if valid, False otherwise.
+        Token claims dict if valid, None otherwise.
     """
     token = json.loads(event["body"])["token"]
     headers = jwt.get_unverified_headers(token)
@@ -36,19 +36,19 @@ def verify_token(event: dict[str, Any]) -> dict[str, Any] | bool:
             break
     if key_index == -1:
         print("Public key not found in jwks.json")
-        return False
+        return None
     public_key = jwk.construct(keys[key_index])
     message, encoded_signature = str(token).rsplit(".", 1)
     decoded_signature = base64url_decode(encoded_signature.encode("utf-8"))
     if not public_key.verify(message.encode("utf8"), decoded_signature):
         print("Signature verification failed")
-        return False
+        return None
     print("Signature successfully verified")
     claims = jwt.get_unverified_claims(token)
     if time() > claims["exp"]:
         print("Token is expired")
-        return False
+        return None
     if claims["aud"] != web_client_id:
         print("Token was not issued for this audience")
-        return False
+        return None
     return claims
