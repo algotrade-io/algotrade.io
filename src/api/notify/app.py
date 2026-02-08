@@ -15,7 +15,6 @@ from botocore.exceptions import ClientError
 from jinja2 import Template
 from models import UserModel
 from pynamodb.attributes import UTCDateTimeAttribute
-
 from utils import (
     TEST,
     enough_time_has_passed,
@@ -142,8 +141,7 @@ def notify_user(user: UserModel, signal: dict[str, Any]) -> str | None:
                 try:
                     alert["fx"](user, signal)
                 except Exception as e:
-                    print(
-                        f"{alert['type']} alert failed to send for {user.email}")
+                    print(f"{alert['type']} alert failed to send for {user.email}")
                     logging.exception(e)
                     notify_success = False
         user_alerts = user.alerts
@@ -198,8 +196,7 @@ def post_notify(event: dict[str, Any], _: Any) -> dict[str, Any]:
     )
     users_in_beta = UserModel.in_beta_index.query(1, filter_condition=cond)
     s3 = boto3.client("s3")
-    obj = s3.get_object(
-        Bucket=os.environ["S3_BUCKET"], Key="data/api/preview.json")
+    obj = s3.get_object(Bucket=os.environ["S3_BUCKET"], Key="data/api/preview.json")
     preview = json.loads(obj["Body"].read())
     hyperdrive = [
         data for data in preview["BTC"]["data"][-2:] if data["Name"] == "hyperdrive"
@@ -207,8 +204,7 @@ def post_notify(event: dict[str, Any], _: Any) -> dict[str, Any]:
     signal["Perf"] = hyperdrive["Bal"] - 1
     processor = Processor(notify_user, signal)
     notified = set(processor.run(users_in_beta))
-    users_subscribed = UserModel.subscribed_index.query(
-        1, filter_condition=cond)
+    users_subscribed = UserModel.subscribed_index.query(1, filter_condition=cond)
     users_to_notify = skip_users(users_subscribed, notified)
     notified = notified.union(set(processor.run(users_to_notify)))
     num_notified = len(notified)
@@ -296,8 +292,7 @@ def notify_webhook(user: UserModel, signal: dict[str, Any]) -> None:
     data = [signal]
     response = requests.post(url, json=data, headers=headers)
     if not response.ok:
-        raise Exception(
-            f"Webhook did not return 2xx response. User: {user.email}")
+        raise Exception(f"Webhook did not return 2xx response. User: {user.email}")
 
 
 def notify_sms(user: UserModel, signal: dict[str, Any]) -> None:

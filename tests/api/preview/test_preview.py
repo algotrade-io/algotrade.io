@@ -5,7 +5,8 @@ import json
 from preview.app import get_preview
 
 
-def test_get_preview():
+def test_get_preview() -> None:
+    """Test get_preview returns trading performance data."""
     res = get_preview()
     assert res["statusCode"] == 200
     data = json.loads(res["body"])

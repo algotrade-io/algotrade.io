@@ -6,7 +6,6 @@ from typing import Any
 
 import boto3
 from models import UserModel, query_by_api_key
-
 from utils import (
     enough_time_has_passed,
     error,

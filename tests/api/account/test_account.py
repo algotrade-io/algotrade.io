@@ -3,12 +3,12 @@
 import json
 
 import pytest
-
 from account.app import get_account, handle_account, options, post_account
 from shared.python.models import UserModel
 
 
-def test_handle_account():
+def test_handle_account() -> None:
+    """Test handle_account routes to correct handler based on HTTP method."""
     event = {"httpMethod": "OPTIONS"}
     res = handle_account(event, None)
     assert res == options()
@@ -27,7 +27,8 @@ def test_handle_account():
     assert res["statusCode"] == 401
 
 
-def test_get_account():
+def test_get_account() -> None:
+    """Test get_account retrieves or creates user account data."""
     user = UserModel.get("test_user@example.com")
     user_data = user.to_simple_dict()
     event = {
@@ -54,7 +55,8 @@ def test_get_account():
     assert body == user_data
 
 
-def test_post_account():
+def test_post_account() -> None:
+    """Test post_account updates user account settings."""
     user = UserModel.get("new_user")
     assert not user.permissions.read_disclaimer
     assert not user.alerts.email

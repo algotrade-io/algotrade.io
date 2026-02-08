@@ -6,7 +6,8 @@ from contact.app import handle_contact, post_contact
 from shared.python.utils import options
 
 
-def test_handle_contact():
+def test_handle_contact() -> None:
+    """Test handle_contact routes to correct handler based on HTTP method."""
     event = {"httpMethod": "OPTIONS"}
     res = handle_contact(event, None)
     assert res == options()
@@ -20,7 +21,8 @@ def test_handle_contact():
     assert res["statusCode"] == 401
 
 
-def test_post_contact():
+def test_post_contact() -> None:
+    """Test post_contact validates required fields and sends message."""
     event = {
         "httpMethod": "POST",
         "requestContext": {

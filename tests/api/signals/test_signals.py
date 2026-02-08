@@ -3,12 +3,19 @@
 import json
 from datetime import datetime
 
-from signals.app import MAX_ACCESSES, get_signals, handle_signals, options, update_access_queue
 from shared.python.models import UserModel
 from shared.python.utils import DATE_FMT
+from signals.app import (
+    MAX_ACCESSES,
+    get_signals,
+    handle_signals,
+    options,
+    update_access_queue,
+)
 
 
-def test_handle_signals():
+def test_handle_signals() -> None:
+    """Test handle_signals routes to correct handler based on HTTP method."""
     event = {"httpMethod": "OPTIONS"}
     res = handle_signals(event, None)
     assert res == options()
@@ -23,7 +30,8 @@ def test_handle_signals():
     assert res["statusCode"] == 401
 
 
-def test_get_signals():
+def test_get_signals() -> None:
+    """Test get_signals validates API key and returns signal data."""
     event = {
         "httpMethod": "GET",
         "requestContext": {"authorizer": {"claims": {"email_verified": "true"}}},
@@ -43,8 +51,7 @@ def test_get_signals():
     for datum in data:
         assert isinstance(datetime.strptime(datum["Date"], DATE_FMT), datetime)
         assert datum["Signal"] == "BUY" or datum["Signal"] == "SELL"
-        assert datum["Day"] in {"Sun", "Mon",
-                                "Tue", "Wed", "Thu", "Fri", "Sat"}
+        assert datum["Day"] in {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"}
         assert datum["Asset"] == "BTC"
     for _ in range(MAX_ACCESSES):
         remaining = update_access_queue(user)

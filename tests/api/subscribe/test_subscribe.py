@@ -4,7 +4,7 @@ import json
 import os
 
 import stripe
-
+from shared.python.models import UserModel
 from subscribe.app import (
     get_plans,
     get_product,
@@ -15,13 +15,13 @@ from subscribe.app import (
     post_checkout,
     post_subscribe,
 )
-from shared.python.models import UserModel
 
 stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
 price_id = os.environ["STRIPE_PRICE_ID"]
 
 
-def test_get_plans_and_product():
+def test_get_plans_and_product() -> None:
+    """Test get_plans returns Stripe price and get_product returns product."""
     res = get_plans()
     assert res["statusCode"] == 200
     body = json.loads(res["body"])
@@ -37,7 +37,8 @@ def test_get_plans_and_product():
     assert body["object"] == "product"
 
 
-def test_handle_checkout():
+def test_handle_checkout() -> None:
+    """Test handle_checkout routes to correct handler based on HTTP method."""
     event = {"httpMethod": "OPTIONS"}
     res = handle_checkout(event, None)
     assert res == options()
@@ -52,7 +53,8 @@ def test_handle_checkout():
     assert res["statusCode"] == 401
 
 
-def test_post_checkout():
+def test_post_checkout() -> None:
+    """Test post_checkout creates Stripe checkout session."""
     user = UserModel.get("test_user@example.com")
     assert not user.stripe.checkout.url
     event = {
@@ -78,7 +80,8 @@ def test_post_checkout():
     assert body.index("https://checkout.stripe.com") == 0
 
 
-def test_handle_billing():
+def test_handle_billing() -> None:
+    """Test handle_billing routes to correct handler based on HTTP method."""
     event = {"httpMethod": "OPTIONS"}
     res = handle_billing(event, None)
     assert res == options()
@@ -93,7 +96,8 @@ def test_handle_billing():
     assert res["statusCode"] == 401
 
 
-def test_post_billing():
+def test_post_billing() -> None:
+    """Test post_billing creates Stripe billing portal session."""
     event = {
         "httpMethod": "GET",
         "requestContext": {
@@ -114,7 +118,8 @@ def test_post_billing():
     assert body.index("https://billing.stripe.com") == 0
 
 
-def test_post_subscribe():
+def test_post_subscribe() -> None:
+    """Test post_subscribe handles Stripe webhook events."""
     # test webhook
     user = UserModel.get("test_user@example.com")
     customer_id = user.customer_id
@@ -131,7 +136,8 @@ def test_post_subscribe():
     assert user.subscribed
 
 
-def test_cleanup():
+def test_cleanup() -> None:
+    """Clean up test Stripe customers."""
     customers = stripe.Customer.search(
         query="email:'test_user@example.com'", limit=100
     )["data"]

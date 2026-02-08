@@ -3,7 +3,8 @@
 from trade.app import chance_of_profit
 
 
-def test_chance_of_profit():
+def test_chance_of_profit() -> None:
+    """Test chance_of_profit calculates option probability correctly."""
     chance = chance_of_profit(
         stock_price=240.80,
         strike_price=255,

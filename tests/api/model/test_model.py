@@ -5,17 +5,16 @@ from datetime import datetime
 
 import numpy as np
 import pytest
-
 from model.app import NumpyEncoder, get_model, get_visualization
 from shared.python.utils import DATE_FMT
 
 
-def test_get_model():
+def test_get_model() -> None:
+    """Test get_model returns model metadata with expected fields."""
     res = get_model()
     assert res["statusCode"] == 200
     data = json.loads(res["body"])
-    assert {"created", "start", "end", "num_features",
-            "accuracy"}.issubset(data.keys())
+    assert {"created", "start", "end", "num_features", "accuracy"}.issubset(data.keys())
     created = datetime.strptime(data["created"], DATE_FMT)
     start = datetime.strptime(data["start"], DATE_FMT)
     end = datetime.strptime(data["end"], DATE_FMT)
@@ -27,7 +26,8 @@ def test_get_model():
     assert res["headers"]["Access-Control-Allow-Origin"] == "*"
 
 
-def verify_visualization(data, dims):
+def _verify_visualization(data: dict, dims: str | int) -> None:
+    """Verify visualization data structure for given dimensions."""
     if isinstance(dims, str):
         dims = int(dims[0])
     assert len(data["centroid"]) == dims
@@ -43,15 +43,15 @@ def verify_visualization(data, dims):
     assert set(data["preds"]) == {0, 1}
 
 
-def test_get_visualization():
+def test_get_visualization() -> None:
+    """Test get_visualization returns dimensionality reduction data."""
     for dims in ["2D", "3D"]:
         event = {"queryStringParameters": {"dims": dims}}
         res = get_visualization(event, None)
         assert res["statusCode"] == 200
         data = json.loads(res["body"])
-        assert {"actual", "centroid", "radius",
-                "grid", "preds"}.issubset(data.keys())
-        verify_visualization(data, dims)
+        assert {"actual", "centroid", "radius", "grid", "preds"}.issubset(data.keys())
+        _verify_visualization(data, dims)
         assert res["headers"]["Access-Control-Allow-Origin"] == "*"
 
 
@@ -59,7 +59,10 @@ encoder = NumpyEncoder()
 
 
 class TestNumpyEncoder:
-    def test_default(self):
+    """Tests for NumpyEncoder JSON serialization."""
+
+    def test_default(self) -> None:
+        """Test default method handles numpy types correctly."""
         # list
         arr = np.array([True, False])
         with pytest.raises(TypeError):
@@ -86,8 +89,7 @@ class TestNumpyEncoder:
         val = np.complex64(1 + 2j)
         with pytest.raises(TypeError):
             json.dumps(val)
-        assert json.dumps(NumpyEncoder().default(
-            val)) == '{"real": 1.0, "imag": 2.0}'
+        assert json.dumps(NumpyEncoder().default(val)) == '{"real": 1.0, "imag": 2.0}'
 
         # void
         dt = np.dtype([("x", np.int64)])
