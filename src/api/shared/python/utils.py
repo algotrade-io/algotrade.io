@@ -117,7 +117,7 @@ def success(body: Any, status: int = 200) -> dict[str, Any]:
     if not dump:
         try:
             json.loads(body)
-        except ValueError:
+        except json.decoder.JSONDecodeError:
             dump = True
 
     return {"statusCode": status, "body": json.dumps(body) if dump else body, "headers": RES_HEADERS}
