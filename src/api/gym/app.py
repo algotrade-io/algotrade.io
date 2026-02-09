@@ -5,7 +5,6 @@ from typing import Any
 
 import pandas as pd
 import requests
-
 from utils import success
 
 

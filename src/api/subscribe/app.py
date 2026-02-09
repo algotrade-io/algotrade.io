@@ -9,7 +9,6 @@ from typing import Any
 import stripe
 from models import UserModel
 from pynamodb.attributes import UTCDateTimeAttribute
-
 from utils import (
     PAST_DATE,
     TEST,
@@ -103,7 +102,8 @@ def post_checkout(event: dict[str, Any]) -> dict[str, Any]:
     req_headers = event["headers"]
     domain = os.environ["DOMAIN"]
     origin = (
-        req_headers.get("origin") or f"https://{'dev.' if env == 'dev' else ''}{domain}"
+        req_headers.get(
+            "origin") or f"https://{'dev.' if env == 'dev' else ''}{domain}"
     )
 
     user = UserModel.get(email)
@@ -188,7 +188,8 @@ def post_billing(event: dict[str, Any]) -> dict[str, Any]:
     req_headers = event["headers"]
     domain = os.environ["DOMAIN"]
     origin = (
-        req_headers.get("origin") or f"https://{'dev.' if env == 'dev' else ''}{domain}"
+        req_headers.get(
+            "origin") or f"https://{'dev.' if env == 'dev' else ''}{domain}"
     )
 
     user = UserModel.get(email)
@@ -220,7 +221,8 @@ def post_subscribe(event: dict[str, Any], _: Any) -> dict[str, Any]:
         req_headers = event["headers"]
         signature = req_headers["Stripe-Signature"]
         try:
-            event = stripe.Webhook.construct_event(req_body, signature, webhook_secret)
+            event = stripe.Webhook.construct_event(
+                req_body, signature, webhook_secret)
         except ValueError as e:
             logging.exception(e)
             raise

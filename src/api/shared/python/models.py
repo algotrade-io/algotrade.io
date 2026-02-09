@@ -15,7 +15,6 @@ from pynamodb.attributes import (
 )
 from pynamodb.indexes import AllProjection, GlobalSecondaryIndex
 from pynamodb.models import Model
-
 from utils import PAST_DATE, TEST
 
 

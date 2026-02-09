@@ -7,7 +7,6 @@ from typing import Any
 
 import stripe
 from models import ALERTS_LOOKUP, ATTRS_LOOKUP, UserModel
-
 from utils import error, options, success, verify_user
 
 stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
