@@ -1,6 +1,7 @@
 """Tests for contact Lambda handler."""
 
 import json
+from unittest.mock import patch
 
 from contact.app import handle_contact, post_contact
 from shared.python.utils import options
@@ -44,7 +45,8 @@ def test_post_contact() -> None:
     assert "message" in data["message"]
 
     event["body"] = '{"subject": "hi", "message": "bye"}'
-    res = post_contact(event)
+    with patch("contact.app.send_email", return_value=True):
+        res = post_contact(event)
     assert res["statusCode"] == 200
     data = json.loads(res["body"])
     assert "success" in data["message"]

@@ -2,10 +2,8 @@
 UV_SYNC := uv sync $(if $(DEV),--dev,--no-dev)
 UV_SYNC_FROZEN := uv sync --frozen $(if $(DEV),--dev,--no-dev)
 
-# Lambda dependency groups for selective install
-LAMBDA_GROUPS := $(if $(TRADE),--group trade) $(if $(ACCOUNT),--group account) $(if $(CONTACT),--group contact) \
-	$(if $(GYM),--group gym) $(if $(MODEL),--group model) $(if $(NOTIFY),--group notify) \
-	$(if $(PREVIEW),--group preview) $(if $(SIGNALS),--group signals) $(if $(SUBSCRIBE),--group subscribe)
+# All Lambda dependency groups (used by default for install/ci/test)
+ALL_LAMBDA_GROUPS := --group trade --group account --group contact --group gym --group model --group notify --group preview --group signals --group subscribe
 
 # API directories
 API_DIR := src/api
@@ -22,7 +20,7 @@ PARAMS_FILE := $(if $(PROD),parameters.env,dev-parameters.env)
 help:
 	@echo "Available targets:"
 	@echo "  install   - Install deps (DEV=1 for dev deps)"
-	@echo "  ci        - Install with frozen lockfile (DEV=1 for dev deps, TRADE=1 etc for lambda groups)"
+	@echo "  ci        - Install with frozen lockfile (DEV=1 for dev deps)"
 	@echo "  lint      - Run ruff linter + format check"
 	@echo "  format    - Auto-fix and format with ruff"
 	@echo "  type      - Run type checking (ty for Python, tsc for TypeScript)"
@@ -44,10 +42,10 @@ help:
 	@echo "  test-db   - Run tests with local DynamoDB"
 
 install:
-	$(UV_SYNC)
+	$(UV_SYNC) $(ALL_LAMBDA_GROUPS)
 
 ci:
-	$(UV_SYNC_FROZEN) $(LAMBDA_GROUPS)
+	$(UV_SYNC_FROZEN) $(ALL_LAMBDA_GROUPS)
 
 lint:
 	uv run ruff check .
