@@ -138,8 +138,7 @@ def test_post_subscribe() -> None:
 
 def test_cleanup() -> None:
     """Clean up test Stripe customers."""
-    result = stripe.Customer.search(
-        query="email:'test_user@example.com'", limit=100)
+    result = stripe.Customer.search(query="email:'test_user@example.com'", limit=100)
     customers = result.data
     customer_ids = [customer.id for customer in customers]
     for customer_id in customer_ids:
