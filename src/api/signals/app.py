@@ -2,7 +2,7 @@
 
 import os
 from datetime import UTC, datetime, timedelta
-from typing import Any
+from typing import Any, cast
 
 import boto3
 from models import UserModel, query_by_api_key
@@ -50,7 +50,7 @@ def update_access_queue(user: UserModel) -> int | None:
     Returns:
         Number of remaining requests, or None if quota reached.
     """
-    access_queue = user.access_queue
+    access_queue: list[datetime] = cast(list[datetime], user.access_queue)
 
     reset_duration = timedelta(days=RATE_LIMIT_DAYS)
     now = datetime.now(UTC)
@@ -60,7 +60,7 @@ def update_access_queue(user: UserModel) -> int | None:
     if len(user.access_queue) >= MAX_ACCESSES:
         start = access_queue[-MAX_ACCESSES]
         if enough_time_has_passed(start, now, reset_duration):
-            access_queue = access_queue[-MAX_ACCESSES + 1 :] + [now]
+            access_queue = access_queue[-MAX_ACCESSES + 1:] + [now]
         else:
             access_queue = access_queue[-MAX_ACCESSES:]
             quota_reached = True
@@ -68,7 +68,7 @@ def update_access_queue(user: UserModel) -> int | None:
         access_queue += [now]
 
     # Update user model in db with new access_queue
-    user.update(actions=[UserModel.access_queue.set(access_queue)])
+    user.update(actions=[UserModel.access_queue.set(cast(Any, access_queue))])
     if quota_reached:
         return None
 
@@ -113,7 +113,8 @@ def get_signals(event: dict[str, Any]) -> dict[str, Any]:
             f"You have reached your quota of {MAX_ACCESSES} requests / {RATE_LIMIT_DAYS} day(s).",
         )
 
-    obj = s3.get_object(Bucket=os.environ["S3_BUCKET"], Key="models/latest/signals.csv")
+    obj = s3.get_object(
+        Bucket=os.environ["S3_BUCKET"], Key="models/latest/signals.csv")
 
     days_in_a_week = 7
     lines = [line.decode() for line in list(obj["Body"].iter_lines())]
