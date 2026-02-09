@@ -7,7 +7,6 @@ from typing import Any
 
 import boto3
 import numpy as np
-
 from utils import success
 
 s3 = boto3.client("s3")
