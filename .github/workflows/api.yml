@@ -46,7 +46,7 @@ jobs:
         run: make lint
 
       - name: Type check
-        run: uv run ty check src/api
+        run: make type
       
       - name: Write env var
         run: |

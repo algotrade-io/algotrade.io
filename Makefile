@@ -57,7 +57,6 @@ format:
 
 type:
 	uv run ty check src/api tests/api
-	pnpm run typescript
 
 test:
 	uv run python -m pytest

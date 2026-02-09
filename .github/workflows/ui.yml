@@ -70,6 +70,11 @@ jobs:
           util/aws_exports.sh
           pnpm run swagger
 
+      # TODO: Lint step
+
+      - name: Typescript
+        run: pnpm run typescript
+          
       - name: Build app [${{ fromJSON('["dev","prod"]')[github.ref_name == 'master'] }}]
         run: VITE_APP_DOMAIN="$(basename ${GITHUB_REPOSITORY})" pnpm run build
         env:
