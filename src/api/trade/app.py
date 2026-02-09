@@ -536,7 +536,7 @@ class Sell(Trade):
         for symbol in lookup:
             print("symbol in init_chain lookup", symbol)
             chain = rh.options.get_chains(symbol)
-            price = lookup[symbol]["price"]
+            price = float(prices[symbol])
             expirations = chain["expiration_dates"]
             expirations = get_expirations(expirations)
             lookup[symbol]["expirations"] = expirations
@@ -702,7 +702,7 @@ class SellOut(Trade):
         for symbol in lookup:
             print("symbol in init_chain lookup", symbol)
             chain = rh.options.get_chains(symbol)
-            price = lookup[symbol]["price"]
+            price = float(prices[symbol])
             expirations = chain["expiration_dates"]
             expirations = get_expirations(expirations)
             lookup[symbol]["expirations"] = expirations
@@ -719,6 +719,26 @@ class SellIn(Trade):
 
 class Buy(Trade):
     """Buy to close short call options."""
+
+    def _extract_option_id(self, opt: dict[str, Any], pattern: str) -> str:
+        """Extract option ID from option data using regex pattern.
+
+        Args:
+            opt: Option position data.
+            pattern: Regex pattern to match UUID.
+
+        Returns:
+            Matched option ID string.
+
+        Raises:
+            ValueError: If no match found.
+        """
+        match = re.search(
+            pattern, opt["legs"][0]["option"], re.IGNORECASE
+        ) or re.search(pattern, opt["strategy_code"], re.IGNORECASE)
+        if match is None:
+            raise ValueError(f"Could not extract option ID from {opt}")
+        return match[0]
 
     def init_chain(self, symbols: list[str]) -> dict[str, Any]:
         """Initialize option chain for buying to close.
@@ -740,10 +760,7 @@ class Buy(Trade):
                 "expiration": opt["legs"][0]["expiration_date"],
                 "strike": float(opt["legs"][0]["strike_price"]),
                 "curr": 0,
-                "id": (
-                    re.search(pattern, opt["legs"][0]["option"], re.IGNORECASE)
-                    or re.search(pattern, opt["strategy_code"], re.IGNORECASE)
-                )[0],
+                "id": self._extract_option_id(opt, pattern),
             }
             for opt in opts
             if (opt["symbol"] in symbol_set and opt["strategy"] == "short_call")

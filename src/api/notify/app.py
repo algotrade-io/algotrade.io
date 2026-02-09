@@ -7,7 +7,8 @@ from datetime import UTC, datetime, timedelta
 from multiprocessing import Pipe, Process
 from multiprocessing.connection import Connection
 from time import sleep
-from typing import Any
+from typing import Any, TypedDict
+from collections.abc import Callable
 
 import boto3
 import requests
@@ -23,6 +24,13 @@ from utils import (
     success,
     transform_signal,
 )
+
+
+class AlertConfig(TypedDict):
+    """Configuration for an alert notification type."""
+
+    fx: Callable[[UserModel, dict[str, Any]], None]
+    type: str
 
 
 class Processor:
@@ -124,7 +132,7 @@ def notify_user(user: UserModel, signal: dict[str, Any]) -> str | None:
     Returns:
         User email if successful, None otherwise.
     """
-    alerts = [
+    alerts: list[AlertConfig] = [
         {"fx": notify_email, "type": "Email"},
         {"fx": notify_webhook, "type": "Webhook"},
         {"fx": notify_sms, "type": "SMS"},
