@@ -5,7 +5,8 @@ import os
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-RES_HEADERS = {"Access-Control-Allow-Origin": "*", "Content-Type": "application/json"}
+RES_HEADERS = {"Access-Control-Allow-Origin": "*",
+               "Content-Type": "application/json"}
 
 PAST_DATE = datetime(2020, 1, 1, tzinfo=UTC)
 DATE_FMT = "%Y-%m-%d"

@@ -58,7 +58,7 @@ format:
 	uv run ruff format .
 
 type:
-	uv run ty check src/api
+	uv run ty check src/api tests/api
 	pnpm run typescript
 
 test:
