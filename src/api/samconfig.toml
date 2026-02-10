@@ -8,7 +8,6 @@ s3_prefix = "api"
 region = "us-east-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
-image_repository = "092475342352.dkr.ecr.us-east-1.amazonaws.com/api.forcepu.sh"
 
 [dev]
 [dev.deploy]
@@ -19,4 +18,3 @@ s3_prefix = "api"
 region = "us-east-1"
 confirm_changeset = true
 capabilities = "CAPABILITY_IAM"
-image_repository = "092475342352.dkr.ecr.us-east-1.amazonaws.com/api.dev.forcepu.sh"
