@@ -110,7 +110,7 @@ Resources:
   APIBucket:
     Type: AWS::S3::Bucket
     Properties:
-    BucketName: !Join [ "", ["api.", !If [IsProd, "", "dev."], !Ref Domain ] ]
+      BucketName: !Join [ "", ["api.", !If [IsProd, "", "dev."], !Ref Domain ] ]
   UIBucket:
     Type: AWS::S3::Bucket
     Properties:
