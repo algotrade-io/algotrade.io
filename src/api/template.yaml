@@ -338,26 +338,11 @@ Resources:
               Action:
                 - execute-api:Invoke
                 - execute-api:ManageConnections
-              # Resource: !Sub "arn:aws:execute-api:::${S3Bucket}/data/robinhood*.pickle"
               Resource: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebSocketApi}/*'
       CodeUri: trade
       Handler: app.handle_ws
       Layers:
       - !Ref SharedLayer
-      # MemorySize: 256
-      # Runtime: nodejs14.x
-      # Environment:
-      #   Variables:
-      #     TABLE_NAME: !Ref TableName
-      # Policies:
-      # - DynamoDBCrudPolicy:
-      #     TableName: !Ref TableName
-      # - Statement:
-      #   - Effect: Allow
-      #     Action:
-      #     - 'execute-api:ManageConnections'
-      #     Resource:
-      #     - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SimpleChatWebSocket}/*'
   WebSocketPermission:
     Type: AWS::Lambda::Permission
     DependsOn: WebSocketApi
@@ -365,18 +350,6 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !Ref WebSocketFunction
       Principal: apigateway.amazonaws.com
-  # WebSocketFunction:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     Handler: index.handler
-  #     Timeout: 30
-  #     Runtime: nodejs8.10
-  #     CodeUri: ./
-  #     # Policies:
-  #     #   - AWSLambdaFullAccess
-  #     #   - CloudWatchLogsFullAccess
-  #     #   - AmazonAPIGatewayInvokeFullAccess
-  #     #   - AmazonAPIGatewayAdministrator
   ApiGatewayApi:
     Type: AWS::Serverless::Api
     DependsOn: HostedZone
