@@ -3,7 +3,6 @@ version = 0.1
 [prod.deploy]
 [prod.deploy.parameters]
 stack_name = "api"
-s3_bucket = "api.algotrade.io"
 s3_prefix = "api"
 region = "us-east-1"
 confirm_changeset = true
@@ -13,7 +12,6 @@ capabilities = "CAPABILITY_IAM"
 [dev.deploy]
 [dev.deploy.parameters]
 stack_name = "api-dev"
-s3_bucket = "api.dev.algotrade.io"
 s3_prefix = "api"
 region = "us-east-1"
 confirm_changeset = true
