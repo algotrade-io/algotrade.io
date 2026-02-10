@@ -101,7 +101,6 @@ def post_account(event: dict[str, Any]) -> dict[str, Any]:
     if "in_beta" in req_body:
         in_beta = int(req_body["in_beta"])
         pattern = rf"^.*@(dev\.)?{re.escape(domain)}$"
-        print("re match: ", re.match(pattern, email))
         if re.match(pattern, email):
             print("updating beta status", email, in_beta)
             actions.append(UserModel.in_beta.set(in_beta))
