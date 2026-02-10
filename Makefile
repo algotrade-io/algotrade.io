@@ -13,7 +13,7 @@ LAMBDAS := trade account contact gym model notify preview signals subscribe
 STAGE := $(if $(PROD),prod,dev)
 PARAMS_FILE := $(if $(PROD),parameters.env,dev-parameters.env)
 DOMAIN := $(shell basename $(CURDIR))
-S3_BUCKET := api.$(if $(PROD),,dev.)$(DOMAIN)
+API_BUCKET := api.$(if $(PROD),,dev.)$(DOMAIN)
 
 .PHONY: install ci lint format type test cov clean help all \
 	reqs build start deploy \
@@ -97,7 +97,7 @@ start:
 # Deploy API (PROD=1 for production, default is dev)
 deploy:
 	cd $(API_DIR) && sam deploy --no-confirm-changeset --no-fail-on-empty-changeset \
-		--parameter-overrides $$(cat $(PARAMS_FILE)) --config-env $(STAGE) --s3-bucket $(S3_BUCKET)
+		--parameter-overrides $$(cat $(PARAMS_FILE)) --config-env $(STAGE) --s3-bucket $(API_BUCKET)
 
 # Database targets
 start-db:
