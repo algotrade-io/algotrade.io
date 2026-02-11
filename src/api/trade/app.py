@@ -214,7 +214,7 @@ def get_trade() -> dict[str, Any]:
         sold = -1 if opt["type"] == "short" else 1
         symbol = opt["chain_symbol"]
         if symbol not in holdings:
-            holdings[symbol] = {}
+            holdings[symbol] = {"symbol": symbol, "open_contracts": 0}
         holdings[symbol]["open_contracts"] += int(float(opt["quantity"])) * sold
         opt = rh.options.get_option_instrument_data_by_id(opt["option_id"])
         holdings[symbol]["option_type"] = opt["type"][0].upper()
@@ -337,8 +337,9 @@ def get_expirations(expirations: list[str], num: int = 2) -> list[str]:
     today = datetime.now(ZoneInfo("America/New_York"))
     week = {datetime.strftime(day, "%Y-%m-%d") for day in get_week(today)}
     idx = 0
-    for _, exp in enumerate(expirations):
+    for i, exp in enumerate(expirations):
         if exp not in week:
+            idx = i
             break
     offset = int(bool(idx))
     exp_candidates = expirations[idx - offset : idx + num - offset]
@@ -388,10 +389,13 @@ def spread_is_high(mid_price: float, price: float) -> bool:
         price: Proposed trade price.
 
     Returns:
-        True if spread exceeds 20%.
+        True if spread exceeds 20% or mid_price is zero.
     """
     print("mid_price", mid_price)
     print("price", price)
+    if mid_price <= 0:
+        print("is_high", True)
+        return True
     is_high = abs((mid_price - price) / mid_price) > 0.2
     print("is_high", is_high)
     return is_high

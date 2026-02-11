@@ -36,7 +36,7 @@ class AlertConfig(TypedDict):
 class Processor:
     """Parallel processor for running jobs across multiple processes."""
 
-    def __init__(self, fx: Any, data: dict[str, Any]) -> None:
+    def __init__(self, fx: Any, data: Any) -> None:
         """Initialize processor with function and shared data.
 
         Args:
