@@ -76,8 +76,8 @@ Globals:
 Conditions:
   IsProd:
     !Equals [!Ref Stage, prod]
-  NotProd:
-    !Not [!Condition IsProd]
+  IsDev:
+    !Equals [!Ref Stage, dev]
 
 Resources:
   DomainIdentity:
@@ -150,7 +150,7 @@ Resources:
   # Create NS delegation records in parent zone for dev subdomain
   NSDelegationRecordSet:
     Type: AWS::Route53::RecordSet
-    Condition: NotProd
+    Condition: IsDev
     DependsOn: HostedZone
     Properties:
       HostedZoneId: !Sub "{{resolve:ssm:/${Domain}/hosted-zone-id}}"
