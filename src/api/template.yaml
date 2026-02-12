@@ -76,6 +76,8 @@ Globals:
 Conditions:
   IsProd:
     !Equals [!Ref Stage, prod]
+  NotProd:
+    !Not [!Condition IsProd]
 
 Resources:
   DomainIdentity:
@@ -136,6 +138,26 @@ Resources:
     Type: AWS::Route53::HostedZone
     Properties: 
       Name: !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
+  # Store prod HostedZoneId in SSM for dev stack to reference
+  HostedZoneIdParameter:
+    Type: AWS::SSM::Parameter
+    Condition: IsProd
+    Properties:
+      Name: !Sub "/${Domain}/hosted-zone-id"
+      Type: String
+      Value: !Ref HostedZone
+      Description: !Sub "Hosted Zone ID for ${Domain}"
+  # Create NS delegation records in parent zone for dev subdomain
+  NSDelegationRecordSet:
+    Type: AWS::Route53::RecordSet
+    Condition: NotProd
+    DependsOn: HostedZone
+    Properties:
+      HostedZoneId: !Sub "{{resolve:ssm:/${Domain}/hosted-zone-id}}"
+      Name: !Sub "dev.${Domain}"
+      Type: NS
+      TTL: 300
+      ResourceRecords: !GetAtt HostedZone.NameServers
   RecordSet:
     Type: AWS::Route53::RecordSet
     DependsOn: HostedZone
