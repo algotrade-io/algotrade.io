@@ -15,7 +15,8 @@
     "clean": "rm -rf node_modules && rm -rf src/.umi",
     "swagger": "swagger-cli bundle -o src/ui/gen/swagger.json src/api/spec/swagger.yaml",
     "visualize": "vite-bundle-visualizer -t treemap --open -o ${PWD}/stats.html",
-    "test": "dotenv -e config.env -- npx cypress open"
+    "test:open": "dotenv -e config.env -- npx cypress open",
+    "test": "dotenv -e config.env -- npx cypress run"
   },
   "author": "Krish Suchak <suchak.krish@gmail.com>",
   "license": "MIT",
