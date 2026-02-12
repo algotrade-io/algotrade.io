@@ -1,18 +1,39 @@
+"""Signals Lambda handler for trading signal access with rate limiting."""
+
 import os
-import json
+from datetime import UTC, datetime, timedelta
+from typing import Any, cast
+
 import boto3
-from datetime import datetime, timedelta, timezone
-from models import query_by_api_key, UserModel
-from utils import options, error, enough_time_has_passed, RES_HEADERS, transform_signal
+from models import UserModel, query_by_api_key
+from utils import (
+    enough_time_has_passed,
+    error,
+    options,
+    success,
+    transform_signal,
+)
 
-s3 = boto3.client('s3')
+s3 = boto3.client("s3")
 
-max_accesses = 5
-duration_days = 1
+# Rate limiting configuration for signal access
+# MAX_ACCESSES: Number of signal requests allowed per rate limit window
+# RATE_LIMIT_DAYS: Duration of the rate limit window in days
+MAX_ACCESSES = int(os.environ.get("SIGNAL_MAX_ACCESSES", 5))
+RATE_LIMIT_DAYS = int(os.environ.get("SIGNAL_RATE_LIMIT_DAYS", 1))
 
 
-def handle_signals(event, _):
-    if event['httpMethod'].upper() == 'OPTIONS':
+def handle_signals(event: dict[str, Any], _: Any) -> dict[str, Any]:
+    """Route signals requests to appropriate handler.
+
+    Args:
+        event: API Gateway event containing request details.
+        _: Lambda context (unused).
+
+    Returns:
+        API response dictionary with statusCode and body.
+    """
+    if event["httpMethod"].upper() == "OPTIONS":
         response = options()
     else:
         response = get_signals(event)
@@ -20,30 +41,36 @@ def handle_signals(event, _):
     return response
 
 
-def update_access_queue(user):
-    # Notes: Instead of using usage plan,
-    # store list of last 5 access times
-    access_queue = user.access_queue
+def update_access_queue(user: UserModel) -> int | None:
+    """Update user's access queue and check rate limits.
 
-    reset_duration = timedelta(days=duration_days)
-    now = datetime.now(timezone.utc)
+    Args:
+        user: User model instance.
+
+    Returns:
+        Number of remaining requests, or None if quota reached.
+    """
+    access_queue: list[datetime] = cast(list[datetime], user.access_queue)
+
+    reset_duration = timedelta(days=RATE_LIMIT_DAYS)
+    now = datetime.now(UTC)
     quota_reached = False
 
     # Update access queue
-    if len(user.access_queue) >= max_accesses:
-        start = access_queue[-max_accesses]
+    if len(user.access_queue) >= MAX_ACCESSES:
+        start = access_queue[-MAX_ACCESSES]
         if enough_time_has_passed(start, now, reset_duration):
-            access_queue = access_queue[-max_accesses + 1:] + [now]
+            access_queue = access_queue[-MAX_ACCESSES + 1 :] + [now]
         else:
-            access_queue = access_queue[-max_accesses:]
+            access_queue = access_queue[-MAX_ACCESSES:]
             quota_reached = True
     else:
         access_queue += [now]
 
     # Update user model in db with new access_queue
-    user.update(actions=[UserModel.access_queue.set(access_queue)])
+    user.update(actions=[UserModel.access_queue.set(cast(Any, access_queue))])
     if quota_reached:
-        return
+        return None
 
     # Find out how many requests are left
     remaining = 0
@@ -53,67 +80,58 @@ def update_access_queue(user):
         else:
             break
     # This is to cover the case that len(access_queue) < max_accesses
-    remaining += max_accesses - len(access_queue)
+    remaining += MAX_ACCESSES - len(access_queue)
     return remaining
 
 
-def get_signals(event):
+def get_signals(event: dict[str, Any]) -> dict[str, Any]:
+    """Get trading signals for authenticated user with rate limiting.
+
+    Args:
+        event: API Gateway event with x-api-key header.
+
+    Returns:
+        Success response with signals data or error response.
+    """
     # first get user by api key
-    req_headers = event['headers']
-    if 'x-api-key' not in req_headers:
-        return error(401, 'Provide a valid API key.')
-    api_key = req_headers['x-api-key']
+    req_headers = event["headers"]
+    if "x-api-key" not in req_headers:
+        return error(401, "Provide a valid API key.")
+    api_key = req_headers["x-api-key"]
     query_results = query_by_api_key(api_key)
     if not query_results:
-        return error(401, 'Provide a valid API key.')
+        return error(401, "Provide a valid API key.")
     user = query_results[0]
 
     if not (user.in_beta or user.subscribed):
-        return error(402, 'This endpoint is for subscribers only.')
+        return error(402, "This endpoint is for subscribers only.")
 
     remaining = update_access_queue(user)
     if not remaining:
-        return error(403,
-                     f'You have reached your quota of {max_accesses} requests / {duration_days} day(s).'
-                     )
+        return error(
+            403,
+            f"You have reached your quota of {MAX_ACCESSES} requests / {RATE_LIMIT_DAYS} day(s).",
+        )
 
-    obj = s3.get_object(
-        Bucket=os.environ['S3_BUCKET'], Key='models/latest/signals.csv')
+    obj = s3.get_object(Bucket=os.environ["S3_BUCKET"], Key="models/latest/signals.csv")
 
     days_in_a_week = 7
-    lines = [line.decode('utf-8') for line in list(obj['Body'].iter_lines())]
+    lines = [line.decode() for line in list(obj["Body"].iter_lines())]
     header = lines[0]
     rows = lines[-days_in_a_week:]
-    keys = header.split(',')
+    keys = header.split(",")
 
-    response = {'message': None, 'data': []}
+    response: dict[str, Any] = {"message": None, "data": []}
     for row in rows:
-        cols = row.split(',')
+        cols = row.split(",")
         item = {}
         for idx, col in enumerate(cols):
             key = keys[idx]
             item[key] = col
         signal = transform_signal(item)
-        response['data'].append(signal)
-    # Time -> Date
-    # Sig -> Signal
+        response["data"].append(signal)
 
-    # schema is list from oldest to newest
-    # 1 week - 7 items
-    # each item {Date: 2022-06-23, Day: Mon, Tue, (3 letter slice) Signal: BUY or SELL}
-    # obj['Body'].read()
-    status_code = 200
-    response['message'] = f'You have {remaining} requests left / {duration_days} day(s).'
-    body = json.dumps(response)
-    return {
-        "statusCode": status_code,
-        "body": body,
-        "headers": RES_HEADERS
-    }
-
-
-# client.create_usage_plan_key(
-#     usagePlanId='12345',
-#     keyId='[API_KEY_ID]',
-#     keyType='API_KEY'
-# )
+    response["message"] = (
+        f"You have {remaining} requests left / {RATE_LIMIT_DAYS} day(s)."
+    )
+    return success(response)

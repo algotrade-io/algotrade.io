@@ -1,6 +1,6 @@
 {
   "auth": {
-    "forcepush": {
+    "algotrade.io": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
       "dependsOn": [],

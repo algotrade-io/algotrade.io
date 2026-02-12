@@ -25,14 +25,14 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Use Node.js 18
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v4
         name: Install pnpm
         id: pnpm-install
         with:
@@ -45,7 +45,7 @@ jobs:
         run: |
           echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         name: Setup pnpm cache
         with:
           path: |
@@ -70,8 +70,13 @@ jobs:
           util/aws_exports.sh
           pnpm run swagger
 
+      # TODO: Lint step
+
+      - name: Typescript
+        run: pnpm run typescript
+          
       - name: Build app [${{ fromJSON('["dev","prod"]')[github.ref_name == 'master'] }}]
-        run: VITE_APP_DOMAIN="$(basename ${GITHUB_REPOSITORY})" pnpm run build:ui
+        run: VITE_APP_DOMAIN="$(basename ${GITHUB_REPOSITORY})" pnpm run build
         env:
           VITE_APP_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
           VITE_APP_IDENTITY_POOL_ID: ${{ fromJSON(format('["{0}","{1}"]', secrets.DEV_IDENTITY_POOL_ID, secrets.IDENTITY_POOL_ID))[github.ref_name == 'master'] }}
@@ -108,7 +113,7 @@ jobs:
       #   run: sleep 30s
       
       - name: Run UI tests
-        uses: cypress-io/github-action@v5
+        uses: cypress-io/github-action@v6
         id: cypress
         continue-on-error: true
         with:

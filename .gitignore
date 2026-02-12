@@ -1,5 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+__pycache__
+
 # dependencies
 **/node_modules
 # roadhog-api-doc ignore
@@ -39,6 +41,7 @@ screenshot
 
 # api
 src/api/.aws-sam
+src/api/*/requirements.txt
 
 build
 

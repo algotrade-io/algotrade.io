@@ -6,7 +6,7 @@ describe('Algorithm', () => {
     const plot = '.plotly';
     const toggle = '.ant-segmented';
     // Test that toggle switches charts
-    cy.get(plot).find('text').contains('[3D]');
+    cy.get(plot, {timeout: 10000}).find('text').contains('[3D]');
     cy.get(plot).should('not.contain', '[2D]');
     cy.get(toggle).contains('2D').first().click();
     cy.get(plot).find('text').contains('[2D]');

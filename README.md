@@ -2,27 +2,32 @@
 
 ## Development
 
-```
-# Install Deps
-npm install
+```bash
+# Install UI deps
+pnpm install
 
-# Run dev server
-npm start
-```
+# Install API deps
+make install DEV=1
 
-### Generate Page
+# Run UI dev server
+pnpm start
 
-To generate a page
-
-```
-npm run umi g page <path> --typescript
+# Build and start local API
+make build START=1
 ```
 
-<!--
-Amplify auth thoughts
-install amplify cli
-make sure aws creds are set as env vars
-put appIds in gh secrets
-write script for `amplify pull --appId "${APP_ID}" --envName "${ENV}"`
-add this to npm scripts and ci steps
--->
+### API Commands
+
+```bash
+# Build API
+make build
+
+# Deploy API (dev by default)
+make deploy
+
+# Deploy to production
+make deploy PROD=1
+
+# Run tests with local DynamoDB
+make test-db
+```

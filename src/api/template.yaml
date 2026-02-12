@@ -65,10 +65,19 @@ Globals:
   Function:
     Timeout: 30
     MemorySize: 10240
+    Runtime: python3.14
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref UsersTable
+        S3_BUCKET: !Ref S3Bucket
+        STAGE: !Ref Stage
+        DOMAIN: !Ref Domain
 
 Conditions:
   IsProd:
     !Equals [!Ref Stage, prod]
+  IsDev:
+    !Equals [!Ref Stage, dev]
 
 Resources:
   DomainIdentity:
@@ -129,6 +138,26 @@ Resources:
     Type: AWS::Route53::HostedZone
     Properties: 
       Name: !Join [ "", [!If [IsProd, "", "dev."], !Ref Domain ] ]
+  # Store prod HostedZoneId in SSM for dev stack to reference
+  HostedZoneIdParameter:
+    Type: AWS::SSM::Parameter
+    Condition: IsProd
+    Properties:
+      Name: !Sub "/${Domain}/hosted-zone-id"
+      Type: String
+      Value: !Ref HostedZone
+      Description: !Sub "Hosted Zone ID for ${Domain}"
+  # Create NS delegation records in parent zone for dev subdomain
+  NSDelegationRecordSet:
+    Type: AWS::Route53::RecordSet
+    Condition: IsDev
+    DependsOn: HostedZone
+    Properties:
+      HostedZoneId: !Sub "{{resolve:ssm:/${Domain}/hosted-zone-id}}"
+      Name: !Sub "dev.${Domain}"
+      Type: NS
+      TTL: 300
+      ResourceRecords: !GetAtt HostedZone.NameServers
   RecordSet:
     Type: AWS::Route53::RecordSet
     DependsOn: HostedZone
@@ -303,7 +332,6 @@ Resources:
       Timeout: 900 # 15 min
       Environment:
         Variables:
-          S3_BUCKET: !Ref S3Bucket
           RH_USERNAME: !Ref RHUsername
           RH_PASSWORD: !Ref RHPassword
           RH_2FA: !Ref RH2FA
@@ -328,28 +356,11 @@ Resources:
               Action:
                 - execute-api:Invoke
                 - execute-api:ManageConnections
-              # Resource: !Sub "arn:aws:execute-api:::${S3Bucket}/data/robinhood*.pickle"
               Resource: !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${WebSocketApi}/*'
-      PackageType: Zip
       CodeUri: trade
-      Runtime: python3.9 
       Handler: app.handle_ws
       Layers:
       - !Ref SharedLayer
-      # MemorySize: 256
-      # Runtime: nodejs14.x
-      # Environment:
-      #   Variables:
-      #     TABLE_NAME: !Ref TableName
-      # Policies:
-      # - DynamoDBCrudPolicy:
-      #     TableName: !Ref TableName
-      # - Statement:
-      #   - Effect: Allow
-      #     Action:
-      #     - 'execute-api:ManageConnections'
-      #     Resource:
-      #     - !Sub 'arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${SimpleChatWebSocket}/*'
   WebSocketPermission:
     Type: AWS::Lambda::Permission
     DependsOn: WebSocketApi
@@ -357,18 +368,6 @@ Resources:
       Action: lambda:InvokeFunction
       FunctionName: !Ref WebSocketFunction
       Principal: apigateway.amazonaws.com
-  # WebSocketFunction:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     Handler: index.handler
-  #     Timeout: 30
-  #     Runtime: nodejs8.10
-  #     CodeUri: ./
-  #     # Policies:
-  #     #   - AWSLambdaFullAccess
-  #     #   - CloudWatchLogsFullAccess
-  #     #   - AmazonAPIGatewayInvokeFullAccess
-  #     #   - AmazonAPIGatewayAdministrator
   ApiGatewayApi:
     Type: AWS::Serverless::Api
     DependsOn: HostedZone
@@ -392,19 +391,15 @@ Resources:
       ContentUri: shared
       RetentionPolicy: Delete
   AccountFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       Environment:
         Variables:
-          TABLE_NAME: !Ref UsersTable
           STRIPE_SECRET_KEY: !Ref StripeSecretKey
-          DOMAIN: !Ref Domain
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
-      PackageType: Zip
       CodeUri: account
-      Runtime: python3.8 
       Handler: app.handle_account
       Layers:
       - !Ref SharedLayer
@@ -443,21 +438,17 @@ Resources:
             Method: options
             RestApiId: !Ref ApiGatewayApi
   ContactFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       Environment:
         Variables:
           EMAIL_USER: !Ref EmailUser
           EMAIL_PASS: !Ref EmailPass
-          STAGE: !Ref Stage
-          DOMAIN: !Ref Domain
       #     TABLE_NAME: !Ref UsersTable
       # Policies:
       #   - DynamoDBCrudPolicy:
       #       TableName: !Ref UsersTable
-      PackageType: Zip
       CodeUri: contact
-      Runtime: python3.8 
       Handler: app.handle_contact
       Layers:
       - !Ref SharedLayer
@@ -478,12 +469,12 @@ Resources:
             Method: options
             RestApiId: !Ref ApiGatewayApi
   ExerciseLogFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
-      PackageType: Zip
       CodeUri: gym
-      Runtime: python3.8 
       Handler: app.get_exercise_log
+      Layers:
+      - !Ref SharedLayer
       Events:
         ExerciseLog:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -492,11 +483,8 @@ Resources:
             Method: get
             RestApiId: !Ref ApiGatewayApi
   PreviewFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
-      Environment:
-        Variables:
-          S3_BUCKET: !Ref S3Bucket
       Policies:
         - Statement:
             - Sid: S3ReadPolicy
@@ -504,10 +492,10 @@ Resources:
               Action:
                 - s3:GetObject
               Resource: !Sub "arn:aws:s3:::${S3Bucket}/data/api/*"
-      PackageType: Zip
       CodeUri: preview
-      Runtime: python3.8 
       Handler: app.get_preview
+      Layers:
+      - !Ref SharedLayer
       Events:
         Preview:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -516,13 +504,12 @@ Resources:
             Method: get
             RestApiId: !Ref ApiGatewayApi
   TradeFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       MemorySize: 10240 # 10GB
       Timeout: 900 # 15 min
       Environment:
         Variables:
-          S3_BUCKET: !Ref S3Bucket
           RH_USERNAME: !Ref RHUsername
           RH_PASSWORD: !Ref RHPassword
           RH_2FA: !Ref RH2FA
@@ -541,9 +528,7 @@ Resources:
                 - s3:GetObject
                 - s3:PutObject
               Resource: !Sub "arn:aws:s3:::${S3Bucket}/data/robinhood*.pickle"
-      PackageType: Zip
       CodeUri: trade
-      Runtime: python3.9 
       Handler: app.handle_trade
       Layers:
       - !Ref SharedLayer
@@ -571,11 +556,8 @@ Resources:
             Method: options
             RestApiId: !Ref ApiGatewayApi
   ModelFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
-      Environment:
-        Variables:
-          S3_BUCKET: !Ref S3Bucket
       Policies:
         - Statement:
             - Sid: S3ReadPolicy
@@ -583,10 +565,10 @@ Resources:
               Action:
                 - s3:GetObject
               Resource: !Sub "arn:aws:s3:::${S3Bucket}/models/latest/metadata.json"
-      PackageType: Zip
       CodeUri: model
-      Runtime: python3.8 
       Handler: app.get_model
+      Layers:
+      - !Ref SharedLayer
       Events:
         Model:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -595,11 +577,8 @@ Resources:
             Method: get
             RestApiId: !Ref ApiGatewayApi
   VisualizationFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
-      Environment:
-        Variables:
-          S3_BUCKET: !Ref S3Bucket
       Policies:
         - Statement:
             - Sid: S3ReadPolicy
@@ -611,10 +590,10 @@ Resources:
                   !Sub "arn:aws:s3:::${S3Bucket}/models/latest/2D/*",
                   !Sub "arn:aws:s3:::${S3Bucket}/models/latest/3D/*",
                 ]
-      PackageType: Zip
       CodeUri: model
-      Runtime: python3.8 
       Handler: app.get_visualization
+      Layers:
+      - !Ref SharedLayer
       Events:
         Model:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
@@ -623,12 +602,8 @@ Resources:
             Method: get
             RestApiId: !Ref ApiGatewayApi
   SignalsFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
-      Environment:
-        Variables:
-          S3_BUCKET: !Ref S3Bucket
-          TABLE_NAME: !Ref UsersTable
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
@@ -638,9 +613,7 @@ Resources:
               Action:
                 - s3:GetObject
               Resource: !Sub "arn:aws:s3:::${S3Bucket}/models/latest/signals.csv"
-      PackageType: Zip
       CodeUri: signals
-      Runtime: python3.8 
       Handler: app.handle_signals
       Layers:
       - !Ref SharedLayer
@@ -658,16 +631,13 @@ Resources:
             Method: options
             RestApiId: !Ref ApiGatewayApi
   PlansFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       Environment:
         Variables:
           STRIPE_SECRET_KEY: !Ref StripeSecretKey
-          TABLE_NAME: !Ref UsersTable
           STRIPE_PRICE_ID: !Ref StripePriceId
-      PackageType: Zip
       CodeUri: subscribe
-      Runtime: python3.8 
       Handler: app.get_plans
       Layers:
       - !Ref SharedLayer
@@ -679,19 +649,16 @@ Resources:
             Method: get
             RestApiId: !Ref ApiGatewayApi
   SubscribeFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       Environment:
         Variables:
           STRIPE_SECRET_KEY: !Ref StripeSecretKey
           STRIPE_WEBHOOK_SECRET: !Ref StripeWebhookSecret
-          TABLE_NAME: !Ref UsersTable
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
-      PackageType: Zip
       CodeUri: subscribe
-      Runtime: python3.8 
       Handler: app.post_subscribe
       Layers:
       - !Ref SharedLayer
@@ -703,18 +670,14 @@ Resources:
             Method: post
             RestApiId: !Ref ApiGatewayApi
   NotifyFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       MemorySize: 10240 # 10GB
       Timeout: 900 # 15 min
       Environment:
         Variables:
           EMIT_SECRET: !Ref EmitSecret
-          TABLE_NAME: !Ref UsersTable
-          STAGE: !Ref Stage
           SIGNAL_EMAIL: !Ref SignalEmail
-          S3_BUCKET: !Ref S3Bucket
-          DOMAIN: !Ref Domain
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
@@ -730,9 +693,7 @@ Resources:
               Action:
                 - ses:SendEmail
               Resource: "*"
-      PackageType: Zip
       CodeUri: notify
-      Runtime: python3.8 
       Handler: app.post_notify
       Layers:
       - !Ref SharedLayer
@@ -744,21 +705,16 @@ Resources:
             Method: post
             RestApiId: !Ref ApiGatewayApi
   CheckoutFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       Environment:
         Variables:
           STRIPE_SECRET_KEY: !Ref StripeSecretKey
-          TABLE_NAME: !Ref UsersTable
           STRIPE_PRICE_ID: !Ref StripePriceId
-          STAGE: !Ref Stage
-          DOMAIN: !Ref Domain
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
-      PackageType: Zip
       CodeUri: subscribe
-      Runtime: python3.8 
       Handler: app.handle_checkout
       Layers:
       - !Ref SharedLayer
@@ -779,20 +735,15 @@ Resources:
             Method: options
             RestApiId: !Ref ApiGatewayApi
   BillingFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       Environment:
         Variables:
           STRIPE_SECRET_KEY: !Ref StripeSecretKey
-          TABLE_NAME: !Ref UsersTable
-          STAGE: !Ref Stage
-          DOMAIN: !Ref Domain
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref UsersTable
-      PackageType: Zip
       CodeUri: subscribe
-      Runtime: python3.8 
       Handler: app.handle_billing
       Layers:
       - !Ref SharedLayer
