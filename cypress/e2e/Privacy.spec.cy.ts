@@ -16,4 +16,13 @@ describe('Privacy Policy', () => {
       cy.contains('a', 'contact').click();
       cy.url().should('include', '/contact');
     })
+    it('Display interpretation section', () => {
+      cy.contains('Interpretation');
+      cy.contains('Definitions');
+      cy.contains('meanings defined');
+    })
+    it('Display external links', () => {
+      // Privacy policy template link
+      cy.get('a[href*="privacypolicies.com"]').should('exist');
+    })
   })

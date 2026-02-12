@@ -1,0 +1,13 @@
+describe('Template', () => {
+    it('Display template page', () => {
+      cy.visit('/template')
+      cy.get('div[style]').should('exist');
+    })
+    it('Render HTML content', () => {
+      cy.visit('/template')
+      // Verify the template container has white background
+      cy.get('div[style*="background: white"]').should('exist');
+      // Verify inner HTML is rendered
+      cy.get('div[style*="background: white"]').children().should('exist');
+    })
+  })
