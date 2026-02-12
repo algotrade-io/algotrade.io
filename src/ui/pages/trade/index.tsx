@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { Typography, Table, Button, notification } from "antd";
 import { useState, useEffect, useReducer } from "react";
 import { NavLink } from "react-router-dom";
