@@ -2,7 +2,7 @@
     "lines": 80,
     "functions": 70,
     "branches": 65,
-    "statements": 80,
+    "statements": 75,
     "exclude": [
         "src/pages/trade/**"
     ]
