@@ -237,8 +237,8 @@ const Page = () => {
     numDaysInAWeek - 1
   );
   const defaultSignals = signalDates.map((date) => ({
-    Date: date.toISOString().slice(0, 10),
-    Day: date.toUTCString().slice(0, 3),
+    Date: !isNaN(date.getTime()) ? date.toISOString().slice(0, 10) : '',
+    Day: !isNaN(date.getTime()) ? date.toUTCString().slice(0, 3) : '',
     Signal: "?",
     Asset: "BTC",
   }));

@@ -10,8 +10,10 @@ export const getDateRange = (
   end: string | number | Date,
   steps = 1
 ) => {
-  const range = [];
+  const range: Date[] = [];
   let curr = new Date(start);
+
+  if (isNaN(curr.getTime())) return range;
 
   if (typeof end === "number") {
     const tmp = new Date(start);
@@ -19,7 +21,10 @@ export const getDateRange = (
     end = tmp;
   }
 
-  while (curr <= new Date(end)) {
+  const endDate = new Date(end);
+  if (isNaN(endDate.getTime())) return range;
+
+  while (curr <= endDate) {
     range.push(new Date(curr));
     curr.setUTCDate(curr.getUTCDate() + steps);
   }
@@ -47,6 +52,7 @@ export const getDayDiff = (start: string | Date, end: string | Date) => {
 
 export const addDays = (date: string | Date, steps = 0) => {
   const newDate = new Date(date);
+  if (isNaN(newDate.getTime())) return newDate;
   newDate.setUTCDate(newDate.getUTCDate() + steps);
   return newDate;
 };

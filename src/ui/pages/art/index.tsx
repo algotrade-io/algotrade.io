@@ -61,6 +61,7 @@ const nftCard = (contract: string, token: string) => (
             <span style={{ width: metadataWidth }}>{data?.tokenId}</span>
             <span style={{ width: metadataWidth }}>
               {data?.timestamp &&
+                !isNaN(new Date(Number(data?.timestamp) * 1000).getTime()) &&
                 new Date(Number(data?.timestamp) * 1000).toISOString()}
             </span>
           </div>
