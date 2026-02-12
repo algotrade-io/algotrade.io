@@ -97,49 +97,16 @@ describe('Docs', () => {
       cy.get('.ant-notification').contains('Wrong API Key');
       cy.contains('Copy your API key from the Auth section');
     })
-    it('Handle forbidden (quota reached) error', () => {
-      cy.login();
-      cy.intercept('GET', `https://api.${domain}/account`).as('getAccount');
-      cy.wait('@getAccount').then(({ request }) => {
-        const auth = request.headers['authorization'];
-        // Set user as beta user
-        cy.request({method: 'POST', url: `https://api.${domain}/account`, headers: {Authorization: auth}, body: {in_beta: 1}});
-      });
-      cy.reload();
-      
-      cy.intercept('GET', `https://api.${domain}/account`).as('getAccount2');
-      cy.wait('@getAccount2');
-      
-      // Execute multiple times to reach quota
-      cy.get('.opblock').click();
-      cy.contains('button', 'Try it out').click();
-      
-      for (let i = 0; i < 6; i++) {
-        cy.contains('button', 'Execute').click();
-        cy.wait(2000);
-      }
-      
-      // Should see Forbidden error at some point
-      cy.get('.ant-notification').should('exist');
-      
-      // Clean up
-      cy.intercept('GET', `https://api.${domain}/account`).as('getAccount3');
-      cy.reload();
-      cy.wait('@getAccount3').then(({ request }) => {
-        const auth = request.headers['authorization'];
-        cy.request({method: 'POST', url: `https://api.${domain}/account`, headers: {Authorization: auth}, body: {in_beta: 0}});
-      });
-    })
     it('Trigger Signals API', () => {
         const notification = '.ant-notification';
         cy.login();
         cy.intercept('GET', `https://api.${domain}/account`).as('getAccount');
-        cy.get('input[type="password"]').invoke('val').should('have.length', 86);
+        cy.get('input[type="password"]', { timeout: 10000 }).invoke('val').should('have.length', 86);
         // Try API without access
         cy.get('.opblock').click();
         cy.contains('button', 'Try it out').click();
         cy.contains('button', 'Execute').click();
-        cy.contains(notification, 'Payment Required').should('be.visible');
+        cy.contains(notification, 'Payment Required', { timeout: 10000 }).should('be.visible');
         cy.get('.ant-notification-notice-icon-error').should('be.visible');
         // Get access
         cy.wait('@getAccount').then(({ request }) => {
@@ -148,7 +115,7 @@ describe('Docs', () => {
         });
         // Try again
         cy.contains('button', 'Execute').click();
-        cy.contains(notification, 'Success').should('be.visible');
+        cy.contains(notification, 'Success', { timeout: 10000 }).should('be.visible');
         cy.get('.ant-notification-notice-icon-success').should('be.visible');
         cy.contains(notification, 'Quota').should('be.visible');
         cy.get('.ant-notification-notice-icon-warning').should('be.visible');

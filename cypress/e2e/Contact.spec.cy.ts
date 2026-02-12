@@ -39,7 +39,7 @@ describe('Contact', () => {
       // Click submit without filling anything - should show error states
       // First select a subject to enable some validation
       const subject = 'input[type="search"]';
-      cy.get(subject).click();
+      cy.get(subject).should('not.be.disabled').click();
       cy.get('.ant-select-item').first().click();
       
       // Submit should still be disabled without message
@@ -59,7 +59,7 @@ describe('Contact', () => {
       cy.wait('@getAccount');
       
       const subject = 'input[type="search"]';
-      cy.get(subject).click();
+      cy.get(subject).should('not.be.disabled').click();
       
       // Verify all subject options are present
       cy.get('.ant-select-dropdown').within(() => {
@@ -110,9 +110,9 @@ describe('Contact', () => {
       const testMessage = `duplicate-test-${Date.now()}`;
       
       // Send first message
-      cy.get(subject).click();
+      cy.get(subject).should('not.be.disabled').click();
       cy.get('.ant-select-item').first().click();
-      cy.get('textarea').type(testMessage);
+      cy.get('textarea').should('not.be.disabled').type(testMessage);
       cy.intercept('POST', `https://api.${domain}/contact`).as('postContact');
       cy.contains('button', 'Submit').click();
       cy.wait('@postContact');
@@ -121,9 +121,9 @@ describe('Contact', () => {
       cy.contains('button', 'Return to contact form').click();
       
       // Send same message again (should be cached)
-      cy.get(subject).click();
+      cy.get(subject).should('not.be.disabled').click();
       cy.get('.ant-select-item').first().click();
-      cy.get('textarea').type(testMessage);
+      cy.get('textarea').should('not.be.disabled').type(testMessage);
       cy.contains('button', 'Submit').click();
       
       // Should show success without making API call (message is cached)
@@ -135,7 +135,7 @@ describe('Contact', () => {
       cy.wait('@getAccount');
       
       // Type in textarea
-      cy.get('textarea').type('hello world');
+      cy.get('textarea').should('not.be.disabled').type('hello world');
       
       // Verify character count is shown
       cy.contains('11 / 2500');
@@ -152,9 +152,9 @@ describe('Contact', () => {
       }).as('postContactError');
       
       const subject = 'input[type="search"]';
-      cy.get(subject).click();
+      cy.get(subject).should('not.be.disabled').click();
       cy.get('.ant-select-item').first().click();
-      cy.get('textarea').type('test error handling');
+      cy.get('textarea').should('not.be.disabled').type('test error handling');
       cy.contains('button', 'Submit').click();
       
       cy.wait('@postContactError');

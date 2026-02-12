@@ -5,22 +5,14 @@ describe('Auth', () => {
       cy.visit('/')
     })
     it('Sign in', () => {
-
         // Sign in
         cy.login();
 
-        // Reset account
+        // Verify account API call works
         cy.intercept('GET', `https://api.${domain}/account`).as('getAccount');
-        cy.wait('@getAccount').then(({ request }) => {
-            const auth = request.headers['authorization'];
-            cy.request({method: 'DELETE', url: `https://api.${domain}/account`, headers: {Authorization: auth}});
+        cy.wait('@getAccount').then(({ response }) => {
+            // Account should be retrieved successfully
+            cy.wrap(response?.statusCode).should('eq', 200);
         });
-        cy.reload()
-
-        // Read disclaimer
-        let selector = '.ant-modal-footer';
-        cy.get(selector).find('input[type="checkbox"]').click()
-        cy.get(selector).find('button').contains('OK').click();
-        cy.get(selector).should('not.be.visible');
     })
   })

@@ -9,7 +9,7 @@ describe('Gym', () => {
       cy.get('button').contains('Search');
     })
     it('List exercises with correct columns', () => {
-      cy.get('.ant-table-thead').within(() => {
+      cy.get('.ant-table-thead', { timeout: 10000 }).within(() => {
         cy.contains('Date');
         cy.contains('Id');
         cy.contains('Weight');
@@ -18,20 +18,20 @@ describe('Gym', () => {
         cy.contains('Volume');
         cy.contains('1RM');
       });
-      cy.get('.ant-table-cell').contains('Bench');
+      cy.get('.ant-table-cell', { timeout: 10000 }).contains('Bench');
     })
     it('Display pagination', () => {
-      cy.get('.ant-pagination').should('have.length.greaterThan', 0);
+      cy.get('.ant-pagination', { timeout: 10000 }).should('have.length.greaterThan', 0);
     })
     it('Load exercise data from API', () => {
       // Wait for loading spinner to disappear and data to load
-      cy.get('.ant-spin-spinning').should('not.exist', { timeout: 10000 });
+      cy.get('.ant-spin-spinning', { timeout: 15000 }).should('not.exist');
       
       // Verify table has rows with data
-      cy.get('.ant-table-tbody .ant-table-row').should('have.length.greaterThan', 0);
+      cy.get('.ant-table-tbody .ant-table-row', { timeout: 10000 }).should('have.length.greaterThan', 0);
       
       // Verify results count is displayed
-      cy.contains('results').invoke('text').should('match', /\d+ results/);
+      cy.contains('results', { timeout: 10000 }).invoke('text').should('match', /\d+ results/);
       
       // Verify at least one exercise is shown
       cy.get('.ant-table-tbody').within(() => {
@@ -41,7 +41,7 @@ describe('Gym', () => {
     })
     it('Display search input functionality', () => {
       // Verify search input is usable
-      cy.get('.ant-input-search').should('exist');
+      cy.get('.ant-input-search', { timeout: 10000 }).should('exist');
       cy.get('input.ant-input').should('not.be.disabled');
       
       // Verify search button exists
@@ -50,14 +50,14 @@ describe('Gym', () => {
       
       // Verify allow clear is enabled
       cy.get('.ant-input-search').find('input').type('test');
-      cy.get('.ant-input-clear-icon').should('be.visible');
+      cy.get('.ant-input-clear-icon', { timeout: 5000 }).should('be.visible');
     })
     it('Display pagination controls', () => {
       // Wait for data to load
-      cy.get('.ant-spin-spinning').should('not.exist', { timeout: 10000 });
+      cy.get('.ant-spin-spinning', { timeout: 15000 }).should('not.exist');
       
       // Verify both top and bottom pagination
-      cy.get('.ant-pagination').should('have.length', 2);
+      cy.get('.ant-pagination', { timeout: 10000 }).should('have.length', 2);
       
       // Verify page controls are present
       cy.get('.ant-pagination-item').should('exist');

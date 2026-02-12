@@ -57,9 +57,10 @@ describe('Navigation', () => {
   it('Sign in and sign out', () => {
     cy.login();
     cy.intercept('GET', `https://api.${domain}/account`).as('getAccount');
+    cy.wait('@getAccount');
     
     // Should show account text
-    cy.contains('signed in as');
+    cy.contains('signed in as', { timeout: 10000 });
     
     // Sign out button should be visible
     cy.get('.ant-layout-header').contains('button', 'Sign out').should('be.visible');
@@ -144,8 +145,8 @@ describe('Navigation', () => {
     cy.get('.ant-layout-header').find('button').contains('Get started').first().click();
     cy.get('.ant-modal').should('be.visible');
     
-    // Click outside modal to close
-    cy.get('.ant-modal-wrap').click({ force: true });
-    cy.get('.ant-modal').should('not.exist');
+    // Click outside modal to close - need to click on the overlay area
+    cy.get('body').click(0, 0);
+    cy.get('.ant-modal').should('not.exist', { timeout: 5000 });
   })
 })

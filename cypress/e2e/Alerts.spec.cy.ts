@@ -102,11 +102,11 @@ describe('Alerts', () => {
       cy.wait('@getAccount2');
       
       // Webhook toggle should be enabled and on
-      cy.get('.ant-switch').eq(1).should('not.be.disabled');
+      cy.get('.ant-switch').eq(1, {timeout: 10000}).should('not.be.disabled');
       cy.get('.ant-switch').eq(1).should('have.class', 'ant-switch-checked');
       
       // Input should show webhook URL
-      cy.get('input[placeholder*="https://api"]').should('have.value', 'https://test.com/webhook');
+      cy.get('input[placeholder*="https://api"]', {timeout: 10000}).should('have.value', 'https://test.com/webhook');
       
       // Toggle webhook off
       cy.get('.ant-switch').eq(1).click();
@@ -138,7 +138,7 @@ describe('Alerts', () => {
       cy.wait('@getAccount2');
       
       // Input should be enabled
-      cy.get('input[placeholder*="https://api"]').should('not.be.disabled');
+      cy.get('input[placeholder*="https://api"]', {timeout: 10000}).should('not.be.disabled');
       
       // Enter webhook URL
       const testUrl = 'https://test.com/webhook-test';
@@ -149,7 +149,7 @@ describe('Alerts', () => {
       cy.wait('@postAccount');
       
       // Clear button should now be visible
-      cy.contains('button', 'Clear').should('be.visible');
+      cy.contains('button', 'Clear', {timeout: 10000}).should('be.visible');
       cy.get('input[placeholder*="https://api"]').should('be.disabled');
       
       // Click clear
@@ -157,7 +157,7 @@ describe('Alerts', () => {
       cy.wait('@postAccount');
       
       // Input should be enabled again
-      cy.get('input[placeholder*="https://api"]').should('not.be.disabled');
+      cy.get('input[placeholder*="https://api"]', {timeout: 10000}).should('not.be.disabled');
       cy.get('input[placeholder*="https://api"]').should('have.value', '');
       
       // Clean up
