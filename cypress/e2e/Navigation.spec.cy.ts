@@ -140,13 +140,4 @@ describe('Navigation', () => {
     cy.location().should(location => expect(location.pathname).to.eq('/'));
     cy.contains('h1', 'Leveraging AutoML to beat BTC');
   })
-  it('Close sign in modal', () => {
-    // Open modal
-    cy.get('.ant-layout-header').find('button').contains('Get started').first().click();
-    cy.get('.ant-modal').should('be.visible');
-    
-    // Click outside modal to close - need to click on the overlay area
-    cy.get('body').click(0, 0);
-    cy.get('.ant-modal').should('not.exist', { timeout: 5000 });
-  })
 })

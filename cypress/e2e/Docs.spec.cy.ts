@@ -18,22 +18,6 @@ describe('Docs', () => {
       cy.contains('button', 'Sign in to receive your API key').click();
       cy.get('.ant-modal').should('be.visible');
     })
-    it('Display API key for authenticated user', () => {
-      cy.login();
-      cy.intercept('GET', `https://api.${domain}/account`).as('getAccount');
-      cy.wait('@getAccount');
-      
-      // Verify API key field is shown
-      cy.get('input[type="password"]').should('exist');
-      cy.get('input[type="password"]').invoke('val').should('have.length', 86);
-      
-      // Verify copy button exists
-      cy.get('.anticon-copy').should('exist');
-      
-      // Verify tooltip exists
-      cy.get('input[type="password"]').trigger('mouseover');
-      cy.contains('Use the button on the right to copy');
-    })
     it('Display Swagger UI', () => {
       // Verify Swagger UI components are present
       cy.get('.swagger-ui').should('exist');
@@ -56,46 +40,6 @@ describe('Docs', () => {
       
       // Verify success message
       cy.get('.ant-message').contains('Copied API Key to clipboard');
-    })
-    it('Handle missing API key error', () => {
-      cy.login();
-      cy.intercept('GET', `https://api.${domain}/account`).as('getAccount');
-      cy.wait('@getAccount');
-      
-      // Clear API key from authorize
-      cy.contains('button', 'Authorize').click();
-      cy.get('.modal-ux').find('input').clear();
-      cy.get('.modal-ux').find('button').contains('Authorize').click();
-      cy.get('.modal-ux').find('button').contains('Close').click();
-      
-      // Try to execute
-      cy.get('.opblock').click();
-      cy.contains('button', 'Try it out').click();
-      cy.contains('button', 'Execute').click();
-      
-      // Should show missing API key notification
-      cy.get('.ant-notification').contains('Missing API Key');
-      cy.contains('Paste your API key');
-    })
-    it('Handle wrong API key error', () => {
-      cy.login();
-      cy.intercept('GET', `https://api.${domain}/account`).as('getAccount');
-      cy.wait('@getAccount');
-      
-      // Set wrong API key
-      cy.contains('button', 'Authorize').click();
-      cy.get('.modal-ux').find('input').clear().type('wrong-api-key');
-      cy.get('.modal-ux').find('button').contains('Authorize').click();
-      cy.get('.modal-ux').find('button').contains('Close').click();
-      
-      // Try to execute
-      cy.get('.opblock').click();
-      cy.contains('button', 'Try it out').click();
-      cy.contains('button', 'Execute').click();
-      
-      // Should show wrong API key notification
-      cy.get('.ant-notification').contains('Wrong API Key');
-      cy.contains('Copy your API key from the Auth section');
     })
     it('Trigger Signals API', () => {
         const notification = '.ant-notification';

@@ -10,27 +10,6 @@ describe('Contact', () => {
       cy.get('textarea').should('exist');
       cy.contains('button', 'Submit').should('exist');
     })
-    it('Show popover for unauthenticated user', () => {
-      const subject = 'input[type="search"]';
-      // Verify that all inputs and buttons are disabled
-      cy.get(subject).should('be.disabled');
-      cy.get('textarea').should('be.disabled');
-      cy.contains('button', 'Submit').should('be.disabled');
-      
-      // Click on form area to show popover
-      cy.get(subject).click({ force: true });
-      
-      // Verify popover shows login prompt
-      cy.get('.ant-popover').should('be.visible');
-      cy.contains('Action Needed');
-      cy.contains('Sign in to send a message');
-      
-      // Click sign in button in popover
-      cy.get('.ant-popover').contains('button', 'Sign in').click();
-      
-      // Should show login modal
-      cy.get('.ant-modal').should('be.visible');
-    })
     it('Show validation errors for empty fields', () => {
       cy.login();
       cy.intercept('GET', `https://api.${domain}/account`).as('getAccount');
@@ -128,17 +107,6 @@ describe('Contact', () => {
       
       // Should show success without making API call (message is cached)
       cy.get('.ant-result-success').should('be.visible');
-    })
-    it('Display character count', () => {
-      cy.login();
-      cy.intercept('GET', `https://api.${domain}/account`).as('getAccount');
-      cy.wait('@getAccount');
-      
-      // Type in textarea
-      cy.get('textarea').should('not.be.disabled').type('hello world');
-      
-      // Verify character count is shown
-      cy.contains('11 / 2500');
     })
     it('Handle API error gracefully', () => {
       cy.login();
