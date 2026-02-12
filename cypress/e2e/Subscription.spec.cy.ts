@@ -1,4 +1,4 @@
-import { domain } from "../support/e2e";
+import { domain, handleException } from "../support/e2e";
 
 describe('Subscription', () => {
     beforeEach(() => {
