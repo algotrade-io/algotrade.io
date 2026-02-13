@@ -1,5 +1,5 @@
 import React, { memo, useRef, useMemo } from "react";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import {
   Typography,
   Spin,
@@ -37,7 +37,7 @@ import {
 import { useAuthenticator } from "@aws-amplify/ui-react";
 const { Title } = Typography;
 const antIcon = <LoadingOutlined style={{ fontSize: 50 }} spin />;
-import { AccountContext } from "@/layouts";
+import { useAccount } from "@/contexts";
 
 const toggleLabels = { BTC: "₿", USD: "$" };
 
@@ -224,7 +224,7 @@ const LineChart: React.FC<any> = memo(
 );
 
 const Page = () => {
-  const { account, accountLoading } = useContext(AccountContext) as { account: any; accountLoading: boolean };
+  const { account, accountLoading } = useAccount();
 
   const caretIconSize = 50;
   const { user: loggedIn } = useAuthenticator((context) => [context.user]);

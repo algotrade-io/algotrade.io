@@ -8,15 +8,18 @@ import {
 import { Amplify } from "aws-amplify";
 import "@aws-amplify/ui-react/styles.css";
 
-import { getLoginLoading, getEnvironment, getHostname, getAccount } from "@/utils";
+import { getEnvironment, getHostname, getAccount } from "@/utils";
 import Header from "./Header";
 import Footer from "./Footer";
 import DisclaimerModal from "./DisclaimerModal";
 import { headerHeight, pages } from "./config";
 import type { Account, AuthUser } from "@/types";
+import { AccountContext } from "@/contexts";
+import { useLoginLoading } from "@/hooks";
 
-// Re-export headerHeight for backwards compatibility
+// Re-export for backwards compatibility
 export { headerHeight } from "./config";
+export { AccountContext } from "@/contexts";
 import Docs from "@/pages/docs";
 import Algorithm from "@/pages/algorithm";
 import Subscription from "@/pages/subscription";
@@ -80,10 +83,6 @@ if (isLocal) {
   };
 }
 
-
-
-export const AccountContext = createContext({});
-
 interface LayoutProps {
   route?: any;
   children?: any;
@@ -91,19 +90,22 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const [showLogin, setShowLogin] = useState(false);
-  const [loginLoading, setLoginLoading] = useState(false);
+  const loginLoading = useLoginLoading();
   const { user: loggedIn, signOut } = useAuthenticator((context) => [
     context.user,
   ]);
-  const [account, setAccount] = useState<Account | undefined>();
+  const [account, setAccount] = useState<Account | null>(null);
   const [accountLoading, setAccountLoading] = useState(false);
   const showModal = !loggedIn && showLogin;
   const [selectedMenuIdx, setSelectedMenuIdx] = useState(
     pages.indexOf(window.location.pathname.slice(1)) + 1
   );
 
-  useEffect(getLoginLoading(setLoginLoading));
-  useEffect(getAccount(loggedIn, setAccount, setAccountLoading), [loggedIn]);
+  useEffect(() => {
+    if (loggedIn) {
+      getAccount(loggedIn, setAccount, setAccountLoading)();
+    }
+  }, [loggedIn]);
 
   const location = useLocation();
   const { pathname } = location;

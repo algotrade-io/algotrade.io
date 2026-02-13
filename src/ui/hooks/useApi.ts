@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { getApiUrl } from '@/utils/env';
-import type { AuthUser } from '@/types';
+import type { AuthUser, Account } from '@/types';
 
 interface UseApiOptions {
   /** Whether to require authentication */
@@ -107,7 +107,7 @@ export function useApi<T>(
     if (fetchOnMount) {
       fetchData();
     }
-  }, [fetchOnMount, ...deps]);
+  }, [fetchData, fetchOnMount, ...deps]);
 
   return { data, loading, error, refetch: fetchData };
 }
@@ -131,7 +131,7 @@ export function useLoginLoading(): boolean {
  */
 export function useFetchAccount(
   loggedIn: AuthUser | null | undefined,
-  setAccount: (account: unknown) => void,
+  setAccount: (account: Account | null) => void,
   setAccountLoading: (loading: boolean) => void
 ): void {
   useEffect(() => {
