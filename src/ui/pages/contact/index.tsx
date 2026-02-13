@@ -1,11 +1,8 @@
 import React from "react";
-import { useState, useEffect, useMemo, useContext } from "react";
-import { useSearchParams } from "react-router-dom";
-import { Typography, notification, Tooltip, Badge, Card, Button, Spin, Alert, Select, Input, Popover, Result } from "antd";
-import { getApiUrl, getDayDiff, get3DCircle, linspace } from "@/utils";
-import pageStyles from "@/pages/home/index.module.less";
+import { useState, useContext } from "react";
+import { Typography, notification, Button, Input, Popover, Result, Select } from "antd";
+import { getApiUrl } from "@/utils";
 import layoutStyles from "@/layouts/index.module.less";
-import { LoadingOutlined } from "@ant-design/icons";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import { AccountContext } from "../../layouts";
 import { headerHeight } from "../../layouts";

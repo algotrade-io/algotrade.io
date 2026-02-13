@@ -1,4 +1,4 @@
-import React, { memo, useRef } from "react";
+import React, { memo, useRef, useMemo } from "react";
 import { useState, useEffect, useContext } from "react";
 import {
   Typography,
@@ -23,7 +23,6 @@ import {
   QuestionOutlined,
 } from "@ant-design/icons";
 import styles from "./index.module.less";
-import layoutStyles from "@/layouts/index.module.less";
 import subStyles from "@/pages/subscription/index.module.less";
 import "./index.module.less";
 import {
@@ -57,6 +56,26 @@ const formatUSD = (v: number) => {
     return `$ ${v / 1e3}k`;
   }
   return `$ ${v / 1e6}M`;
+};
+
+// Color constants moved outside component to avoid recreation
+const ribbonColors: Record<string, string> = {
+  Sun: "red",
+  Mon: "yellow",
+  Tue: "blue",
+  Wed: "pink",
+  Thu: "green",
+  Fri: "cyan",
+  Sat: "orange",
+};
+const cardHeaderColors: Record<string, string> = {
+  Sun: "#D32029",
+  Mon: "#D8BD14",
+  Tue: "#177DDC",
+  Wed: "#CB2B83",
+  Thu: "#49AA19",
+  Fri: "#13A8A8",
+  Sat: "#D87A16",
 };
 
 // Look up memo vs useMemo
@@ -206,24 +225,6 @@ const LineChart: React.FC<any> = memo(
 
 const Page = () => {
   const { account, accountLoading } = useContext(AccountContext) as { account: any; accountLoading: boolean };
-  const ribbonColors: Record<string, string> = {
-    Sun: "red",
-    Mon: "yellow",
-    Tue: "blue",
-    Wed: "pink",
-    Thu: "green",
-    Fri: "cyan",
-    Sat: "orange",
-  };
-  const cardHeaderColors: Record<string, string> = {
-    Sun: "#D32029",
-    Mon: "#D8BD14",
-    Tue: "#177DDC",
-    Wed: "#CB2B83",
-    Thu: "#49AA19",
-    Fri: "#13A8A8",
-    Sat: "#D87A16",
-  };
 
   const caretIconSize = 50;
   const { user: loggedIn } = useAuthenticator((context) => [context.user]);
@@ -354,7 +355,8 @@ const Page = () => {
     },
   });
 
-  const columns = [
+  // Memoize columns to prevent recreation on each render
+  const columns = useMemo(() => [
     { title: "Metric", dataIndex: "metric", key: "metric" },
     {
       title: <span style={{ color: "#DF00DF" }}>{HODL}</span>,
@@ -366,10 +368,11 @@ const Page = () => {
       dataIndex: hyperdrive,
       key: hyperdrive,
     },
-  ];
+  ], []);
 
   const betaTitlePrefix = "New Signal:";
-  const betaTitle = (
+  // Memoize betaTitle to avoid recreation on every render
+  const betaTitle = useMemo(() => (
     <div className={styles.content}>
       <div className={styles.betaContainer}>
         <div className={styles.text}>{betaTitlePrefix}</div>
@@ -466,7 +469,7 @@ const Page = () => {
         </div>
       </div>
     </div>
-  );
+  ), [haveNewSignal, signalData]);
 
   return (
     <>
