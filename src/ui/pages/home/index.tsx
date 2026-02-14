@@ -273,7 +273,11 @@ const Page = () => {
   const fetchSignals = () => {
     setSignalLoading(true);
     const url = `${getApiUrl()}/signals`;
-    fetch(url, { method: "GET", headers: { "X-API-Key": account?.api_key } })
+    const headers: HeadersInit = {};
+    if (account?.api_key) {
+      headers["X-API-Key"] = account.api_key;
+    }
+    fetch(url, { method: "GET", headers })
       .then((response) => response.json())
       .then((data) => {
         if (!("data" in data)) {

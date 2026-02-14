@@ -12,9 +12,9 @@ import overrides from './index.module.less';
 import type { Account, AuthUser, SetState } from '@/types';
 
 interface DisclaimerModalProps {
-    account: Account | undefined;
+    account: Account | null;
     loggedIn: AuthUser | null;
-    setAccount: SetState<Account | undefined>;
+    setAccount: SetState<Account | null>;
 }
 
 const DisclaimerModal: React.FC<DisclaimerModalProps> = ({
@@ -38,7 +38,7 @@ const DisclaimerModal: React.FC<DisclaimerModalProps> = ({
         }
     };
 
-    const showModal = account && !account?.permissions?.read_disclaimer;
+    const showModal = Boolean(account && !account?.permissions?.read_disclaimer);
 
     return (
         <Modal
