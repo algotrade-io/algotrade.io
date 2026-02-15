@@ -456,7 +456,7 @@ Resources:
               Effect: Allow
               Action:
                 - ses:SendEmail
-              Resource: !Join [ "", [!Sub 'arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/', !Ref SupportIdentity, "@", !If [IsProd, "", "dev."], !Ref Domain ] ]
+              Resource: !Sub 'arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/${SupportIdentity}'
       CodeUri: contact
       Handler: app.handle_contact
       Layers:
@@ -702,7 +702,7 @@ Resources:
               Effect: Allow
               Action:
                 - ses:SendEmail
-              Resource: !Join [ "", [!Sub 'arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/', !Ref SignalEmail, "@", !If [IsProd, "", "dev."], !Ref Domain ] ]
+              Resource: !Sub 'arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/${SignalsIdentity}'
 
       CodeUri: notify
       Handler: app.post_notify
