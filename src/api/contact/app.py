@@ -4,9 +4,6 @@ import json
 import logging
 import os
 import ssl
-
-# from email.mime.text import MIMEText
-# from smtplib import SMTP
 from typing import Any
 
 import boto3
@@ -79,15 +76,11 @@ def send_email(user: str, subject: str, message: str) -> bool:
         True if email sent successfully, False otherwise.
     """
     sender = get_email(os.environ["EMAIL_USER"], os.environ["STAGE"])
-    # msg = MIMEText(message, "plain")
     recipient = "success@simulator.amazonses.com" if TEST else sender
     region = "us-east-1"
     charset = "UTF-8"
     client = boto3.client("sesv2", region_name=region)
-    # msg["To"] = recipient
-    # msg["From"] = user
-    # msg["Reply-To"] = user
-    # msg["Subject"] = subject
+
     try:
         response = client.send_email(
             FromEmailAddress=sender,
@@ -106,19 +99,3 @@ def send_email(user: str, subject: str, message: str) -> bool:
         logging.exception(e)
         print(e.response["Error"]["Message"])
         return False
-
-    # try:
-    #     server = SMTP("smtp.purelymail.com", 587)
-    #     server.ehlo()
-    #     server.starttls(context=context)
-    #     server.ehlo()
-    #     server.login(sender, os.environ["EMAIL_PASS"])
-    #     # sender email must be same as login email - error otherwise
-    #     server.sendmail(sender, recipient, msg.as_string())
-    #     return True
-    # except Exception as e:
-    #     logging.exception(e)
-    #     print("SMTP server connection error")
-    #     return False
-    # finally:
-    #     server.quit()
