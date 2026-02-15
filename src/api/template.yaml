@@ -468,6 +468,13 @@ Resources:
             Path: /contact
             Method: options
             RestApiId: !Ref ApiGatewayApi
+      Policies:
+        - Statement:
+            - Sid: SESSendEmail
+              Effect: Allow
+              Action:
+                - ses:SendEmail
+              Resource: !Ref SupportIdentity
   ExerciseLogFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -692,7 +699,9 @@ Resources:
               Effect: Allow
               Action:
                 - ses:SendEmail
-              Resource: "*"
+              Resource: !Ref SignalsIdentity
+              # Resource: !Sub 'arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/${SignalEmail}@'
+
       CodeUri: notify
       Handler: app.post_notify
       Layers:
