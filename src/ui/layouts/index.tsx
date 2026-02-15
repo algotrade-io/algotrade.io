@@ -1,4 +1,4 @@
-import { useState, useEffect, createContext } from "react";
+import { useState } from "react";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { Layout as AntLayout, ConfigProvider, theme } from "antd";
 import {
@@ -8,14 +8,14 @@ import {
 import { Amplify } from "aws-amplify";
 import "@aws-amplify/ui-react/styles.css";
 
-import { getEnvironment, getHostname, getAccount } from "@/utils";
+import { getEnvironment, getHostname } from "@/utils";
 import Header from "./Header";
 import Footer from "./Footer";
 import DisclaimerModal from "./DisclaimerModal";
 import { headerHeight, pages } from "./config";
 import type { Account, AuthUser } from "@/types";
 import { AccountContext } from "@/contexts";
-import { useLoginLoading } from "@/hooks";
+import { useLoginLoading, useFetchAccount } from "@/hooks";
 
 // Re-export for backwards compatibility
 export { headerHeight } from "./config";
@@ -101,11 +101,7 @@ const Layout = ({ children }: LayoutProps) => {
     pages.indexOf(window.location.pathname.slice(1)) + 1
   );
 
-  useEffect(() => {
-    if (loggedIn) {
-      getAccount(loggedIn, setAccount, setAccountLoading)();
-    }
-  }, [loggedIn]);
+  useFetchAccount(loggedIn, setAccount, setAccountLoading);
 
   const location = useLocation();
   const { pathname } = location;
