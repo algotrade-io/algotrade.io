@@ -158,8 +158,7 @@ def login(variant: bool = False) -> None:
     postfix = "2" if variant else ""
     ext = ".pickle"
     filename = "robinhood"
-    auth_path = os.path.join(os.path.expanduser(
-        "~"), ".tokens", f"{filename}{ext}")
+    auth_path = os.path.join(os.path.expanduser("~"), ".tokens", f"{filename}{ext}")
     key = f"data/{filename}{postfix}{ext}"
     bucket = s3.Bucket(os.environ["S3_BUCKET"])
     try:
@@ -205,8 +204,7 @@ def get_trade() -> dict[str, Any]:
         holdings[symbol]["open_contracts"] = 0
         price = float(holding["price"])
         quant = (
-            float(holding["quantity"]) % 100 if float(
-                holding["quantity"]) > 100 else 0
+            float(holding["quantity"]) % 100 if float(holding["quantity"]) > 100 else 0
         )
         amt = quant * price
         holdings[symbol]["loose"] = amt
@@ -217,8 +215,7 @@ def get_trade() -> dict[str, Any]:
         symbol = opt["chain_symbol"]
         if symbol not in holdings:
             holdings[symbol] = {"symbol": symbol, "open_contracts": 0}
-        holdings[symbol]["open_contracts"] += int(
-            float(opt["quantity"])) * sold
+        holdings[symbol]["open_contracts"] += int(float(opt["quantity"])) * sold
         opt = rh.options.get_option_instrument_data_by_id(opt["option_id"])
         holdings[symbol]["option_type"] = opt["type"][0].upper()
         holdings[symbol]["expiration"] = opt["expiration_date"]
@@ -231,8 +228,7 @@ def get_trade() -> dict[str, Any]:
         [holding for _, holding in holdings.items()],
         key=lambda holding: holding["symbol"],
     )
-    body = [holding | {"key": idx}
-            for idx, holding in enumerate(sorted_holdings)]
+    body = [holding | {"key": idx} for idx, holding in enumerate(sorted_holdings)]
     return success(body)
 
 
@@ -324,8 +320,7 @@ def suggest_contracts() -> tuple[dict[str, int], dict[str, float]]:
         symbol: max_contract - curr_contracts[symbol]
         for symbol, max_contract in max_contracts.items()
     }
-    prices = {symbol: float(holding["price"])
-              for symbol, holding in holdings.items()}
+    prices = {symbol: float(holding["price"]) for symbol, holding in holdings.items()}
     return available_contracts, prices
 
 
@@ -347,7 +342,7 @@ def get_expirations(expirations: list[str], num: int = 2) -> list[str]:
             idx = i
             break
     offset = int(bool(idx))
-    exp_candidates = expirations[idx - offset: idx + num - offset]
+    exp_candidates = expirations[idx - offset : idx + num - offset]
     return exp_candidates
 
 
@@ -549,8 +544,7 @@ class Sell(Trade):
             expirations = chain["expiration_dates"]
             expirations = get_expirations(expirations)
             lookup[symbol]["expirations"] = expirations
-            contracts = [get_contracts(symbol, exp, price)
-                         for exp in expirations]
+            contracts = [get_contracts(symbol, exp, price) for exp in expirations]
             lookup[symbol]["contracts"] = contracts
         return lookup
 
@@ -716,8 +710,7 @@ class SellOut(Trade):
             expirations = chain["expiration_dates"]
             expirations = get_expirations(expirations)
             lookup[symbol]["expirations"] = expirations
-            contracts = [get_contracts(symbol, exp, price)
-                         for exp in expirations]
+            contracts = [get_contracts(symbol, exp, price) for exp in expirations]
             lookup[symbol]["contracts"] = contracts
         return lookup
 
