@@ -3,10 +3,9 @@
  */
 
 import styled from 'styled-components';
-export { headerHeight as HeaderHeight } from './config';
 
 // Re-export for backwards compatibility
-// export const HeaderHeight = headerHeight;
+export { headerHeight as HeaderHeight } from './config';
 
 export const HeaderWrapper = styled.span`
   display: flex;
