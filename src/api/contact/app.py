@@ -4,12 +4,13 @@ import json
 import logging
 import os
 import ssl
-from email.mime.text import MIMEText
-from smtplib import SMTP
-from typing import Any
-from botocore.exceptions import ClientError
-import boto3
 
+# from email.mime.text import MIMEText
+# from smtplib import SMTP
+from typing import Any
+
+import boto3
+from botocore.exceptions import ClientError
 from utils import TEST, error, get_email, options, success, verify_user
 
 context = ssl.create_default_context()
