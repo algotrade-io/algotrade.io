@@ -1,14 +1,11 @@
 import React from "react";
-import { useState, useEffect, useMemo, useContext } from "react";
-import { useSearchParams } from "react-router-dom";
-import { Typography, notification, Tooltip, Badge, Card, Button, Spin, Alert, Select, Input, Popover, Result } from "antd";
-import { getApiUrl, getDayDiff, get3DCircle, linspace } from "@/utils";
-import pageStyles from "@/pages/home/index.module.less";
+import { useState } from "react";
+import { Typography, notification, Button, Input, Popover, Result, Select } from "antd";
+import { getApiUrl } from "@/utils";
 import layoutStyles from "@/layouts/index.module.less";
-import { LoadingOutlined } from "@ant-design/icons";
 import { useAuthenticator } from "@aws-amplify/ui-react";
-import { AccountContext } from "../../layouts";
 import { headerHeight } from "../../layouts";
+import { useAccount } from "@/contexts";
 import subStyles from "@/pages/subscription/index.module.less";
 
 import "./index.module.less";
@@ -17,9 +14,7 @@ const { Title } = Typography;
 
 const ContactPage = () => {
   const { user: loggedIn } = useAuthenticator((context) => [context.user]);
-  const { account, setShowLogin } = useContext(
-    AccountContext
-  ) as { account: any; setShowLogin: (show: boolean) => void };
+  const { account, setShowLogin } = useAccount();
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [contactLoading, setContactLoading] = useState(false);
@@ -154,7 +149,7 @@ const ContactPage = () => {
       }}
     />
     <Button
-      className={(account && subject && message) && subStyles.subscribe}
+      className={account && subject && message ? subStyles.subscribe : undefined}
       style={{ width: '100%' }}
       disabled={!(account && subject && message)}
       onClick={onContact}

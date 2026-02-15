@@ -92,7 +92,9 @@ Resources:
   # Add support email
   SupportIdentity:
     Type: AWS::SES::EmailIdentity
-    DependsOn: HostedZone
+    DependsOn: 
+      - HostedZone
+      - DomainIdentity
     Properties:
       DkimAttributes: 
         SigningEnabled: true
@@ -102,7 +104,9 @@ Resources:
   # Add signals email
   SignalsIdentity:
     Type: AWS::SES::EmailIdentity
-    DependsOn: HostedZone
+    DependsOn: 
+      - HostedZone
+      - DomainIdentity
     Properties:
       DkimAttributes: 
         SigningEnabled: true
@@ -218,8 +222,8 @@ Resources:
   UIDistro:
     Type: AWS::CloudFront::Distribution
     DependsOn: 
-    - Certificate
-    - UIBucket
+      - Certificate
+      - UIBucket
     Properties:
       DistributionConfig: 
         Aliases: 
@@ -438,16 +442,20 @@ Resources:
             Method: options
             RestApiId: !Ref ApiGatewayApi
   ContactFunction:
+    DependsOn: SupportIdentity
     Type: AWS::Serverless::Function
     Properties:
       Environment:
         Variables:
           EMAIL_USER: !Ref EmailUser
-          EMAIL_PASS: !Ref EmailPass
       #     TABLE_NAME: !Ref UsersTable
-      # Policies:
-      #   - DynamoDBCrudPolicy:
-      #       TableName: !Ref UsersTable
+      Policies:
+        - Statement:
+            - Sid: SESSendEmail
+              Effect: Allow
+              Action:
+                - ses:SendEmail
+              Resource: !Sub 'arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/${SupportIdentity}'
       CodeUri: contact
       Handler: app.handle_contact
       Layers:
@@ -670,6 +678,7 @@ Resources:
             Method: post
             RestApiId: !Ref ApiGatewayApi
   NotifyFunction:
+    DependsOn: SignalsIdentity
     Type: AWS::Serverless::Function
     Properties:
       MemorySize: 10240 # 10GB
@@ -692,7 +701,8 @@ Resources:
               Effect: Allow
               Action:
                 - ses:SendEmail
-              Resource: "*"
+              Resource: !Sub 'arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/${SignalsIdentity}'
+
       CodeUri: notify
       Handler: app.post_notify
       Layers:

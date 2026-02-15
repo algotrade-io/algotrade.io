@@ -3,7 +3,6 @@ import { useState, useEffect, useContext } from "react";
 import { NavLink, useSearchParams } from "react-router-dom";
 import { Typography, Tooltip, Badge, Card, Button, Spin, Alert } from "antd";
 import { getApiUrl, getDayDiff } from "@/utils";
-import pageStyles from "@/pages/home/index.module.less";
 import layoutStyles from "@/layouts/index.module.less";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useAuthenticator } from "@aws-amplify/ui-react";

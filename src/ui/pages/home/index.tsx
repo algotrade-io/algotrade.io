@@ -1,5 +1,5 @@
-import React, { memo, useRef } from "react";
-import { useState, useEffect, useContext } from "react";
+import React, { memo, useRef, useMemo } from "react";
+import { useState, useEffect } from "react";
 import {
   Typography,
   Spin,
@@ -23,7 +23,6 @@ import {
   QuestionOutlined,
 } from "@ant-design/icons";
 import styles from "./index.module.less";
-import layoutStyles from "@/layouts/index.module.less";
 import subStyles from "@/pages/subscription/index.module.less";
 import "./index.module.less";
 import {
@@ -38,7 +37,7 @@ import {
 import { useAuthenticator } from "@aws-amplify/ui-react";
 const { Title } = Typography;
 const antIcon = <LoadingOutlined style={{ fontSize: 50 }} spin />;
-import { AccountContext } from "@/layouts";
+import { useAccount } from "@/contexts";
 
 const toggleLabels = { BTC: "₿", USD: "$" };
 
@@ -57,6 +56,26 @@ const formatUSD = (v: number) => {
     return `$ ${v / 1e3}k`;
   }
   return `$ ${v / 1e6}M`;
+};
+
+// Color constants moved outside component to avoid recreation
+const ribbonColors: Record<string, string> = {
+  Sun: "red",
+  Mon: "yellow",
+  Tue: "blue",
+  Wed: "pink",
+  Thu: "green",
+  Fri: "cyan",
+  Sat: "orange",
+};
+const cardHeaderColors: Record<string, string> = {
+  Sun: "#D32029",
+  Mon: "#D8BD14",
+  Tue: "#177DDC",
+  Wed: "#CB2B83",
+  Thu: "#49AA19",
+  Fri: "#13A8A8",
+  Sat: "#D87A16",
 };
 
 // Look up memo vs useMemo
@@ -205,25 +224,7 @@ const LineChart: React.FC<any> = memo(
 );
 
 const Page = () => {
-  const { account, accountLoading } = useContext(AccountContext) as { account: any; accountLoading: boolean };
-  const ribbonColors: Record<string, string> = {
-    Sun: "red",
-    Mon: "yellow",
-    Tue: "blue",
-    Wed: "pink",
-    Thu: "green",
-    Fri: "cyan",
-    Sat: "orange",
-  };
-  const cardHeaderColors: Record<string, string> = {
-    Sun: "#D32029",
-    Mon: "#D8BD14",
-    Tue: "#177DDC",
-    Wed: "#CB2B83",
-    Thu: "#49AA19",
-    Fri: "#13A8A8",
-    Sat: "#D87A16",
-  };
+  const { account, accountLoading } = useAccount();
 
   const caretIconSize = 50;
   const { user: loggedIn } = useAuthenticator((context) => [context.user]);
@@ -272,7 +273,11 @@ const Page = () => {
   const fetchSignals = () => {
     setSignalLoading(true);
     const url = `${getApiUrl()}/signals`;
-    fetch(url, { method: "GET", headers: { "X-API-Key": account?.api_key } })
+    const headers: HeadersInit = {};
+    if (account?.api_key) {
+      headers["X-API-Key"] = account.api_key;
+    }
+    fetch(url, { method: "GET", headers })
       .then((response) => response.json())
       .then((data) => {
         if (!("data" in data)) {
@@ -354,7 +359,9 @@ const Page = () => {
     },
   });
 
-  const columns = [
+  // Memoize columns to prevent recreation on each render
+  // Empty dependency array is intentional since HODL and hyperdrive are module-level constants
+  const columns = useMemo(() => [
     { title: "Metric", dataIndex: "metric", key: "metric" },
     {
       title: <span style={{ color: "#DF00DF" }}>{HODL}</span>,
@@ -366,10 +373,11 @@ const Page = () => {
       dataIndex: hyperdrive,
       key: hyperdrive,
     },
-  ];
+  ], []);
 
   const betaTitlePrefix = "New Signal:";
-  const betaTitle = (
+  // Memoize betaTitle to avoid recreation on every render
+  const betaTitle = useMemo(() => (
     <div className={styles.content}>
       <div className={styles.betaContainer}>
         <div className={styles.text}>{betaTitlePrefix}</div>
@@ -466,7 +474,7 @@ const Page = () => {
         </div>
       </div>
     </div>
-  );
+  ), [haveNewSignal, signalData]);
 
   return (
     <>

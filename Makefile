@@ -95,9 +95,16 @@ start:
 	cd $(API_DIR) && sam local start-api --parameter-overrides $$(cat local-parameters.env)
 
 # Deploy API (PROD=1 for production, default is dev)
+STACK_NAME := api$(if $(PROD),,-dev)
 deploy:
 	cd $(API_DIR) && sam deploy --no-confirm-changeset --no-fail-on-empty-changeset \
 		--parameter-overrides $$(cat $(PARAMS_FILE)) --config-env $(STAGE) --s3-bucket $(API_BUCKET)
+	@# Force API Gateway deployment to ensure stage uses latest changes
+	@API_ID=$$(aws cloudformation describe-stack-resource --stack-name $(STACK_NAME) \
+		--logical-resource-id ApiGatewayApi --query 'StackResourceDetail.PhysicalResourceId' --output text) && \
+	aws apigateway create-deployment --rest-api-id $$API_ID --stage-name $(STAGE) \
+		--description "Post-deploy $(STACK_NAME) $$(date -u +%Y-%m-%dT%H:%M:%SZ)" > /dev/null && \
+	echo "API Gateway deployment created for $$API_ID"
 
 # Database targets
 start-db:

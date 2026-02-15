@@ -3,14 +3,11 @@
 import json
 import logging
 import os
-import ssl
-from email.mime.text import MIMEText
-from smtplib import SMTP
 from typing import Any
 
+import boto3
+from botocore.exceptions import ClientError
 from utils import TEST, error, get_email, options, success, verify_user
-
-context = ssl.create_default_context()
 
 
 def handle_contact(event: dict[str, Any], _: Any) -> dict[str, Any]:
@@ -76,25 +73,26 @@ def send_email(user: str, subject: str, message: str) -> bool:
         True if email sent successfully, False otherwise.
     """
     sender = get_email(os.environ["EMAIL_USER"], os.environ["STAGE"])
-    msg = MIMEText(message, "plain")
     recipient = "success@simulator.amazonses.com" if TEST else sender
-    msg["To"] = recipient
-    msg["From"] = user
-    msg["Reply-To"] = user
-    msg["Subject"] = subject
+    region = "us-east-1"
+    charset = "UTF-8"
+    client = boto3.client("sesv2", region_name=region)
 
     try:
-        server = SMTP("smtp.purelymail.com", 587)
-        server.ehlo()
-        server.starttls(context=context)
-        server.ehlo()
-        server.login(sender, os.environ["EMAIL_PASS"])
-        # sender email must be same as login email - error otherwise
-        server.sendmail(sender, recipient, msg.as_string())
+        response = client.send_email(
+            FromEmailAddress=sender,
+            Destination={"ToAddresses": [recipient]},
+            Content={
+                "Simple": {
+                    "Subject": {"Data": subject, "Charset": charset},
+                    "Body": {"Text": {"Data": message, "Charset": charset}},
+                }
+            },
+            ReplyToAddresses=[user],
+        )
+        logging.info(f"Email sent: {response['MessageId']}")
         return True
-    except Exception as e:
+    except ClientError as e:
         logging.exception(e)
-        print("SMTP server connection error")
+        print(e.response["Error"]["Message"])
         return False
-    finally:
-        server.quit()
