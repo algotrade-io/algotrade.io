@@ -360,6 +360,7 @@ const Page = () => {
   });
 
   // Memoize columns to prevent recreation on each render
+  // Empty dependency array is intentional since HODL and hyperdrive are module-level constants
   const columns = useMemo(() => [
     { title: "Metric", dataIndex: "metric", key: "metric" },
     {

@@ -3,14 +3,11 @@
 import json
 import logging
 import os
-import ssl
 from typing import Any
 
 import boto3
 from botocore.exceptions import ClientError
 from utils import TEST, error, get_email, options, success, verify_user
-
-context = ssl.create_default_context()
 
 
 def handle_contact(event: dict[str, Any], _: Any) -> dict[str, Any]:

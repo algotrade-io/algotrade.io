@@ -41,11 +41,17 @@ export const pages: string[] = [
 ];
 
 // Helper functions
-const capitalize = (s: string | any[]) => s[0].toUpperCase() + s.slice(1);
+const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1);
 const [prefix, suffix] = domain.split('.');
 
+// Route type for navigation
+interface Route {
+    text: React.ReactNode;
+    to: string;
+}
+
 // Navigation routes
-export const routes = [
+export const routes: Route[] = [
     {
         text: (
             <>
@@ -59,7 +65,8 @@ export const routes = [
         ),
         to: '',
     },
-].concat(pages.map((page) => ({ text: capitalize(page), to: page })));
+    ...pages.map((page) => ({ text: capitalize(page), to: page })),
+];
 
 // Layout dimensions
 export const headerHeight = 64;
