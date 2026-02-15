@@ -448,7 +448,6 @@ Resources:
       Environment:
         Variables:
           EMAIL_USER: !Ref EmailUser
-          EMAIL_PASS: !Ref EmailPass
       #     TABLE_NAME: !Ref UsersTable
       Policies:
         - Statement:
