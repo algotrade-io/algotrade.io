@@ -92,7 +92,9 @@ Resources:
   # Add support email
   SupportIdentity:
     Type: AWS::SES::EmailIdentity
-    DependsOn: HostedZone
+    DependsOn: 
+      - HostedZone
+      - DomainIdentity
     Properties:
       DkimAttributes: 
         SigningEnabled: true
@@ -102,7 +104,9 @@ Resources:
   # Add signals email
   SignalsIdentity:
     Type: AWS::SES::EmailIdentity
-    DependsOn: HostedZone
+    DependsOn: 
+      - HostedZone
+      - DomainIdentity
     Properties:
       DkimAttributes: 
         SigningEnabled: true
@@ -218,8 +222,8 @@ Resources:
   UIDistro:
     Type: AWS::CloudFront::Distribution
     DependsOn: 
-    - Certificate
-    - UIBucket
+      - Certificate
+      - UIBucket
     Properties:
       DistributionConfig: 
         Aliases: 
@@ -438,6 +442,7 @@ Resources:
             Method: options
             RestApiId: !Ref ApiGatewayApi
   ContactFunction:
+    DependsOn: SupportIdentity
     Type: AWS::Serverless::Function
     Properties:
       Environment:
@@ -445,9 +450,13 @@ Resources:
           EMAIL_USER: !Ref EmailUser
           EMAIL_PASS: !Ref EmailPass
       #     TABLE_NAME: !Ref UsersTable
-      # Policies:
-      #   - DynamoDBCrudPolicy:
-      #       TableName: !Ref UsersTable
+      Policies:
+        - Statement:
+            - Sid: SESSendEmail
+              Effect: Allow
+              Action:
+                - ses:SendEmail
+              Resource: !Join [ "", [!Sub 'arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/', !Ref SupportIdentity, "@", !If [IsProd, "", "dev."], !Ref Domain ] ]
       CodeUri: contact
       Handler: app.handle_contact
       Layers:
@@ -468,13 +477,6 @@ Resources:
             Path: /contact
             Method: options
             RestApiId: !Ref ApiGatewayApi
-      Policies:
-        - Statement:
-            - Sid: SESSendEmail
-              Effect: Allow
-              Action:
-                - ses:SendEmail
-              Resource: !Ref SupportIdentity
   ExerciseLogFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -677,6 +679,7 @@ Resources:
             Method: post
             RestApiId: !Ref ApiGatewayApi
   NotifyFunction:
+    DependsOn: SignalsIdentity
     Type: AWS::Serverless::Function
     Properties:
       MemorySize: 10240 # 10GB
@@ -699,8 +702,7 @@ Resources:
               Effect: Allow
               Action:
                 - ses:SendEmail
-              Resource: !Ref SignalsIdentity
-              # Resource: !Sub 'arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/${SignalEmail}@'
+              Resource: !Join [ "", [!Sub 'arn:aws:ses:${AWS::Region}:${AWS::AccountId}:identity/', !Ref SignalEmail, "@", !If [IsProd, "", "dev."], !Ref Domain ] ]
 
       CodeUri: notify
       Handler: app.post_notify
