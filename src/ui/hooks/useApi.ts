@@ -101,13 +101,13 @@ export function useApi<T>(
     } finally {
       setLoading(false);
     }
-  }, [endpoint, auth, jwtToken, apiKey, method, body, localOverride]);
+  }, [endpoint, auth, jwtToken, apiKey, method, body, localOverride, ...deps]);
 
   useEffect(() => {
     if (fetchOnMount) {
       fetchData();
     }
-  }, [fetchData, fetchOnMount, ...deps]);
+  }, [fetchData, fetchOnMount]);
 
   return { data, loading, error, refetch: fetchData };
 }

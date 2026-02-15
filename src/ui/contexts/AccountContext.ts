@@ -14,27 +14,25 @@ export interface AccountContextType {
   setAccount: SetState<Account | null>;
 }
 
+const CONTEXT_ERROR = 'useAccount must be used within an AccountContext.Provider';
+
+/**
+ * Default context value that throws on any property access.
+ * Provides clear error messages if context is used outside provider.
+ */
+const throwingDefault = new Proxy({} as AccountContextType, {
+  get(_, prop) {
+    throw new Error(`${CONTEXT_ERROR} (accessed: ${String(prop)})`);
+  },
+});
+
 /**
  * Context for account state. Use useAccount() hook for type-safe access.
  */
-export const AccountContext = createContext<AccountContextType | null>(null);
+export const AccountContext = createContext<AccountContextType>(throwingDefault);
 
 /**
  * Hook for accessing account context with type safety.
  * @throws Error if used outside of AccountContext.Provider
  */
-export const useAccount = (): AccountContextType => {
-  const context = useContext(AccountContext);
-  if (!context) {
-    throw new Error('useAccount must be used within an AccountContext.Provider');
-  }
-  return context;
-};
-
-/**
- * Hook for optional account context access (doesn't throw if context is null).
- * Useful for components that may be rendered outside the provider.
- */
-export const useAccountOptional = (): AccountContextType | null => {
-  return useContext(AccountContext);
-};
+export const useAccount = (): AccountContextType => useContext(AccountContext);
