@@ -34,6 +34,7 @@ import {
   signalEmojis,
   Toggle,
 } from "@/utils";
+import type { PreviewDataPoint } from "@/types";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 const { Title } = Typography;
 const antIcon = <LoadingOutlined style={{ fontSize: 50 }} spin />;
@@ -48,14 +49,15 @@ const RibbonCol = styled(Col)`
 `;
 const HODL = "HODL";
 const hyperdrive = "hyperdrive";
-const formatBTC = (v: number) => `${Math.round(v * 10) / 10} ₿`;
-const formatUSD = (v: number) => {
-  if (v < 1e3) {
-    return `$ ${v}`;
-  } else if (v < 1e6) {
-    return `$ ${v / 1e3}k`;
+const formatBTC = (v: number | string) => `${Math.round(Number(v) * 10) / 10} ₿`;
+const formatUSD = (v: number | string) => {
+  const num = Number(v);
+  if (num < 1e3) {
+    return `$ ${num}`;
+  } else if (num < 1e6) {
+    return `$ ${num / 1e3}k`;
   }
-  return `$ ${v / 1e6}M`;
+  return `$ ${num / 1e6}M`;
 };
 
 // Color constants moved outside component to avoid recreation
@@ -78,13 +80,25 @@ const cardHeaderColors: Record<string, string> = {
   Sat: "#D87A16",
 };
 
+// Type definitions
+interface LineChartProps {
+  data: PreviewDataPoint[];
+  formatFx: (value: number | string) => string;
+  chartRef?: React.RefObject<unknown>;
+}
+
+interface TooltipItem {
+  color: string;
+  name: string;
+  value: string | number;
+  data: PreviewDataPoint;
+}
+
 // Look up memo vs useMemo
 // https://blog.logrocket.com/react-memo-vs-usememo/
-const LineChart: React.FC<any> = memo(
-  ({ data, formatFx, chartRef }) => {
+const LineChart: React.FC<LineChartProps> = memo(
+  function LineChart({ data, formatFx, chartRef }) {
     const sqSize = 5;
-    let triSize = Math.sqrt(Math.pow(sqSize, 2) * (4 / Math.sqrt(3)));
-    triSize = triSize / 1.3;
     const config = {
       // search for symbols:
       // https://github.com/search?q=org%3Aantvis+bowtie+-filename%3A*.json+-filename%3A*.html+-filename%3A*.md&type=Code
@@ -151,13 +165,14 @@ const LineChart: React.FC<any> = memo(
         },
         showCrosshairs: true,
         showMarkers: false,
-        customItems: (originalItems: any[]) => {
+        customItems: (originalItems: TooltipItem[]) => {
           const hyperdriveItem = originalItems[0].name === hyperdrive ? originalItems[0] : originalItems[1];
           const signal = hyperdriveItem.data.Full_Sig;
-          const signalDatum = {
+          const signalDatum: TooltipItem = {
             color: signal ? 'lime' : 'red',
             name: 'SIGNAL',
-            value: signal ? '▲ BUY' : '▼ SELL'
+            value: signal ? '▲ BUY' : '▼ SELL',
+            data: hyperdriveItem.data
           };
           originalItems.push(signalDatum);
           return originalItems;
@@ -203,7 +218,7 @@ const LineChart: React.FC<any> = memo(
       },
       yAxis: {
         label: {
-          formatter: (v: any) => formatFx(v),
+          formatter: (v: number | string) => formatFx(v),
         },
         grid: {
           line: {
@@ -268,7 +283,9 @@ const Page = () => {
   }, []);
 
   // useEffect(getAccount(loggedIn, setAccount, setAccountLoading), [loggedIn]);
-  useEffect(getLoginLoading(setLoginLoading));
+  useEffect(() => {
+    getLoginLoading(setLoginLoading)();
+  }, []);
 
   const fetchSignals = () => {
     setSignalLoading(true);
@@ -316,15 +333,15 @@ const Page = () => {
       .finally(() => setSignalLoading(false));
   };
   G2.registerShape("point", "breath-point", {
-    draw(cfg: any, container: any) {
-      const data = cfg.data as { Name?: string; Sig?: boolean | null };
+    draw(cfg, container) {
+      const data = cfg.data as { Name?: string; Sig?: boolean | null } | undefined;
       const point = {
         x: cfg.x as number,
         y: cfg.y as number,
       };
       const group = container.addGroup();
 
-      if (data.Name === hyperdrive && data.Sig !== null) {
+      if (data?.Name === hyperdrive && data?.Sig !== null) {
         const fill = data.Sig ? "lime" : "red";
         const symbol = data.Sig ? "triangle" : "triangle-down";
         // const text = data.Sig ? "BUY" : "SELL";

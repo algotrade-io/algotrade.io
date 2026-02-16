@@ -1,11 +1,11 @@
-import React from "react";
 import { useState } from "react";
-import { Typography, notification, Button, Input, Popover, Result, Select } from "antd";
+import { Typography, Button, Input, Popover, Result, Select } from "antd";
 import { getApiUrl } from "@/utils";
 import layoutStyles from "@/layouts/index.module.less";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import { headerHeight } from "../../layouts";
 import { useAccount } from "@/contexts";
+import type { AuthUser } from "@/types";
 import subStyles from "@/pages/subscription/index.module.less";
 
 import "./index.module.less";
@@ -41,6 +41,7 @@ const ContactPage = () => {
       extra:
         [
           <Button
+            key="return-success"
             className={layoutStyles.start}
             onClick={() => setResultProps({})}
           >
@@ -57,6 +58,7 @@ const ContactPage = () => {
       extra:
         [
           <Button
+            key="return-error"
             className={subStyles.subscribe}
             onClick={() => setResultProps({})}
           >
@@ -78,7 +80,7 @@ const ContactPage = () => {
     setSubjectStatus('')
     setMessageStatus('')
     setContactLoading(true);
-    const jwtToken = (loggedIn as any)?.signInUserSession?.idToken?.jwtToken;
+    const jwtToken = (loggedIn as AuthUser)?.signInUserSession?.idToken?.jwtToken;
     const url = `${getApiUrl()}/contact`;
     if (sentMessages.has(message)) {
       onSuccess();
@@ -86,7 +88,7 @@ const ContactPage = () => {
     } else {
       fetch(url, {
         method: "POST",
-        headers: { Authorization: jwtToken },
+        headers: { Authorization: jwtToken || '' },
         body: JSON.stringify({ subject, message }),
       })
         .then((response) => {
@@ -160,7 +162,12 @@ const ContactPage = () => {
   </div>;
   if (!(account && loggedIn)) {
     form =
-      <div onClick={() => !loggedIn && setShowLogin(true)}>
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => !loggedIn && setShowLogin(true)}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { !loggedIn && setShowLogin(true); } }}
+      >
         <Popover
           title="🔒 Action Needed"
           content={loggedIn ? "Verify your email to send a message." : <Button onClick={() => setShowLogin(true)} className={layoutStyles.start}>Sign in to send a message.</Button>}

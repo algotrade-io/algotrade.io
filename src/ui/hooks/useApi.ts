@@ -49,7 +49,7 @@ export function useApi<T>(
     body,
     localOverride,
     fetchOnMount = true,
-    deps = [],
+    deps: _deps = [],
   } = options;
 
   const [data, setData] = useState<T | null>(null);
@@ -101,7 +101,7 @@ export function useApi<T>(
     } finally {
       setLoading(false);
     }
-  }, [endpoint, auth, jwtToken, apiKey, method, body, localOverride, ...deps]);
+  }, [endpoint, auth, jwtToken, apiKey, method, body, localOverride]);
 
   useEffect(() => {
     if (fetchOnMount) {

@@ -1,10 +1,10 @@
-import React from "react";
 import { useState, useEffect, useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { Typography, notification, Button, Alert, Input, Switch } from "antd";
 import { getApiUrl } from "@/utils";
 import { CopyOutlined } from "@ant-design/icons";
 import { useAuthenticator } from "@aws-amplify/ui-react";
+import type { Account, AuthUser } from "@/types";
 import { AccountContext } from "../../layouts";
 import { headerHeight } from "../../layouts";
 import subStyles from "@/pages/subscription/index.module.less";
@@ -67,7 +67,7 @@ const AlertsPage = () => {
   const { user: loggedIn } = useAuthenticator((context) => [context.user]);
   const { account, setShowLogin, setAccount, accountLoading } = useContext(
     AccountContext
-  ) as { account: any; setShowLogin: (show: boolean) => void; setAccount: (account: any) => void; accountLoading: boolean };
+  ) as { account: Account | null; setShowLogin: (show: boolean) => void; setAccount: (account: Account | null) => void; accountLoading: boolean };
   const [alertsLoading, setLoading] = useState(false);
   // may need useEffect to set webhook url
   const [url, setUrl] = useState(account?.alerts?.webhook || "")
@@ -96,11 +96,11 @@ const AlertsPage = () => {
 
   const postAccount = (alerts: { alerts: { webhook?: string; email?: boolean } }) => {
     setLoading(true);
-    const jwtToken = (loggedIn as any)?.signInUserSession?.idToken?.jwtToken;
+    const jwtToken = (loggedIn as AuthUser)?.signInUserSession?.idToken?.jwtToken;
     const url = `${getApiUrl()}/account`;
     fetch(url, {
       method: "POST",
-      headers: { Authorization: jwtToken },
+      headers: { Authorization: jwtToken || '' },
       body: JSON.stringify(alerts),
     })
       .then(async (response) => {
@@ -145,11 +145,12 @@ const AlertsPage = () => {
       {!loggedIn && (
         <Alert
           message={<span>You must be&nbsp;
-            <a
-              style={{ color: '#52e5ff' }}
+            <button
+              type="button"
+              style={{ color: '#52e5ff', background: 'none', border: 'none', padding: 0, cursor: 'pointer', textDecoration: 'underline' }}
               onClick={() => setShowLogin(true)}>
               {'signed in'}
-            </a>
+            </button>
             &nbsp;to change your notification preferences. 🔔</span>}
           type="error"
           showIcon
@@ -205,16 +206,16 @@ const AlertsPage = () => {
             {/* <img className="logo" src={BULL} height={'20%'}></img> */}
             {/* <img className="logo" src={BEAR} height={'20%'}></img> */}
             <div className={overrides.img}>
-              <img src={account?.alerts?.email ? BULL : BULL_GRAY}></img>
+              <img src={account?.alerts?.email ? BULL : BULL_GRAY} alt="Bull indicator"></img>
               {/* use _invert, _gs1, or _gs2 for deactivated state */}
-              <img src={account?.alerts?.email ? BEAR : BEAR_GRAY}></img>
+              <img src={account?.alerts?.email ? BEAR : BEAR_GRAY} alt="Bear indicator"></img>
             </div>
           </div>
           <div className={overrides.column}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minWidth: '300px' }}>
               <Title level={2} style={{ margin: 0 }}>Webhook</Title>
               <Switch
-                checked={account?.alerts?.webhook}
+                checked={Boolean(account?.alerts?.webhook)}
                 disabled={disabled || !account?.alerts?.webhook}
                 onChange={(e) => !e && onClear()}
               />
@@ -225,7 +226,7 @@ const AlertsPage = () => {
             <b>Listen for events</b>
             <div style={{ display: 'flex' }}>
               <Input
-                disabled={disabled || account?.alerts?.webhook}
+                disabled={disabled || Boolean(account?.alerts?.webhook)}
                 placeholder="https://api.domain.com/route"
                 onChange={(event) => setUrl(event.target.value)}
                 value={account?.alerts?.webhook || url}
@@ -257,7 +258,7 @@ const AlertsPage = () => {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', minWidth: '300px' }}>
               <Title level={2} style={{ margin: 0, color: 'rgba(255, 255, 255, 0.45)' }}>SMS</Title>
               <Switch
-                checked={account?.alerts?.sms}
+                checked={Boolean(account?.alerts?.sms)}
                 disabled={true || disabled}
               />
             </div>

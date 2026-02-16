@@ -44,4 +44,4 @@ export const Toggle = styled(Segmented)`
   }
 `;
 
-export const isEmpty = (obj: Object) => !(obj && Object.keys(obj).length)
+export const isEmpty = (obj: object) => !(obj && Object.keys(obj).length)

@@ -103,7 +103,7 @@ const TOSPage = ({ modal } = { modal: false }) => {
           its Services, in all languages, formats and media throughout the
           world, including all copyrights and trademarks therein, are the
           exclusive property of FORCEPU.SH, its affiliates or its Data
-          Providers. Any Content on websites (a "Site" or "Sites") that are
+          Providers. Any Content on websites (a &quot;Site&quot; or &quot;Sites&quot;) that are
           hosted by FORCEPU.SH and/or its affiliates, is owned by or licensed to
           FORCEPU.SH. User acknowledges the Content is protected under United
           States copyright laws. Such Content includes data and prices wholly
@@ -171,7 +171,7 @@ const TOSPage = ({ modal } = { modal: false }) => {
           OWN RISK AND IS SUBJECT TO THEIR TERMS OF USE.
         </p>
         <p>
-          If you register as a user (a "Member") of any of the features of
+          If you register as a user (a &quot;Member&quot;) of any of the features of
           FORCEPU.SH, including the FORCEPU.SH family of newsletters, FORCEPU.SH
           will automatically opt you into our email lists. The FORCEPU.SH email
           lists are an important revenue source for FORCEPU.SH which help pay
@@ -217,7 +217,7 @@ const TOSPage = ({ modal } = { modal: false }) => {
           its affiliates make any express or implied warranties (including,
           without limitation, any warranty or merchantability or fitness for a
           particular purpose or use) regarding the Content on FORCEPU.SH. The
-          FORCEPU.SH Content is provided to the users "as is." Neither
+          FORCEPU.SH Content is provided to the users &quot;as is.&quot; Neither
           FORCEPU.SH nor its affiliates will be liable to any user or anyone
           else for any interruption, inaccuracy, error or omission, regardless
           of cause, in the FORCEPU.SH Content or for any damages (whether direct
@@ -539,12 +539,12 @@ const TOSPage = ({ modal } = { modal: false }) => {
         </p>
         <ul>
           <li>
-            a complementary extension of access to their FORCEPU.SH algorithm's
+            a complementary extension of access to their FORCEPU.SH algorithm&apos;s
             signals for a period of time equaled to the interruption period
           </li>
           <li>
             a refund pro-rated for the remainder of the subscription period.
-            Choosing this option will cancel the subscriber's existing
+            Choosing this option will cancel the subscriber&apos;s existing
             subscription for the remainder of the subscription period.
           </li>
         </ul>
@@ -558,7 +558,7 @@ const TOSPage = ({ modal } = { modal: false }) => {
           subscribers via FORCEPU.SH communication channels, e.g. email,
           encouraging them to take action. The discontinued algorithm will no
           longer accept new subscribers, and continue publishing signals until
-          all existing subscribers' subscription periods have expired, at which
+          all existing subscribers&apos; subscription periods have expired, at which
           point signal publishing will stop.
         </p>
         <p>
@@ -568,7 +568,7 @@ const TOSPage = ({ modal } = { modal: false }) => {
         <ul>
           <li>
             a refund pro-rated for the remainder of the subscription period.
-            Choosing this option will cancel the subscriber's existing
+            Choosing this option will cancel the subscriber&apos;s existing
             subscription for the remainder of the subscription period.
           </li>
         </ul>
@@ -588,7 +588,7 @@ const TOSPage = ({ modal } = { modal: false }) => {
           BASIS, AND THAT THEY WILL NOT SEEK OR AGREE TO SERVE AS A NAMED
           REPRESENTATIVE IN A CLASS ACTION OR SEEK RELIEF ON BEHALF OF THOSE
           OTHER THAN THEMSELVES. FORCEPU.SH WILL BE ENTITLED TO RECOVER ITS
-          COURT COSTS AND ATTORNEYS' FEES AND EXPENSES INCURRED IN PROVING ANY
+          COURT COSTS AND ATTORNEYS&apos; FEES AND EXPENSES INCURRED IN PROVING ANY
           BREACH BY YOU OF ANY TERMS OF USE.
         </p>
       </section>

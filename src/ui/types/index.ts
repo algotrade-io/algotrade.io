@@ -23,6 +23,7 @@ export interface AccountPermissions {
 export interface AccountAlerts {
   webhook?: string;
   email?: boolean;
+  sms?: boolean;
 }
 
 export interface Account {

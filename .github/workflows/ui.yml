@@ -70,7 +70,8 @@ jobs:
           util/aws_exports.sh
           pnpm run swagger
 
-      # TODO: Lint step
+      - name: Lint
+        run: pnpm run lint
 
       - name: Typescript
         run: pnpm run typescript
