@@ -5,7 +5,6 @@ specifiers:
   '@ant-design/icons': ^4.8.0
   '@aws-amplify/ui-react': ^4.3.1
   '@cypress/code-coverage': ^3.10.7
-  '@nfte/react': ^1.0.4
   '@types/node': ^20.2.6
   '@types/react': ^18.0.26
   '@types/react-dom': ^18.0.10
@@ -20,7 +19,6 @@ specifiers:
   plotly.js-dist-min: ^2.20.0
   react: ^18.2.0
   react-dom: ^18.2.0
-  react-hover-video-player: ^9.7.1
   react-plotly.js: ^2.6.0
   react-router-dom: ^6.6.1
   react-syntax-highlighter: ^15.5.0
@@ -35,13 +33,11 @@ dependencies:
   '@ant-design/charts': 1.4.2_ugkdx7uiqdxcyinqmif543zheq
   '@ant-design/icons': 4.8.0_biqbaboplfbrettd7655fr4n2y
   '@aws-amplify/ui-react': 4.3.1_jdy5h4l4yqakg3q5rkwc655yja
-  '@nfte/react': 1.0.4_react@18.2.0
   antd: 5.1.0_biqbaboplfbrettd7655fr4n2y
   aws-amplify: 5.0.7
   plotly.js-dist-min: 2.20.0
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
-  react-hover-video-player: 9.7.1_biqbaboplfbrettd7655fr4n2y
   react-plotly.js: 2.6.0_react@18.2.0
   react-router-dom: 6.6.1_biqbaboplfbrettd7655fr4n2y
   react-syntax-highlighter: 15.5.0_react@18.2.0
@@ -4047,14 +4043,6 @@ packages:
       subtag: 0.5.0
       suggestions-list: 0.0.2
       xtend: 4.0.2
-    dev: false
-
-  /@nfte/react/1.0.4_react@18.2.0:
-    resolution: {integrity: sha512-qLgAdWGvAKi2miwb8CaYszOuLoWZnGcTt3xrnLgiOQwScvNS5zcwMs4pr32VLGN5gotPBNR7b2GHbaqYjL0S8g==}
-    peerDependencies:
-      react: ^16.13.1 || ^17.x
-    dependencies:
-      react: 18.2.0
     dev: false
 
   /@nodelib/fs.scandir/2.1.5:
@@ -8870,16 +8858,6 @@ packages:
       react: '>=16'
     dependencies:
       react: 18.2.0
-    dev: false
-
-  /react-hover-video-player/9.7.1_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-mC74jCZscPui+vtJUFdwhb6pM+4UQI9ZepzAQKAN8l5sOQRA1AVpiCDl5LoTlnJETYKUc96SKaKsXW5L8Z30AQ==}
-    peerDependencies:
-      react: '>=16.8.0'
-      react-dom: '>=16.8.0'
-    dependencies:
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
     dev: false
 
   /react-immutable-proptypes/2.2.0_immutable@3.8.2:

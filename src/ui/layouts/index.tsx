@@ -24,7 +24,6 @@ import Docs from "@/pages/docs";
 import Algorithm from "@/pages/algorithm";
 import Subscription from "@/pages/subscription";
 import Contact from "@/pages/contact";
-import Art from "@/pages/art";
 import Gym from "@/pages/gym";
 import TOS from "@/pages/tos";
 import Privacy from "@/pages/privacy";
@@ -146,7 +145,6 @@ const Layout = ({ children }: LayoutProps) => {
             <Route path="/algorithm" element={<Algorithm />} />
             <Route path="/subscription" element={<Subscription />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/art" element={<Art />} />
             <Route path="/gym" element={<Gym />} />
             <Route path="/tos" element={<TOS modal={false} />} />
             <Route path="/privacy" element={<Privacy />} />
