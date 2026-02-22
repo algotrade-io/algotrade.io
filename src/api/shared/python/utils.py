@@ -39,7 +39,10 @@ def get_headers(origin: str = "") -> dict[str, str]:
     Returns:
         Dict with Access-Control-Allow-Origin and Content-Type headers.
     """
-    return {"Access-Control-Allow-Origin": origin or f"https://{DOMAIN}", "Content-Type": "application/json"}
+    return {
+        "Access-Control-Allow-Origin": origin or f"https://{DOMAIN}",
+        "Content-Type": "application/json",
+    }
 
 
 def str_to_bool(s: str) -> bool:
