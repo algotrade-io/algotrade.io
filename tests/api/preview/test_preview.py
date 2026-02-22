@@ -7,7 +7,8 @@ from preview.app import get_preview
 
 def test_get_preview() -> None:
     """Test get_preview returns trading performance data."""
-    res = get_preview()
+    event = {"headers": {"origin": "https://dev.algotrade.io"}}
+    res = get_preview(event, None)
     assert res["statusCode"] == 200
     data = json.loads(res["body"])
 
@@ -31,4 +32,4 @@ def test_get_preview() -> None:
         "Sortino Ratio",
     }.issubset({datum["metric"] for datum in data["USD"]["stats"]})
 
-    assert res["headers"]["Access-Control-Allow-Origin"] == "https://algotrade.io"
+    assert res["headers"]["Access-Control-Allow-Origin"] == "https://dev.algotrade.io"

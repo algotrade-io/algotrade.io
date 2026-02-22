@@ -7,20 +7,22 @@ from typing import Any
 
 import boto3
 import numpy as np
-from utils import success
+from utils import get_origin, success
 
 s3 = boto3.client("s3")
 
 
-def get_model(*_: Any) -> dict[str, Any]:
+def get_model(event: dict[str, Any], _: Any) -> dict[str, Any]:
     """Get ML model metadata.
 
     Args:
-        *_: Unused arguments (event, context).
+        event: API Gateway event.
+        _: Lambda context (unused).
 
     Returns:
         API response with model metadata (created, start, end, features, accuracy).
     """
+    origin = get_origin(event)
     obj = s3.get_object(
         Bucket=os.environ["S3_BUCKET"], Key="models/latest/metadata.json"
     )
@@ -28,7 +30,7 @@ def get_model(*_: Any) -> dict[str, Any]:
     metadata["num_features"] = len(metadata["features"])
     allowed_fields = ["created", "start", "end", "num_features", "accuracy"]
     metadata = {key: metadata[key] for key in allowed_fields}
-    return success(metadata)
+    return success(metadata, origin=origin)
 
 
 def get_visualization(event: dict[str, Any], _: Any) -> dict[str, Any]:
@@ -41,6 +43,7 @@ def get_visualization(event: dict[str, Any], _: Any) -> dict[str, Any]:
     Returns:
         API response with visualization data (actual, centroid, radius, grid, preds).
     """
+    origin = get_origin(event)
     params = event["queryStringParameters"]
     dims = "2D"
     supported_dims = {"2D", "3D"}
@@ -57,7 +60,7 @@ def get_visualization(event: dict[str, Any], _: Any) -> dict[str, Any]:
         )
         for label in data_labels
     }
-    return success(json.dumps(data, cls=NumpyEncoder))
+    return success(json.dumps(data, cls=NumpyEncoder), origin=origin)
 
 
 class NumpyEncoder(json.JSONEncoder):

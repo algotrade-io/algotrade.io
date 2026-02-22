@@ -11,7 +11,8 @@ from shared.python.utils import DATE_FMT
 
 def test_get_model() -> None:
     """Test get_model returns model metadata with expected fields."""
-    res = get_model()
+    event = {"headers": {"origin": "https://dev.algotrade.io"}}
+    res = get_model(event, None)
     assert res["statusCode"] == 200
     data = json.loads(res["body"])
     assert {"created", "start", "end", "num_features", "accuracy"}.issubset(data.keys())
@@ -23,7 +24,7 @@ def test_get_model() -> None:
     assert isinstance(data["num_features"], int)
     assert isinstance(data["accuracy"], float)
     assert data["accuracy"] <= 1.0
-    assert res["headers"]["Access-Control-Allow-Origin"] == "https://algotrade.io"
+    assert res["headers"]["Access-Control-Allow-Origin"] == "https://dev.algotrade.io"
 
 
 def _verify_visualization(data: dict, dims: str | int) -> None:
@@ -46,13 +47,18 @@ def _verify_visualization(data: dict, dims: str | int) -> None:
 def test_get_visualization() -> None:
     """Test get_visualization returns dimensionality reduction data."""
     for dims in ["2D", "3D"]:
-        event = {"queryStringParameters": {"dims": dims}}
+        event = {
+            "queryStringParameters": {"dims": dims},
+            "headers": {"origin": "https://dev.algotrade.io"},
+        }
         res = get_visualization(event, None)
         assert res["statusCode"] == 200
         data = json.loads(res["body"])
         assert {"actual", "centroid", "radius", "grid", "preds"}.issubset(data.keys())
         _verify_visualization(data, dims)
-        assert res["headers"]["Access-Control-Allow-Origin"] == "https://algotrade.io"
+        assert (
+            res["headers"]["Access-Control-Allow-Origin"] == "https://dev.algotrade.io"
+        )
 
 
 encoder = NumpyEncoder()

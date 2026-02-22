@@ -7,10 +7,36 @@ from shared.python.utils import (
     enough_time_has_passed,
     error,
     get_email,
+    get_origin,
     options,
     transform_signal,
     verify_user,
 )
+
+
+def test_get_origin() -> None:
+    """Test get_origin returns allowed origins or falls back to production."""
+    # Allowed origins should pass through
+    event = {"headers": {"origin": "https://algotrade.io"}}
+    assert get_origin(event) == "https://algotrade.io"
+
+    event = {"headers": {"origin": "https://dev.algotrade.io"}}
+    assert get_origin(event) == "https://dev.algotrade.io"
+
+    event = {"headers": {"origin": "http://localhost:8000"}}
+    assert get_origin(event) == "http://localhost:8000"
+
+    # Disallowed origin should fall back to production
+    event = {"headers": {"origin": "https://evil.com"}}
+    assert get_origin(event) == "https://algotrade.io"
+
+    # Missing origin should fall back to production
+    event = {"headers": {}}
+    assert get_origin(event) == "https://algotrade.io"
+
+    # Missing headers should fall back to production
+    event = {}
+    assert get_origin(event) == "https://algotrade.io"
 
 
 def test_get_email() -> None:
@@ -48,14 +74,20 @@ def test_enough_time_has_passed() -> None:
 
 def test_error() -> None:
     """Test error returns properly formatted error response."""
+    # Test with no origin (fallback to production domain)
     err = error(401, "Unauthorized")
     assert err["statusCode"] == 401
     assert err["body"] == '{"message": "Unauthorized"}'
     assert err["headers"]["Access-Control-Allow-Origin"] == "https://algotrade.io"
 
+    # Test with dev origin
+    err = error(401, "Unauthorized", origin="https://dev.algotrade.io")
+    assert err["headers"]["Access-Control-Allow-Origin"] == "https://dev.algotrade.io"
+
 
 def test_options() -> None:
     """Test options returns CORS headers."""
+    # Test with no origin (fallback to production domain)
     opts = options()
     assert opts["statusCode"] == 200
     headers = opts["headers"]
@@ -65,6 +97,10 @@ def test_options() -> None:
     assert headers["Access-Control-Allow-Headers"] == (
         "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-API-Key"
     )
+
+    # Test with dev origin
+    opts = options(origin="https://dev.algotrade.io")
+    assert opts["headers"]["Access-Control-Allow-Origin"] == "https://dev.algotrade.io"
 
 
 def test_verify_user() -> None:
