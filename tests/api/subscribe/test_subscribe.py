@@ -22,16 +22,22 @@ price_id = os.environ["STRIPE_PRICE_ID"]
 
 def test_get_plans_and_product() -> None:
     """Test get_plans returns Stripe price and get_product returns product."""
-    res = get_plans()
+    event = {"headers": {"origin": "https://dev.algotrade.io"}}
+    res = get_plans(event, None)
     assert res["statusCode"] == 200
+    assert res["headers"]["Access-Control-Allow-Origin"] == "https://dev.algotrade.io"
     body = json.loads(res["body"])
     product_id = body["product"]
     assert body["id"] == price_id
     assert body["object"] == "price"
 
-    event = {"queryStringParameters": {"id": product_id}}
+    event = {
+        "queryStringParameters": {"id": product_id},
+        "headers": {"origin": "https://dev.algotrade.io"},
+    }
     res = get_product(event, None)
     assert res["statusCode"] == 200
+    assert res["headers"]["Access-Control-Allow-Origin"] == "https://dev.algotrade.io"
     body = json.loads(res["body"])
     assert body["id"] == product_id
     assert body["object"] == "product"

@@ -23,30 +23,33 @@ from utils import (
 stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
 
 
-def get_price(price_id: str) -> dict[str, Any]:
+def get_price(price_id: str, origin: str = "") -> dict[str, Any]:
     """Retrieve price details from Stripe.
 
     Args:
         price_id: Stripe price ID.
+        origin: Validated CORS origin.
 
     Returns:
         Success response with price data.
     """
     price = stripe.Price.retrieve(price_id)
-    return success(price)
+    return success(price, origin=origin)
 
 
-def get_plans(*_: Any) -> dict[str, Any]:
+def get_plans(event: dict[str, Any], _: Any) -> dict[str, Any]:
     """Get subscription plans.
 
     Args:
-        *_: Unused arguments (event, context).
+        event: API Gateway event.
+        _: Lambda context (unused).
 
     Returns:
         Success response with price data.
     """
+    origin = get_origin(event)
     price_id = os.environ["STRIPE_PRICE_ID"]
-    return get_price(price_id)
+    return get_price(price_id, origin=origin)
 
 
 def get_product(event: dict[str, Any], _: Any) -> dict[str, Any]:
@@ -59,10 +62,11 @@ def get_product(event: dict[str, Any], _: Any) -> dict[str, Any]:
     Returns:
         API response with product data.
     """
+    origin = get_origin(event)
     params = event["queryStringParameters"]
     product_id = params["id"]
     product = stripe.Product.retrieve(product_id)
-    return success(product)
+    return success(product, origin=origin)
 
 
 def handle_checkout(event: dict[str, Any], _: Any) -> dict[str, Any]:
