@@ -101,7 +101,8 @@ export function useApi<T>(
     } finally {
       setLoading(false);
     }
-  }, [endpoint, auth, jwtToken, apiKey, method, body, localOverride]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [endpoint, auth, jwtToken, apiKey, method, body, localOverride, ...deps]);
 
   useEffect(() => {
     if (fetchOnMount) {

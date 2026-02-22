@@ -65,9 +65,9 @@ const TradePage = () => {
       key: dataName,
       align: 'center' as const,
       render
-    }, sort && {
+    }, sort && Object.assign({
       sorter: { compare: (a: Holding, b: Holding) => Number(a[dataName as keyof Holding]) - Number(b[dataName as keyof Holding]) }
-    }));
+    }, typeof sort === 'object' ? sort : {})));
   // can add route cache=random to end to force new connections?
   // and set share=false
   const socketUrl = `wss://api2.${getHostname(false)}`;
