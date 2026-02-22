@@ -5,7 +5,7 @@ import os
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-DOMAIN = os.environ.get("DOMAIN", "")
+DOMAIN = os.environ["DOMAIN"]
 ALLOWED_ORIGINS: set[str] = {
     f"https://{DOMAIN}",
     f"https://dev.{DOMAIN}",
