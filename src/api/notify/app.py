@@ -192,7 +192,7 @@ def post_notify(event: dict[str, Any], _: Any) -> dict[str, Any]:
     if not req_headers.get(header) == emit_secret:
         sleep(0 if TEST else 10)
         print("Incorrect emit secret provided.")
-        return error(401, "Provide a valid emit secret.")
+        return error(401, "Provide a valid emit secret.", event)
     req_body = json.loads(event["body"])
     signal = transform_signal(req_body)
     # NOTE: PynamoDB requires explicit `== True` comparisons for BooleanAttribute
@@ -219,10 +219,10 @@ def post_notify(event: dict[str, Any], _: Any) -> dict[str, Any]:
     total_users = processor.total
     success_ratio = num_notified / total_users if total_users else 1
     if success_ratio < 0.95:
-        return error(500, "Notifications failed to send.")
+        return error(500, "Notifications failed to send.", event)
 
     response = {"message": "Notifications delivered."}
-    return success(response)
+    return success(response, event=event)
 
 
 def notify_email(user: UserModel, signal: dict[str, Any]) -> None:

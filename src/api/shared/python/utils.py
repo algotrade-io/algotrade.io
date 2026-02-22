@@ -5,10 +5,56 @@ import os
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-RES_HEADERS = {"Access-Control-Allow-Origin": "*", "Content-Type": "application/json"}
+DOMAIN = os.environ.get("DOMAIN", "")
+ALLOWED_ORIGINS: set[str] = {
+    f"https://{DOMAIN}",
+    f"https://dev.{DOMAIN}",
+    "http://localhost:8000",
+}
 
 PAST_DATE = datetime(2020, 1, 1, tzinfo=UTC)
 DATE_FMT = "%Y-%m-%d"
+
+
+def get_origin(event: dict[str, Any]) -> str:
+    """Extract the Origin header from an API Gateway event.
+
+    Args:
+        event: API Gateway event dict.
+
+    Returns:
+        The Origin header value, or empty string if not present.
+    """
+    headers = event.get("headers") or {}
+    return headers.get("origin", "")
+
+
+def _get_allowed_origin(event: dict[str, Any] | None = None) -> str:
+    """Validate and return the allowed CORS origin.
+
+    Args:
+        event: Optional API Gateway event dict.
+
+    Returns:
+        The validated origin, or the production domain as fallback.
+    """
+    origin = get_origin(event) if event else ""
+    return origin if origin in ALLOWED_ORIGINS else f"https://{DOMAIN}"
+
+
+def get_headers(event: dict[str, Any] | None = None) -> dict[str, str]:
+    """Build response headers with validated CORS origin.
+
+    Args:
+        event: Optional API Gateway event dict.
+
+    Returns:
+        Dict with Access-Control-Allow-Origin and Content-Type headers.
+    """
+    return {
+        "Access-Control-Allow-Origin": _get_allowed_origin(event),
+        "Content-Type": "application/json",
+    }
 
 
 def str_to_bool(s: str) -> bool:
@@ -81,12 +127,13 @@ def enough_time_has_passed(start: datetime, end: datetime, delta: timedelta) -> 
     return end - start >= delta
 
 
-def error(status: int, message: str) -> dict[str, Any]:
+def error(status: int, message: str, event: dict[str, Any] | None = None) -> dict[str, Any]:
     """Construct an error API response.
 
     Args:
         status: HTTP status code.
         message: Error message.
+        event: Optional API Gateway event for CORS origin.
 
     Returns:
         Lambda response dict with statusCode, body, and headers.
@@ -94,16 +141,17 @@ def error(status: int, message: str) -> dict[str, Any]:
     return {
         "statusCode": status,
         "body": json.dumps({"message": message}),
-        "headers": RES_HEADERS,
+        "headers": get_headers(event),
     }
 
 
-def success(body: Any, status: int = 200) -> dict[str, Any]:
+def success(body: Any, status: int = 200, event: dict[str, Any] | None = None) -> dict[str, Any]:
     """Construct a successful API response.
 
     Args:
         body: Response body - will be JSON serialized if not already a string.
         status: HTTP status code (default 200).
+        event: Optional API Gateway event for CORS origin.
 
     Returns:
         Lambda response dict with statusCode, body, and headers.
@@ -121,12 +169,15 @@ def success(body: Any, status: int = 200) -> dict[str, Any]:
     return {
         "statusCode": status,
         "body": json.dumps(body) if dump else body,
-        "headers": RES_HEADERS,
+        "headers": get_headers(event),
     }
 
 
-def options() -> dict[str, Any]:
+def options(event: dict[str, Any] | None = None) -> dict[str, Any]:
     """Construct CORS preflight response.
+
+    Args:
+        event: Optional API Gateway event for CORS origin.
 
     Returns:
         Lambda response dict with CORS headers.
@@ -134,7 +185,7 @@ def options() -> dict[str, Any]:
     return {
         "statusCode": 200,
         "headers": {
-            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Origin": _get_allowed_origin(event),
             "Access-Control-Allow-Credentials": "true",
             "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS,POST,PUT,DELETE",
             "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-API-Key",

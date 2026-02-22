@@ -14,6 +14,7 @@ from utils import (
     TEST,
     enough_time_has_passed,
     error,
+    get_origin,
     options,
     success,
     verify_user,
@@ -75,7 +76,7 @@ def handle_checkout(event: dict[str, Any], _: Any) -> dict[str, Any]:
         API response dictionary with statusCode and body.
     """
     if event["httpMethod"].upper() == "OPTIONS":
-        response = options()
+        response = options(event)
     else:
         response = post_checkout(event)
 
@@ -94,15 +95,14 @@ def post_checkout(event: dict[str, Any]) -> dict[str, Any]:
     verified = verify_user(event)
 
     if not verified:
-        return error(401, "This account is not verified.")
+        return error(401, "This account is not verified.", event)
 
     price_id = os.environ["STRIPE_PRICE_ID"]
     env = os.environ["STAGE"]
     email = verified["email"]
-    req_headers = event["headers"]
     domain = os.environ["DOMAIN"]
-    origin = (
-        req_headers.get("origin") or f"https://{'dev.' if env == 'dev' else ''}{domain}"
+    redirect_origin = (
+        get_origin(event) or f"https://{'dev.' if env == 'dev' else ''}{domain}"
     )
 
     user = UserModel.get(email)
@@ -111,7 +111,7 @@ def post_checkout(event: dict[str, Any]) -> dict[str, Any]:
 
     if customer_id and customer_id != "_":
         if user.subscribed:
-            return error(400, "User is already subscribed.")
+            return error(400, "User is already subscribed.", event)
     else:
         name = verified["name"]
         customer = stripe.Customer.create(email=email, name=name)
@@ -130,8 +130,8 @@ def post_checkout(event: dict[str, Any]) -> dict[str, Any]:
         session = stripe.checkout.Session.create(
             customer=customer_id,
             customer_update={"address": "auto", "name": "auto"},
-            success_url=f"{origin}/subscription?success=true&session_id={{CHECKOUT_SESSION_ID}}",
-            cancel_url=f"{origin}/subscription?canceled=true",
+            success_url=f"{redirect_origin}/subscription?success=true&session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{redirect_origin}/subscription?canceled=true",
             mode="subscription",
             line_items=[
                 {
@@ -147,7 +147,7 @@ def post_checkout(event: dict[str, Any]) -> dict[str, Any]:
         user.update(actions=[UserModel.stripe.set(stripe_lookup)])
 
     url = checkout["url"]
-    return success(url)
+    return success(url, event=event)
 
 
 def handle_billing(event: dict[str, Any], _: Any) -> dict[str, Any]:
@@ -161,7 +161,7 @@ def handle_billing(event: dict[str, Any], _: Any) -> dict[str, Any]:
         API response dictionary with statusCode and body.
     """
     if event["httpMethod"].upper() == "OPTIONS":
-        response = options()
+        response = options(event)
     else:
         response = post_billing(event)
 
@@ -180,25 +180,24 @@ def post_billing(event: dict[str, Any]) -> dict[str, Any]:
     verified = verify_user(event)
 
     if not verified:
-        return error(401, "This account is not verified.")
+        return error(401, "This account is not verified.", event)
 
     env = os.environ["STAGE"]
     email = verified["email"]
-    req_headers = event["headers"]
     domain = os.environ["DOMAIN"]
-    origin = (
-        req_headers.get("origin") or f"https://{'dev.' if env == 'dev' else ''}{domain}"
+    redirect_origin = (
+        get_origin(event) or f"https://{'dev.' if env == 'dev' else ''}{domain}"
     )
 
     user = UserModel.get(email)
     customer_id = user.customer_id
     session = stripe.billing_portal.Session.create(
         customer=customer_id,
-        return_url=f"{origin}/subscription",
+        return_url=f"{redirect_origin}/subscription",
     )
 
     url = session.url
-    return success(url)
+    return success(url, event=event)
 
 
 def post_subscribe(event: dict[str, Any], _: Any) -> dict[str, Any]:

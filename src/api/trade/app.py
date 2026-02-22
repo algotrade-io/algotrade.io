@@ -102,16 +102,16 @@ def handle_trade(event: dict[str, Any], _: Any) -> dict[str, Any]:
         API response with holdings data or error.
     """
     if event["httpMethod"].upper() == "OPTIONS":
-        return options()
+        return options(event)
 
     verified = verify_user(event)
 
     if not (verified and verified["email"] == os.environ["RH_USERNAME"]):
-        return error(401, "This account is not verified.")
+        return error(401, "This account is not verified.", event)
     params = event["queryStringParameters"]
     variant = str_to_bool(str(params and params.get("variant")))
     login(variant)
-    response = get_trade()
+    response = get_trade(event)
     return response
 
 
@@ -192,8 +192,11 @@ def login(variant: bool = False) -> None:
         print(f"Warning: Could not save auth file to S3: {e}")
 
 
-def get_trade() -> dict[str, Any]:
+def get_trade(event: dict[str, Any] | None = None) -> dict[str, Any]:
     """Get current holdings with options positions.
+
+    Args:
+        event: Optional API Gateway event for CORS origin.
 
     Returns:
         API response with holdings data.
@@ -229,7 +232,7 @@ def get_trade() -> dict[str, Any]:
         key=lambda holding: holding["symbol"],
     )
     body = [holding | {"key": idx} for idx, holding in enumerate(sorted_holdings)]
-    return success(body)
+    return success(body, event=event)
 
 
 def post_trade(event: dict[str, Any]) -> dict[str, Any]:

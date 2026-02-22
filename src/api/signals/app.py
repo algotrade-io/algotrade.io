@@ -34,7 +34,7 @@ def handle_signals(event: dict[str, Any], _: Any) -> dict[str, Any]:
         API response dictionary with statusCode and body.
     """
     if event["httpMethod"].upper() == "OPTIONS":
-        response = options()
+        response = options(event)
     else:
         response = get_signals(event)
 
@@ -96,21 +96,22 @@ def get_signals(event: dict[str, Any]) -> dict[str, Any]:
     # first get user by api key
     req_headers = event["headers"]
     if "x-api-key" not in req_headers:
-        return error(401, "Provide a valid API key.")
+        return error(401, "Provide a valid API key.", event)
     api_key = req_headers["x-api-key"]
     query_results = query_by_api_key(api_key)
     if not query_results:
-        return error(401, "Provide a valid API key.")
+        return error(401, "Provide a valid API key.", event)
     user = query_results[0]
 
     if not (user.in_beta or user.subscribed):
-        return error(402, "This endpoint is for subscribers only.")
+        return error(402, "This endpoint is for subscribers only.", event)
 
     remaining = update_access_queue(user)
     if not remaining:
         return error(
             403,
             f"You have reached your quota of {MAX_ACCESSES} requests / {RATE_LIMIT_DAYS} day(s).",
+            event,
         )
 
     obj = s3.get_object(Bucket=os.environ["S3_BUCKET"], Key="models/latest/signals.csv")
@@ -134,4 +135,4 @@ def get_signals(event: dict[str, Any]) -> dict[str, Any]:
     response["message"] = (
         f"You have {remaining} requests left / {RATE_LIMIT_DAYS} day(s)."
     )
-    return success(response)
+    return success(response, event=event)

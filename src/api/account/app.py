@@ -24,7 +24,7 @@ def handle_account(event: dict[str, Any], _: Any) -> dict[str, Any]:
         API response dictionary with statusCode and body.
     """
     if event["httpMethod"].upper() == "OPTIONS":
-        response = options()
+        response = options(event)
     elif event["httpMethod"].upper() == "POST":
         response = post_account(event)
     elif event["httpMethod"].upper() == "DELETE":
@@ -47,7 +47,7 @@ def get_account(event: dict[str, Any]) -> dict[str, Any]:
     verified = verify_user(event)
 
     if not verified:
-        return error(401, "This account is not verified.")
+        return error(401, "This account is not verified.", event)
 
     email = verified["email"]
     try:
@@ -56,7 +56,7 @@ def get_account(event: dict[str, Any]) -> dict[str, Any]:
         user = UserModel(email)
         user.save()
 
-    return success(user.to_simple_dict())
+    return success(user.to_simple_dict(), event=event)
 
 
 def post_account(event: dict[str, Any]) -> dict[str, Any]:
@@ -71,7 +71,7 @@ def post_account(event: dict[str, Any]) -> dict[str, Any]:
     verified = verify_user(event)
 
     if not verified:
-        return error(401, "This account is not verified.")
+        return error(401, "This account is not verified.", event)
 
     email = verified["email"]
     user = UserModel.get(email)
@@ -108,7 +108,7 @@ def post_account(event: dict[str, Any]) -> dict[str, Any]:
     if actions:
         user.update(actions=actions)
 
-    return success(user.to_simple_dict())
+    return success(user.to_simple_dict(), event=event)
 
 
 def delete_account(event: dict[str, Any]) -> dict[str, Any]:
@@ -129,4 +129,4 @@ def delete_account(event: dict[str, Any]) -> dict[str, Any]:
         stripe.Customer.delete(customer_id)
     user.delete()
 
-    return success("OK")
+    return success("OK", event=event)
