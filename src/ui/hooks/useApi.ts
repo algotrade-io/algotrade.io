@@ -49,7 +49,7 @@ export function useApi<T>(
     body,
     localOverride,
     fetchOnMount = true,
-    deps: _deps = [],
+    deps = [],
   } = options;
 
   const [data, setData] = useState<T | null>(null);
