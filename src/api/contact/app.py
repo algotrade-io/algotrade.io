@@ -7,7 +7,7 @@ from typing import Any
 
 import boto3
 from botocore.exceptions import ClientError
-from utils import TEST, error, get_email, options, success, verify_user
+from utils import TEST, error, get_email, get_origin, options, success, verify_user
 
 
 def handle_contact(event: dict[str, Any], _: Any) -> dict[str, Any]:
@@ -21,11 +21,8 @@ def handle_contact(event: dict[str, Any], _: Any) -> dict[str, Any]:
         API response dictionary with statusCode and body.
     """
     if event["httpMethod"].upper() == "OPTIONS":
-        response = options(event)
-    else:
-        response = post_contact(event)
-
-    return response
+        return options(get_origin(event))
+    return post_contact(event)
 
 
 def post_contact(event: dict[str, Any]) -> dict[str, Any]:
@@ -37,10 +34,11 @@ def post_contact(event: dict[str, Any]) -> dict[str, Any]:
     Returns:
         Success response or error if validation fails.
     """
+    origin = get_origin(event)
     verified = verify_user(event)
 
     if not verified:
-        return error(401, "This account is not verified.", event)
+        return error(401, "This account is not verified.", origin)
 
     req_body = json.loads(event["body"])
     subject = req_body.get("subject")
@@ -48,17 +46,17 @@ def post_contact(event: dict[str, Any]) -> dict[str, Any]:
     max_subject_len = 64
     max_message_len = 2500
     if not subject or len(subject) > max_subject_len:
-        return error(400, "Select a valid subject.", event)
+        return error(400, "Select a valid subject.", origin)
     if not message or len(message) > max_message_len:
-        return error(400, "Write a valid message.", event)
+        return error(400, "Write a valid message.", origin)
 
     email = verified["email"]
     email_sent = send_email(email, subject, message)
 
     if not email_sent:
-        return error(500, "Server could not deliver message.", event)
+        return error(500, "Server could not deliver message.", origin)
 
-    return success({"message": "Message sent successfully."}, event=event)
+    return success({"message": "Message sent successfully."}, origin=origin)
 
 
 def send_email(user: str, subject: str, message: str) -> bool:

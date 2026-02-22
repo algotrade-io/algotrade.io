@@ -23,38 +23,23 @@ def get_origin(event: dict[str, Any]) -> str:
         event: API Gateway event dict.
 
     Returns:
-        The Origin header value, or empty string if not present.
+        The validated origin if allowed, or the production domain as fallback.
     """
     headers = event.get("headers") or {}
-    return headers.get("origin", "")
-
-
-def _get_allowed_origin(event: dict[str, Any] | None = None) -> str:
-    """Validate and return the allowed CORS origin.
-
-    Args:
-        event: Optional API Gateway event dict.
-
-    Returns:
-        The validated origin, or the production domain as fallback.
-    """
-    origin = get_origin(event) if event else ""
+    origin = headers.get("origin", "")
     return origin if origin in ALLOWED_ORIGINS else f"https://{DOMAIN}"
 
 
-def get_headers(event: dict[str, Any] | None = None) -> dict[str, str]:
+def get_headers(origin: str = "") -> dict[str, str]:
     """Build response headers with validated CORS origin.
 
     Args:
-        event: Optional API Gateway event dict.
+        origin: Validated origin from get_origin.
 
     Returns:
         Dict with Access-Control-Allow-Origin and Content-Type headers.
     """
-    return {
-        "Access-Control-Allow-Origin": _get_allowed_origin(event),
-        "Content-Type": "application/json",
-    }
+    return {"Access-Control-Allow-Origin": origin or f"https://{DOMAIN}", "Content-Type": "application/json"}
 
 
 def str_to_bool(s: str) -> bool:
@@ -127,13 +112,13 @@ def enough_time_has_passed(start: datetime, end: datetime, delta: timedelta) -> 
     return end - start >= delta
 
 
-def error(status: int, message: str, event: dict[str, Any] | None = None) -> dict[str, Any]:
+def error(status: int, message: str, origin: str = "") -> dict[str, Any]:
     """Construct an error API response.
 
     Args:
         status: HTTP status code.
         message: Error message.
-        event: Optional API Gateway event for CORS origin.
+        origin: Validated CORS origin.
 
     Returns:
         Lambda response dict with statusCode, body, and headers.
@@ -141,17 +126,17 @@ def error(status: int, message: str, event: dict[str, Any] | None = None) -> dic
     return {
         "statusCode": status,
         "body": json.dumps({"message": message}),
-        "headers": get_headers(event),
+        "headers": get_headers(origin),
     }
 
 
-def success(body: Any, status: int = 200, event: dict[str, Any] | None = None) -> dict[str, Any]:
+def success(body: Any, status: int = 200, origin: str = "") -> dict[str, Any]:
     """Construct a successful API response.
 
     Args:
         body: Response body - will be JSON serialized if not already a string.
         status: HTTP status code (default 200).
-        event: Optional API Gateway event for CORS origin.
+        origin: Validated CORS origin.
 
     Returns:
         Lambda response dict with statusCode, body, and headers.
@@ -169,15 +154,15 @@ def success(body: Any, status: int = 200, event: dict[str, Any] | None = None) -
     return {
         "statusCode": status,
         "body": json.dumps(body) if dump else body,
-        "headers": get_headers(event),
+        "headers": get_headers(origin),
     }
 
 
-def options(event: dict[str, Any] | None = None) -> dict[str, Any]:
+def options(origin: str = "") -> dict[str, Any]:
     """Construct CORS preflight response.
 
     Args:
-        event: Optional API Gateway event for CORS origin.
+        origin: Validated CORS origin.
 
     Returns:
         Lambda response dict with CORS headers.
@@ -185,7 +170,7 @@ def options(event: dict[str, Any] | None = None) -> dict[str, Any]:
     return {
         "statusCode": 200,
         "headers": {
-            "Access-Control-Allow-Origin": _get_allowed_origin(event),
+            "Access-Control-Allow-Origin": origin or f"https://{DOMAIN}",
             "Access-Control-Allow-Credentials": "true",
             "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS,POST,PUT,DELETE",
             "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-API-Key",

@@ -9,6 +9,7 @@ from models import UserModel, query_by_api_key
 from utils import (
     enough_time_has_passed,
     error,
+    get_origin,
     options,
     success,
     transform_signal,
@@ -34,11 +35,8 @@ def handle_signals(event: dict[str, Any], _: Any) -> dict[str, Any]:
         API response dictionary with statusCode and body.
     """
     if event["httpMethod"].upper() == "OPTIONS":
-        response = options(event)
-    else:
-        response = get_signals(event)
-
-    return response
+        return options(get_origin(event))
+    return get_signals(event)
 
 
 def update_access_queue(user: UserModel) -> int | None:
@@ -93,25 +91,26 @@ def get_signals(event: dict[str, Any]) -> dict[str, Any]:
     Returns:
         Success response with signals data or error response.
     """
+    origin = get_origin(event)
     # first get user by api key
     req_headers = event["headers"]
     if "x-api-key" not in req_headers:
-        return error(401, "Provide a valid API key.", event)
+        return error(401, "Provide a valid API key.", origin)
     api_key = req_headers["x-api-key"]
     query_results = query_by_api_key(api_key)
     if not query_results:
-        return error(401, "Provide a valid API key.", event)
+        return error(401, "Provide a valid API key.", origin)
     user = query_results[0]
 
     if not (user.in_beta or user.subscribed):
-        return error(402, "This endpoint is for subscribers only.", event)
+        return error(402, "This endpoint is for subscribers only.", origin)
 
     remaining = update_access_queue(user)
     if not remaining:
         return error(
             403,
             f"You have reached your quota of {MAX_ACCESSES} requests / {RATE_LIMIT_DAYS} day(s).",
-            event,
+            origin,
         )
 
     obj = s3.get_object(Bucket=os.environ["S3_BUCKET"], Key="models/latest/signals.csv")
@@ -135,4 +134,4 @@ def get_signals(event: dict[str, Any]) -> dict[str, Any]:
     response["message"] = (
         f"You have {remaining} requests left / {RATE_LIMIT_DAYS} day(s)."
     )
-    return success(response, event=event)
+    return success(response, origin=origin)

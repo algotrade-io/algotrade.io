@@ -22,6 +22,7 @@ if str(os.environ.get("LOCAL")).lower() == "true":
     from src.api.shared.python.auth import verify_token
     from src.api.shared.python.utils import (
         error,
+        get_origin,
         options,
         str_to_bool,
         success,
@@ -29,7 +30,7 @@ if str(os.environ.get("LOCAL")).lower() == "true":
     )
 else:
     from auth import verify_token
-    from utils import error, options, str_to_bool, success, verify_user
+    from utils import error, get_origin, options, str_to_bool, success, verify_user
 
 s3 = boto3.resource("s3")
 
@@ -101,17 +102,18 @@ def handle_trade(event: dict[str, Any], _: Any) -> dict[str, Any]:
     Returns:
         API response with holdings data or error.
     """
+    origin = get_origin(event)
     if event["httpMethod"].upper() == "OPTIONS":
-        return options(event)
+        return options(origin)
 
     verified = verify_user(event)
 
     if not (verified and verified["email"] == os.environ["RH_USERNAME"]):
-        return error(401, "This account is not verified.", event)
+        return error(401, "This account is not verified.", origin)
     params = event["queryStringParameters"]
     variant = str_to_bool(str(params and params.get("variant")))
     login(variant)
-    response = get_trade(event)
+    response = get_trade(origin)
     return response
 
 
@@ -192,11 +194,11 @@ def login(variant: bool = False) -> None:
         print(f"Warning: Could not save auth file to S3: {e}")
 
 
-def get_trade(event: dict[str, Any] | None = None) -> dict[str, Any]:
+def get_trade(origin: str = "") -> dict[str, Any]:
     """Get current holdings with options positions.
 
     Args:
-        event: Optional API Gateway event for CORS origin.
+        origin: Validated CORS origin.
 
     Returns:
         API response with holdings data.
@@ -232,7 +234,7 @@ def get_trade(event: dict[str, Any] | None = None) -> dict[str, Any]:
         key=lambda holding: holding["symbol"],
     )
     body = [holding | {"key": idx} for idx, holding in enumerate(sorted_holdings)]
-    return success(body, event=event)
+    return success(body, origin=origin)
 
 
 def post_trade(event: dict[str, Any]) -> dict[str, Any]:
