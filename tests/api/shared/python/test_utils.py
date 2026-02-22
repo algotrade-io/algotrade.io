@@ -51,7 +51,7 @@ def test_error() -> None:
     err = error(401, "Unauthorized")
     assert err["statusCode"] == 401
     assert err["body"] == '{"message": "Unauthorized"}'
-    assert err["headers"]["Access-Control-Allow-Origin"] == "*"
+    assert err["headers"]["Access-Control-Allow-Origin"] == "https://algotrade.io"
 
 
 def test_options() -> None:
@@ -59,7 +59,7 @@ def test_options() -> None:
     opts = options()
     assert opts["statusCode"] == 200
     headers = opts["headers"]
-    assert headers["Access-Control-Allow-Origin"] == "*"
+    assert headers["Access-Control-Allow-Origin"] == "https://algotrade.io"
     assert headers["Access-Control-Allow-Credentials"] == "true"
     assert headers["Access-Control-Allow-Methods"] == "GET,HEAD,OPTIONS,POST,PUT,DELETE"
     assert headers["Access-Control-Allow-Headers"] == (

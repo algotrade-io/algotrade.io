@@ -13,4 +13,4 @@ def test_get_exercise_log() -> None:
     assert {"Date", "Id", "Weight", "Reps", "Exercise", "Volume", "1RM"}.issubset(
         data[0].keys()
     )
-    assert res["headers"]["Access-Control-Allow-Origin"] == "*"
+    assert res["headers"]["Access-Control-Allow-Origin"] == "https://algotrade.io"

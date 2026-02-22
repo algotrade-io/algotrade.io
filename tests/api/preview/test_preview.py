@@ -31,4 +31,4 @@ def test_get_preview() -> None:
         "Sortino Ratio",
     }.issubset({datum["metric"] for datum in data["USD"]["stats"]})
 
-    assert res["headers"]["Access-Control-Allow-Origin"] == "*"
+    assert res["headers"]["Access-Control-Allow-Origin"] == "https://algotrade.io"

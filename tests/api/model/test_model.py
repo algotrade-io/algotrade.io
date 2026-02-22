@@ -23,7 +23,7 @@ def test_get_model() -> None:
     assert isinstance(data["num_features"], int)
     assert isinstance(data["accuracy"], float)
     assert data["accuracy"] <= 1.0
-    assert res["headers"]["Access-Control-Allow-Origin"] == "*"
+    assert res["headers"]["Access-Control-Allow-Origin"] == "https://algotrade.io"
 
 
 def _verify_visualization(data: dict, dims: str | int) -> None:
@@ -52,7 +52,7 @@ def test_get_visualization() -> None:
         data = json.loads(res["body"])
         assert {"actual", "centroid", "radius", "grid", "preds"}.issubset(data.keys())
         _verify_visualization(data, dims)
-        assert res["headers"]["Access-Control-Allow-Origin"] == "*"
+        assert res["headers"]["Access-Control-Allow-Origin"] == "https://algotrade.io"
 
 
 encoder = NumpyEncoder()
