@@ -133,10 +133,8 @@ def post_checkout(event: dict[str, Any]) -> dict[str, Any]:
             existing_url = checkout["url"]
             if "cs_" in existing_url:
                 session_id_start = existing_url.find("cs_")
-                # Handle URLs with or without # fragment
-                hash_pos = existing_url.find("#", session_id_start)
                 session_id = existing_url[
-                    session_id_start : hash_pos if hash_pos != -1 else None
+                    session_id_start : existing_url.find("#", session_id_start)
                 ]
                 if session_id:
                     existing_session = stripe.checkout.Session.retrieve(session_id)
