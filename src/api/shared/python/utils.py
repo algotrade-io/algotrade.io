@@ -27,11 +27,6 @@ def get_origin(event: dict[str, Any]) -> str:
     """
     headers = event.get("headers") or {}
     origin = headers.get("origin", headers.get("referer", "").rstrip("/"))
-    print(
-        f"Origin header: {headers.get('origin')}, Referer header: {headers.get('referer')}"
-    )
-    print(f"Received origin: {origin}")
-    print(f"Headers: {headers}")
     return origin if origin in ALLOWED_ORIGINS else f"https://{DOMAIN}"
 
 
