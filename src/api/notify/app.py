@@ -21,6 +21,8 @@ from utils import (
     enough_time_has_passed,
     error,
     get_email,
+    get_origin,
+    normalize_headers,
     success,
     transform_signal,
 )
@@ -187,12 +189,13 @@ def post_notify(event: dict[str, Any], _: Any) -> dict[str, Any]:
         Success response or error if authentication fails.
     """
     emit_secret = os.environ["EMIT_SECRET"]
-    req_headers = event["headers"]
-    header = "emit_secret"
+    req_headers = normalize_headers(event)
+    origin = get_origin(event)
+    header = "emit-secret"
     if not req_headers.get(header) == emit_secret:
         sleep(0 if TEST else 10)
         print("Incorrect emit secret provided.")
-        return error(401, "Provide a valid emit secret.")
+        return error(401, "Provide a valid emit secret.", origin)
     req_body = json.loads(event["body"])
     signal = transform_signal(req_body)
     # NOTE: PynamoDB requires explicit `== True` comparisons for BooleanAttribute
@@ -219,10 +222,10 @@ def post_notify(event: dict[str, Any], _: Any) -> dict[str, Any]:
     total_users = processor.total
     success_ratio = num_notified / total_users if total_users else 1
     if success_ratio < 0.95:
-        return error(500, "Notifications failed to send.")
+        return error(500, "Notifications failed to send.", origin)
 
     response = {"message": "Notifications delivered."}
-    return success(response)
+    return success(response, origin=origin)
 
 
 def notify_email(user: UserModel, signal: dict[str, Any]) -> None:

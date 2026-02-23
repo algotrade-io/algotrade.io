@@ -1,6 +1,5 @@
 import { Typography, Table, Button, notification } from "antd";
 import { useState, useEffect, useReducer } from "react";
-import { NavLink } from "react-router-dom";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 const { Title } = Typography;
 import { getApiUrl, Toggle, getEnvironment, isEmpty } from "@/utils";
@@ -12,6 +11,7 @@ import tradeStyles from "./index.module.less";
 import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { getHostname } from "@/utils/env";
 import type { Holding, TradeMessage, TradeResult, TradeLoadingState, QueueState } from "./types";
+import type { AuthUser } from "@/types";
 
 
 const isLocal = getEnvironment() === "local";
@@ -41,20 +41,24 @@ const TradePage = () => {
   // this fixes too many requests issue and websocket issue
 
 
-  const format = (prefix = '', suffix = '', mult = 1, color = (_: number) => 'inherit', arrow = false) => (toRound: unknown): React.ReactNode => {
-    let num = parseFloat(String(toRound)) * mult;
-    return num ? (
-      <>
-        <span style={{ color: color(num) }}>{`${prefix}${num % 1 ? num.toFixed(2) : num}${suffix}`}</span>
-        <span style={{ color: num >= 0 ? 'cyan' : 'magenta' }}>{arrow && (num >= 0 ? ' ▲' : ' ▼') || ''}</span>
-      </>) : '';
-  }
+  const format = (prefix = '', suffix = '', mult = 1, color = (_: number) => 'inherit', arrow = false) => {
+    const FormatValue = (toRound: unknown): React.ReactNode => {
+      const num = parseFloat(String(toRound)) * mult;
+      return num ? (
+        <>
+          <span style={{ color: color(num) }}>{`${prefix}${num % 1 ? num.toFixed(2) : num}${suffix}`}</span>
+          <span style={{ color: num >= 0 ? 'cyan' : 'magenta' }}>{arrow && (num >= 0 ? ' ▲' : ' ▼') || ''}</span>
+        </>) : '';
+    };
+    FormatValue.displayName = 'FormatValue';
+    return FormatValue;
+  };
 
   // Helper type guard
   const isTradeResult = (val: unknown): val is TradeResult =>
     typeof val === 'object' && val !== null && 'direction' in val;
 
-  const createColumn = ({ dataName = '', displayName = '', render = (s: unknown): React.ReactNode => String(s), sort = null as any }) => (
+  const createColumn = ({ dataName = '', displayName = '', render = (s: unknown): React.ReactNode => String(s), sort = null as boolean | { defaultSortOrder?: string; sorter: { compare: (a: Holding, b: Holding) => number } } | null }) => (
     Object.assign({
       title: (displayName || dataName).toLowerCase().replace(/(^| )(\w)/g, (s: string) => s.toUpperCase()),
       dataIndex: dataName,
@@ -63,7 +67,7 @@ const TradePage = () => {
       render
     }, sort && Object.assign({
       sorter: { compare: (a: Holding, b: Holding) => Number(a[dataName as keyof Holding]) - Number(b[dataName as keyof Holding]) }
-    }, sort)));
+    }, typeof sort === 'object' ? sort : {})));
   // can add route cache=random to end to force new connections?
   // and set share=false
   const socketUrl = `wss://api2.${getHostname(false)}`;
@@ -123,7 +127,7 @@ const TradePage = () => {
         }
       })
     }
-  }, [message]);
+  }, [message, selector, variant]);
   const handleQueue = (holding: Holding) => {
     const holdingDir = Boolean(holding.open_contracts);
     const queueIsEmpty = queue[selector].size === 0;
@@ -147,7 +151,7 @@ const TradePage = () => {
       message: "Failure",
       description: `Failed to execute order for [${symbols.join(', ')}].`,
     });
-    const token = (loggedIn as any)?.signInUserSession?.idToken?.jwtToken;
+    const token = (loggedIn as AuthUser)?.signInUserSession?.idToken?.jwtToken;
     // const url = `${getApiUrl({ localOverride: "dev" })}/trade?variant=${Boolean(variant)}`;
     try {
       sendMessage({ token, type: direction ? 'BUY' : 'SELL', symbols: symbols, variant });
@@ -161,7 +165,7 @@ const TradePage = () => {
       //         "Access-Control-Allow-Origin": "*"
       //     }
       // }
-      // buy result is putting statusCode body and headers all in body - fix in api
+      // buy result is putting statusCode body and headers all in body — fix in api
 
       // if ('error' in data[holding.symbol]) {
       //   renderError();
@@ -223,8 +227,8 @@ const TradePage = () => {
       dataName: 'expiration', sort: {
         defaultSortOrder: 'ascend', sorter: {
           compare: (a: Holding, b: Holding) => {
-            let d1 = a.expiration ? Date.parse(a.expiration) : Date.now();
-            let d2 = b.expiration ? Date.parse(b.expiration) : Date.now();
+            const d1 = a.expiration ? Date.parse(a.expiration) : Date.now();
+            const d2 = b.expiration ? Date.parse(b.expiration) : Date.now();
             return d1 - d2;
           }
         }
@@ -245,20 +249,20 @@ const TradePage = () => {
       }
     })
     // add chart for premium income per week
-    // include dividend income on chart - area chart
+    // include dividend income on chart — area chart
   ]
 
   useEffect(() => {
     if (loggedIn) {
       (async () => {
         setLoading(true);
-        const jwtToken = (loggedIn as any)?.signInUserSession?.idToken?.jwtToken;
+        const jwtToken = (loggedIn as AuthUser)?.signInUserSession?.idToken?.jwtToken;
         const variants = [0, 1];
         try {
           const promises = variants.map(async v => {
             const url = `${getApiUrl({ localOverride: "dev" })}/trade?variant=${Boolean(v)}`;
             try {
-              const response = await fetch(url, { method: "GET", headers: { Authorization: jwtToken } });
+              const response = await fetch(url, { method: "GET", headers: { Authorization: jwtToken || '' } });
               if (response.ok) {
                 const data = await response.json();
                 return data;
@@ -360,7 +364,7 @@ const TradePage = () => {
   // execute (magenta) button executes strategy for all assets
   // graph of covered call income over time
   // total + for the week, filter sum to include filled orders after start of day Mon
-  // include dividend income on chart - area chart
+  // include dividend income on chart — area chart
   return (
     <>
       <span style={{ display: 'flex', justifyContent: 'space-between' }}>

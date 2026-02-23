@@ -2,13 +2,13 @@
 
 This project contains source code and supporting files for a serverless application for classifying handwritten digits using a Machine Learning model in [scikit-learn](https://scikit-learn.org/). It includes the following files and folders:
 
-- home/app.py - Code for the application's Lambda function including the code for ML inferencing.
-- home/Dockerfile - The Dockerfile to build the container image.
-- home/model - A simple scikit-learn model for classifying handwritten digits trained against the MNIST dataset.
-- home/requirements.txt - The pip requirements to be installed during the container build.
-- events - Invocation events that you can use to invoke the function.
-- template.yaml - A template that defines the application's AWS resources.
-- training.ipynb - A jupyter notebook to show the training process for the sample model at `home/model`.
+- home/app.py — Code for the application's Lambda function including the code for ML inferencing.
+- home/Dockerfile — The Dockerfile to build the container image.
+- home/model — A simple scikit-learn model for classifying handwritten digits trained against the MNIST dataset.
+- home/requirements.txt — The pip requirements to be installed during the container build.
+- events — Invocation events that you can use to invoke the function.
+- template.yaml — A template that defines the application's AWS resources.
+- training.ipynb — A jupyter notebook to show the training process for the sample model at `home/model`.
 
 The application uses several AWS resources, including Lambda functions and an API Gateway API. These resources are defined in the `template.yaml` file in this project. You can update the template to add AWS resources through the same deployment process that updates your application code.
 

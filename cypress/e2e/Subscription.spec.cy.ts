@@ -1,4 +1,4 @@
-import { domain, handleException } from "../support/e2e";
+import { domain } from "../support/e2e";
 
 describe('Subscription', () => {
     beforeEach(() => {
@@ -39,7 +39,7 @@ describe('Subscription', () => {
       cy.contains('rough estimation');
       
       // Verify signal timing info
-      cy.contains('00:00 - 00:10 UTC');
+      cy.contains('00:00 — 00:10 UTC');
     })
 
     it('Show login modal when not logged in and clicking Subscribe', () => {
@@ -74,13 +74,13 @@ describe('Subscription', () => {
           cy.get('input[name="billingPostalCode"]').type('95014');
           cy.get('select[name="billingAdministrativeArea"').select('CA')
           // cy.get('input[type="checkbox"]').uncheck()
-          cy.wait(5000)
-          cy.get('.SubmitButton').contains('span', 'Subscribe').click({force: true});
-          cy.wait(15000)
+          cy.get('.SubmitButton--complete').contains('span', 'Subscribe').click({force: true});
         });
 
+        // Wait for redirect back to app after Stripe processes subscription
+        cy.get('.ant-ribbon', { timeout: 30000 }).contains('Current Plan');
+
         // Cancel subscription through Billing page
-        cy.get('.ant-ribbon').contains('Current Plan');
         cy.contains('button', 'Manage subscription').click();
         cy.origin('https://billing.stripe.com', () => {
           // cy.on('uncaught:exception', (e) => {

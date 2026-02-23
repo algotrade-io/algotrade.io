@@ -35,11 +35,14 @@ const AlgorithmPage = () => {
   // const size = 0.3333;
   const width = 3;
   const numTicks = Math.ceil(1 / size);
-  const tickText = Array(numTicks).fill("");
-  tickText[0] = "SELL";
-  tickText[numTicks - 1] = "BUY";
-  tickText[Math.floor(numTicks / 2)] = "HODL";
-  const tickVals = tickText.map((_, idx) => size * idx);
+  const { tickText, tickVals } = useMemo(() => {
+    const text = Array(numTicks).fill("");
+    text[0] = "SELL";
+    text[numTicks - 1] = "BUY";
+    text[Math.floor(numTicks / 2)] = "HODL";
+    const vals = text.map((_, idx) => size * idx);
+    return { tickText: text, tickVals: vals };
+  }, [numTicks, size]);
   useEffect(() => {
     const url = `${getApiUrl({ localOverride: "prod" })}/model`;
     fetch(url, { method: "GET" })
@@ -238,7 +241,7 @@ const AlgorithmPage = () => {
         config={{ displayModeBar: false }}
       />
     ),
-    [viz2D]
+    [viz2D, tickText, tickVals]
   );
 
   const plot3D = useMemo(
@@ -356,7 +359,7 @@ const AlgorithmPage = () => {
         config={{ displayModeBar: false }}
       />
     ),
-    [viz3D, eyeIdx, up]
+    [viz3D, eyeIdx, up, tickText, tickVals]
   );
 
   return (
@@ -410,8 +413,8 @@ const AlgorithmPage = () => {
                 <Col span={24} style={{ textAlign: "justify" }}>
                   The points on the plot represent historical market data reduced
                   from {metadata[2]?.stat} dimensions to {toggle2D ? "2D" : "3D"}.
-                  The filled regions represent the model's predictions. Based on
-                  which region today's data point occupies, we may be able to
+                  The filled regions represent the model&apos;s predictions. Based on
+                  which region today&apos;s data point occupies, we may be able to
                   predict whether now is a good time to{" "}
                   <b>
                     <span style={{ color: "#52e5ff" }}>BUY</span>
@@ -422,8 +425,8 @@ const AlgorithmPage = () => {
                   </b>
                   .
                 </Col>
-                {metadata?.map((datum) => (
-                  <Col span={12}>
+                {metadata?.map((datum, idx) => (
+                  <Col span={12} key={idx}>
                     <Card>
                       <Statistic title={datum.metadata} value={datum.stat} />
                     </Card>

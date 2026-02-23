@@ -18,7 +18,7 @@ describe('Auth', () => {
         cy.reload()
 
         // Read disclaimer
-        let selector = '.ant-modal-footer';
+        const selector = '.ant-modal-footer';
         cy.get(selector).find('input[type="checkbox"]').click()
         cy.get(selector).find('button').contains('OK').click();
         cy.get(selector).should('not.be.visible');

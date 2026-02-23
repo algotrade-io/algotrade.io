@@ -4,7 +4,7 @@
  */
 
 // https://stackoverflow.com/questions/17428587/transposing-a-2d-array-in-javascript
-export const transpose = (matrix: any[][]) =>
+export const transpose = <T>(matrix: T[][]) =>
   matrix[0].map((_, i) => matrix.map((row) => row[i]));
 
 // dot product

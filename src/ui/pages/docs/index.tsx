@@ -9,6 +9,7 @@ import {
 } from "antd";
 import { getApiUrl, signalColors, signalEmojis } from "@/utils";
 import { AccountContext } from "@/layouts";
+import type { Account } from "@/types";
 import swaggerSpec from "@/gen/swagger.json";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import { CopyOutlined } from "@ant-design/icons";
@@ -41,8 +42,8 @@ const APIKey = styled(Input.Password)`
   }
 `;
 
-export const copyToClipboard = (val: string, name: string) =>
-  navigator.clipboard.writeText(val).then(
+export const copyToClipboard = (val: string | undefined, name: string) =>
+  navigator.clipboard.writeText(val || '').then(
     () => message.success(`Copied ${name} to clipboard.`),
     () => message.error(`Did not copy ${name} to clipboard`)
   );
@@ -51,7 +52,7 @@ const DocsPage = () => {
   const { user: loggedIn } = useAuthenticator((context) => [context.user]);
   const { account, accountLoading, loginLoading, setShowLogin } = useContext(
     AccountContext
-  ) as { account: any; accountLoading: boolean; loginLoading: boolean; setShowLogin: (show: boolean) => void };
+  ) as { account: Account | null; accountLoading: boolean; loginLoading: boolean; setShowLogin: (show: boolean) => void };
   const loading = loginLoading || accountLoading;
 
   // TODO:
@@ -102,16 +103,16 @@ const DocsPage = () => {
       )}
       <Title level={2}>API</Title>
       <SwaggerUI
-        onComplete={(ui: any) =>
-          ui.preauthorizeApiKey("ApiKeyAuth", account?.api_key)
+        onComplete={(ui) =>
+          ui.preauthorizeApiKey?.("ApiKeyAuth", account?.api_key || "")
         }
-        spec={swaggerSpec}
+        spec={swaggerSpec as object}
         // can make this 0 to collapse Schema
         // or 1 to reveal Schema names
         defaultModelsExpandDepth={0}
         persistAuthorization
         displayRequestDuration
-        requestInterceptor={(req: Request) => {
+        requestInterceptor={(req) => {
           const { headers } = req;
           if (!("X-API-Key" in headers)) {
             notification.error({
@@ -136,7 +137,7 @@ const DocsPage = () => {
           }
           return req;
         }}
-        responseInterceptor={(res: Response) => {
+        responseInterceptor={(res) => {
           // consider dropping this mapping and using status codes and JSON.parse(res.text).message directly
           const errors: Record<number, { message: string; description: string }> = {
             401: {
@@ -154,7 +155,7 @@ const DocsPage = () => {
           };
           const { ok, status } = res;
           if (ok) {
-            const { data, message } = JSON.parse((res as any).text) as { data: { Signal: keyof typeof signalColors }[]; message: string };
+            const { data, message } = JSON.parse(res.text || '{}') as { data: { Signal: keyof typeof signalColors }[]; message: string };
             const signal = data[data.length - 1].Signal;
             notification.success({
               duration: 10,
@@ -188,6 +189,7 @@ const DocsPage = () => {
                   : "Your request failed. Check the error message.",
             });
           }
+          return res;
         }}
       />
     </>

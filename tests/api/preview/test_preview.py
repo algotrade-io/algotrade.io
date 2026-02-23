@@ -1,13 +1,17 @@
 """Tests for preview Lambda handler."""
 
 import json
+import os
 
 from preview.app import get_preview
+
+DOMAIN = os.environ["DOMAIN"]
 
 
 def test_get_preview() -> None:
     """Test get_preview returns trading performance data."""
-    res = get_preview()
+    event = {"headers": {"origin": f"https://dev.{DOMAIN}"}}
+    res = get_preview(event, None)
     assert res["statusCode"] == 200
     data = json.loads(res["body"])
 
@@ -31,4 +35,4 @@ def test_get_preview() -> None:
         "Sortino Ratio",
     }.issubset({datum["metric"] for datum in data["USD"]["stats"]})
 
-    assert res["headers"]["Access-Control-Allow-Origin"] == "*"
+    assert res["headers"]["Access-Control-Allow-Origin"] == f"https://dev.{DOMAIN}"

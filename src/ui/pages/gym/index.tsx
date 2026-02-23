@@ -1,10 +1,22 @@
 import { useState, useEffect } from "react";
 import { Typography, Table, Input } from "antd";
+import type { TableColumnsType } from "antd";
 import { LoadingOutlined, SearchOutlined } from "@ant-design/icons";
 import { getApiUrl } from "@/utils";
 const { Title, Text } = Typography;
 
-const columns: any[] = [
+interface GymLogEntry {
+  Date: string;
+  Id: string;
+  Weight: number;
+  Reps: number;
+  Exercise: string;
+  Volume: number;
+  "1RM": number;
+  key?: string | number;
+}
+
+const columns: TableColumnsType<GymLogEntry> = [
   {
     title: "Date",
     dataIndex: "Date",
@@ -44,7 +56,7 @@ const columns: any[] = [
 ];
 
 const GymPage = () => {
-  const [log, setLog] = useState([]);
+  const [log, setLog] = useState<GymLogEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

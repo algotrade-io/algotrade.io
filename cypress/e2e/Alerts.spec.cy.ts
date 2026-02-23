@@ -40,7 +40,7 @@ describe('Alerts', () => {
     it('Display webhook section', () => {
       cy.contains('Webhook');
       cy.contains('webhook event');
-      cy.contains('00:00 - 00:10 UTC');
+      cy.contains('00:00 — 00:10 UTC');
       cy.contains('automated trading');
       cy.contains('Listen for events');
       cy.contains('Sample Code');

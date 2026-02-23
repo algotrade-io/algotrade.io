@@ -5,7 +5,8 @@ import codeCoverage from '@cypress/code-coverage/task'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const domain = path.basename(__dirname);
+const ROOT_DIR = path.resolve(__dirname, '../../..');
+const domain = path.basename(ROOT_DIR);
 
 export default {
   experimentalModifyObstructiveThirdPartyCode: true,

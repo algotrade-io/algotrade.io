@@ -1,4 +1,3 @@
-import React from "react";
 import { useState, useEffect, useContext } from "react";
 import { NavLink, useSearchParams } from "react-router-dom";
 import { Typography, Tooltip, Badge, Card, Button, Spin, Alert } from "antd";
@@ -9,6 +8,7 @@ import { useAuthenticator } from "@aws-amplify/ui-react";
 import styled from "styled-components";
 import { AccountContext } from "../../layouts";
 import CUBE from "@/assets/cube.gif";
+import { AuthUser, Account } from "@/types";
 
 import overrides from "./index.module.less";
 
@@ -28,12 +28,11 @@ const spinner = <Spin style={{ width: "100%" }} indicator={antIcon} />;
 
 const SubscriptionPage = () => {
   const { user: loggedIn } = useAuthenticator((context) => [context.user]);
-  const { account, accountLoading, loginLoading, setShowLogin } = useContext(
+  const { account, accountLoading: _accountLoading, loginLoading: _loginLoading, setShowLogin } = useContext(
     AccountContext
-  ) as { account: any; accountLoading: boolean; loginLoading: boolean; setShowLogin: (show: boolean) => void };
-  const loading = loginLoading || accountLoading;
+  ) as { account: Account | null; accountLoading: boolean; loginLoading: boolean; setShowLogin: (show: boolean) => void };
   const [minInvestment, setMinInvestment] = useState<string>();
-  const [price, setPrice] = useState<any>();
+  const [price, setPrice] = useState<{ unit_amount: number; recurring?: { interval: string; interval_count: number } } | null>(null);
   const [priceLoading, setPriceLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [billingLoading, setBillingLoading] = useState(false);
@@ -50,11 +49,11 @@ const SubscriptionPage = () => {
       return;
     }
     setCheckoutLoading(true);
-    const jwtToken = (loggedIn as any)?.signInUserSession?.idToken?.jwtToken;
+    const jwtToken = (loggedIn as AuthUser)?.signInUserSession?.idToken?.jwtToken;
     const url = `${getApiUrl()}/checkout`;
     fetch(url, {
       method: "POST",
-      headers: { Authorization: jwtToken },
+      headers: { Authorization: jwtToken || '' },
     })
       .then((response) => {
         if (!response.ok) {
@@ -69,11 +68,11 @@ const SubscriptionPage = () => {
 
   const onBilling = () => {
     setBillingLoading(true);
-    const jwtToken = (loggedIn as any)?.signInUserSession?.idToken?.jwtToken;
+    const jwtToken = (loggedIn as AuthUser)?.signInUserSession?.idToken?.jwtToken;
     const url = `${getApiUrl()}/billing`;
     fetch(url, {
       method: "POST",
-      headers: { Authorization: jwtToken },
+      headers: { Authorization: jwtToken || '' },
     })
       .then((response) => {
         if (!response.ok) {
@@ -134,7 +133,7 @@ const SubscriptionPage = () => {
           const totalBTCRate = last.Bal - 1;
           const monthlyBTCRate = (totalBTCRate / days) * 30;
           // this should be tied to val in backend / maybe make endpoint that returns backend constant
-          const monthlySubUSD = price?.unit_amount / 100;
+          const monthlySubUSD = (price?.unit_amount ?? 0) / 100;
           const monthlySubBTC = monthlySubUSD / btcPrice;
           // principal * monthly rate >= monthlysubrate
           const minBTCInvestment = (monthlySubBTC / monthlyBTCRate).toPrecision(
@@ -162,13 +161,13 @@ const SubscriptionPage = () => {
       }}>
       <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <span style={{ display: 'flex', alignItems: 'center' }}>
-          <img height="50px" src={CUBE}></img>
+          <img height="50px" src={CUBE} alt="Signals API icon"></img>
           <Title style={{ marginBottom: 0, marginLeft: '16px' }} level={3}>{'Signals API'}</Title>
         </span>
         <Title style={{ marginBottom: 0 }} level={3}>
           {/* <> */}
-          <div>{`$${Number(price?.unit_amount / 100).toFixed(2)} `}</div>
-          <div style={{ color: 'rgba(255, 255, 255, 0.45', fontSize: '16px' }}>{`/ ${price?.recurring?.interval_count > 1 ? `${price?.recurring?.interval_count} ` : ''}${price?.recurring?.interval}${price?.recurring?.interval_count > 1 ? 's' : ''}`}</div>
+          <div>{`$${Number((price?.unit_amount ?? 0) / 100).toFixed(2)} `}</div>
+          <div style={{ color: 'rgba(255, 255, 255, 0.45', fontSize: '16px' }}>{`/ ${(price?.recurring?.interval_count ?? 0) > 1 ? `${price?.recurring?.interval_count} ` : ''}${price?.recurring?.interval ?? ''}${(price?.recurring?.interval_count ?? 0) > 1 ? 's' : ''}`}</div>
           {/* </> */}
         </Title>
       </span>
@@ -185,7 +184,7 @@ const SubscriptionPage = () => {
           /signals
         </span> API</li>
 
-        <li>provides up to a week's worth of the latest BUY and SELL signals</li>
+        <li>provides up to a week&apos;s worth of the latest BUY and SELL signals</li>
         <li>maximum of 5 requests / day</li>
       </List>
       <div style={{ display: 'flex', justifyContent: 'center' }}>
@@ -223,7 +222,7 @@ const SubscriptionPage = () => {
         }}
       >
         <Title level={5} style={{ width: "75%" }}>
-          to the algorithm's <span style={{ color: "#52e5ff" }}>BUY</span> and{" "}
+          to the algorithm&apos;s <span style={{ color: "#52e5ff" }}>BUY</span> and{" "}
           <span style={{ color: "magenta" }}>SELL</span> signals
         </Title>
       </span>
@@ -247,7 +246,7 @@ const SubscriptionPage = () => {
                   width: '100%', display: 'flex',
                   justifyContent: 'space-between' // can also be 'space-evenly'
                 }}>
-                  <div>New signals are produced between 00:00 - 00:10 UTC.</div>
+                  <div>New signals are produced between 00:00 — 00:10 UTC.</div>
                   {minInvestment && (
                     <div
                       style={{ marginBottom: "24px" }}
@@ -259,7 +258,7 @@ const SubscriptionPage = () => {
                   <b>Disclaimer:</b>
                   {/* Maybe merge the following disclaimer divs */}
                   <div>
-                    Note that the algorithm's signals <b>DO NOT</b> constitute
+                    Note that the algorithm&apos;s signals <b>DO NOT</b> constitute
                     investment advice.
                     {" "}
                     Do your own research, make your own judgements, and invest

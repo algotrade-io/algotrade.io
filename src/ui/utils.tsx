@@ -19,7 +19,7 @@ export * from './utils/index';
 export { signalColors, signalEmojis, toggleColors } from './tokens';
 import { toggleColors, colors } from './tokens';
 
-// Styled Components - kept here as they depend on styled-components
+// Styled Components — kept here as they depend on styled-components
 export const Toggle = styled(Segmented)`
 
   .ant-segmented-item-selected {
@@ -44,4 +44,4 @@ export const Toggle = styled(Segmented)`
   }
 `;
 
-export const isEmpty = (obj: Object) => !(obj && Object.keys(obj).length)
+export const isEmpty = (obj: object) => !(obj && Object.keys(obj).length)

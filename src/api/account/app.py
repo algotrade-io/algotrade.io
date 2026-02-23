@@ -7,7 +7,7 @@ from typing import Any
 
 import stripe
 from models import ALERTS_LOOKUP, ATTRS_LOOKUP, UserModel
-from utils import error, options, success, verify_user
+from utils import error, get_origin, options, success, verify_user
 
 stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
 domain = os.environ["DOMAIN"]
@@ -24,15 +24,13 @@ def handle_account(event: dict[str, Any], _: Any) -> dict[str, Any]:
         API response dictionary with statusCode and body.
     """
     if event["httpMethod"].upper() == "OPTIONS":
-        response = options()
-    elif event["httpMethod"].upper() == "POST":
-        response = post_account(event)
-    elif event["httpMethod"].upper() == "DELETE":
-        response = delete_account(event)
-    else:
-        response = get_account(event)
+        return options(get_origin(event))
 
-    return response
+    if event["httpMethod"].upper() == "POST":
+        return post_account(event)
+    if event["httpMethod"].upper() == "DELETE":
+        return delete_account(event)
+    return get_account(event)
 
 
 def get_account(event: dict[str, Any]) -> dict[str, Any]:
@@ -44,10 +42,11 @@ def get_account(event: dict[str, Any]) -> dict[str, Any]:
     Returns:
         Success response with user data or 401 error.
     """
+    origin = get_origin(event)
     verified = verify_user(event)
 
     if not verified:
-        return error(401, "This account is not verified.")
+        return error(401, "This account is not verified.", origin)
 
     email = verified["email"]
     try:
@@ -56,7 +55,7 @@ def get_account(event: dict[str, Any]) -> dict[str, Any]:
         user = UserModel(email)
         user.save()
 
-    return success(user.to_simple_dict())
+    return success(user.to_simple_dict(), origin=origin)
 
 
 def post_account(event: dict[str, Any]) -> dict[str, Any]:
@@ -68,10 +67,11 @@ def post_account(event: dict[str, Any]) -> dict[str, Any]:
     Returns:
         Success response with updated user data or 401 error.
     """
+    origin = get_origin(event)
     verified = verify_user(event)
 
     if not verified:
-        return error(401, "This account is not verified.")
+        return error(401, "This account is not verified.", origin)
 
     email = verified["email"]
     user = UserModel.get(email)
@@ -108,7 +108,7 @@ def post_account(event: dict[str, Any]) -> dict[str, Any]:
     if actions:
         user.update(actions=actions)
 
-    return success(user.to_simple_dict())
+    return success(user.to_simple_dict(), origin=origin)
 
 
 def delete_account(event: dict[str, Any]) -> dict[str, Any]:
@@ -120,6 +120,7 @@ def delete_account(event: dict[str, Any]) -> dict[str, Any]:
     Returns:
         Success response with 'OK' message.
     """
+    origin = get_origin(event)
     claims = event["requestContext"]["authorizer"]["claims"]
     email = claims["email"]
     user = UserModel.get(email)
@@ -129,4 +130,4 @@ def delete_account(event: dict[str, Any]) -> dict[str, Any]:
         stripe.Customer.delete(customer_id)
     user.delete()
 
-    return success("OK")
+    return success("OK", origin=origin)

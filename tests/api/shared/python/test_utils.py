@@ -7,10 +7,65 @@ from shared.python.utils import (
     enough_time_has_passed,
     error,
     get_email,
+    get_origin,
+    normalize_headers,
     options,
     transform_signal,
     verify_user,
 )
+
+DOMAIN = os.environ["DOMAIN"]
+
+
+def test_normalize_headers() -> None:
+    """Test normalize_headers lowercases all header keys."""
+    event = {"headers": {"X-API-Key": "secret", "Content-Type": "application/json"}}
+    result = normalize_headers(event)
+    assert result == {"x-api-key": "secret", "content-type": "application/json"}
+
+    # Empty headers
+    event = {"headers": {}}
+    assert normalize_headers(event) == {}
+
+    # Missing headers key
+    event = {}
+    assert normalize_headers(event) == {}
+
+    # None headers
+    event = {"headers": None}
+    assert normalize_headers(event) == {}
+
+
+def test_get_origin() -> None:
+    """Test get_origin returns allowed origins or falls back to production."""
+    # Allowed origins should pass through
+    event = {"headers": {"origin": f"https://{DOMAIN}"}}
+    assert get_origin(event) == f"https://{DOMAIN}"
+
+    event = {"headers": {"origin": f"https://dev.{DOMAIN}"}}
+    assert get_origin(event) == f"https://dev.{DOMAIN}"
+
+    event = {"headers": {"origin": "http://localhost:8000"}}
+    assert get_origin(event) == "http://localhost:8000"
+
+    # Disallowed origin should fall back to production
+    event = {"headers": {"origin": "https://evil.com"}}
+    assert get_origin(event) == f"https://{DOMAIN}"
+
+    # Missing origin should fall back to production
+    event = {"headers": {}}
+    assert get_origin(event) == f"https://{DOMAIN}"
+
+    # Missing headers should fall back to production
+    event = {}
+    assert get_origin(event) == f"https://{DOMAIN}"
+
+    # Mixed-case headers should be normalized
+    event = {"headers": {"Origin": f"https://{DOMAIN}"}}
+    assert get_origin(event) == f"https://{DOMAIN}"
+
+    event = {"headers": {"ORIGIN": "http://localhost:8000"}}
+    assert get_origin(event) == "http://localhost:8000"
 
 
 def test_get_email() -> None:
@@ -48,23 +103,33 @@ def test_enough_time_has_passed() -> None:
 
 def test_error() -> None:
     """Test error returns properly formatted error response."""
+    # Test with no origin (fallback to production domain)
     err = error(401, "Unauthorized")
     assert err["statusCode"] == 401
     assert err["body"] == '{"message": "Unauthorized"}'
-    assert err["headers"]["Access-Control-Allow-Origin"] == "*"
+    assert err["headers"]["Access-Control-Allow-Origin"] == f"https://{DOMAIN}"
+
+    # Test with dev origin
+    err = error(401, "Unauthorized", origin=f"https://dev.{DOMAIN}")
+    assert err["headers"]["Access-Control-Allow-Origin"] == f"https://dev.{DOMAIN}"
 
 
 def test_options() -> None:
     """Test options returns CORS headers."""
+    # Test with no origin (fallback to production domain)
     opts = options()
     assert opts["statusCode"] == 200
     headers = opts["headers"]
-    assert headers["Access-Control-Allow-Origin"] == "*"
+    assert headers["Access-Control-Allow-Origin"] == f"https://{DOMAIN}"
     assert headers["Access-Control-Allow-Credentials"] == "true"
     assert headers["Access-Control-Allow-Methods"] == "GET,HEAD,OPTIONS,POST,PUT,DELETE"
     assert headers["Access-Control-Allow-Headers"] == (
-        "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-API-Key"
+        "Origin, Referer, X-Requested-With, Content-Type, Accept, Authorization, X-API-Key"
     )
+
+    # Test with dev origin
+    opts = options(origin=f"https://dev.{DOMAIN}")
+    assert opts["headers"]["Access-Control-Allow-Origin"] == f"https://dev.{DOMAIN}"
 
 
 def test_verify_user() -> None:

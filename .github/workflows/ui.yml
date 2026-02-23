@@ -25,10 +25,10 @@ jobs:
 
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Use Node.js 18
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 18
 
@@ -45,7 +45,7 @@ jobs:
         run: |
           echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         name: Setup pnpm cache
         with:
           path: |
@@ -70,7 +70,8 @@ jobs:
           util/aws_exports.sh
           pnpm run swagger
 
-      # TODO: Lint step
+      - name: Lint
+        run: pnpm run lint
 
       - name: Typescript
         run: pnpm run typescript
@@ -113,14 +114,14 @@ jobs:
       #   run: sleep 30s
       
       - name: Run UI tests
-        uses: cypress-io/github-action@v6
+        uses: cypress-io/github-action@v7
         id: cypress
         continue-on-error: true
         with:
           record: true
           install: false
           wait-on: 'https://${{ env.AWS_S3_BUCKET }}'
-          config-file: cypress.config.ts
+          config-file: src/ui/config/cypress.config.ts
           command-prefix: "--"
         env:
           SIGNAL_EMAIL: ${{ secrets.SIGNAL_EMAIL }}
@@ -133,7 +134,7 @@ jobs:
         run: |
           echo Cypress finished with: ${{ steps.cypress.outcome }}
           echo See results at ${{ steps.cypress.outputs.resultsUrl }}
-          nyc report --reporter=text
-          nyc report --reporter=text-summary
-          nyc check-coverage
+          nyc report --nycrc-path src/ui/config/nyc.config.json --reporter=text
+          nyc report --nycrc-path src/ui/config/nyc.config.json --reporter=text-summary
+          nyc check-coverage --nycrc-path src/ui/config/nyc.config.json
           exit ${{ fromJSON('["0", "1"]')[steps.cypress.outcome == 'failure'] }}

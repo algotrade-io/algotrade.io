@@ -5,14 +5,22 @@
 
 import { getApiUrl } from './env';
 
-export const getLoginLoading = (setLoginLoading: any) => () => {
+export const getLoginLoading = (setLoginLoading: (loading: boolean) => void) => () => {
   setLoginLoading(window.location?.search?.indexOf("?code=") === 0);
 };
 
+interface AuthUser {
+  signInUserSession?: {
+    idToken?: {
+      jwtToken: string;
+    };
+  };
+}
+
 export const getAccount = (
-  loggedIn: any,
-  setAccount: any,
-  setAccountLoading: any
+  loggedIn: AuthUser | null,
+  setAccount: (account: unknown) => void,
+  setAccountLoading: (loading: boolean) => void
 ) => () => {
   if (loggedIn) {
     setAccountLoading(true);
@@ -20,7 +28,7 @@ export const getAccount = (
     const url = `${getApiUrl()}/account`;
     fetch(url, {
       method: "GET",
-      headers: { Authorization: jwtToken },
+      headers: { Authorization: jwtToken || '' },
     })
       .then((response) => response.json())
       .then((data) => setAccount(data))

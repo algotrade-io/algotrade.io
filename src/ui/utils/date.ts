@@ -11,7 +11,7 @@ export const getDateRange = (
   steps = 1
 ) => {
   const range: Date[] = [];
-  let curr = new Date(start);
+  const curr = new Date(start);
 
   if (isNaN(curr.getTime())) return range;
 

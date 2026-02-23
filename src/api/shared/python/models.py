@@ -67,7 +67,7 @@ class Alerts(MapAttribute):
     )
 
 
-# Derive ALERTS_LOOKUP from class introspection - single source of truth
+# Derive ALERTS_LOOKUP from class introspection — single source of truth
 ALERTS_LOOKUP = {
     name: {"attr": type(attr), "default": attr.default}
     for name, attr in Alerts.get_attributes().items()

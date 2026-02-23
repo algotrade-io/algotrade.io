@@ -50,8 +50,10 @@ def _verify_alerts(alerts: Alerts) -> None:
 class TestAlerts:
     """Tests for Alerts model."""
 
-    alerts = Alerts()
-    _verify_alerts(alerts)
+    def test_alerts_defaults(self) -> None:
+        """Test Alerts has correct default values."""
+        alerts = Alerts()
+        _verify_alerts(alerts)
 
 
 def _verify_permissions(perms: Permissions) -> None:
@@ -65,8 +67,10 @@ def _verify_permissions(perms: Permissions) -> None:
 class TestPermissions:
     """Tests for Permissions model."""
 
-    perms = Permissions()
-    _verify_permissions(perms)
+    def test_permissions_defaults(self) -> None:
+        """Test Permissions has correct default values."""
+        perms = Permissions()
+        _verify_permissions(perms)
 
 
 def _verify_checkout(checkout: Checkout) -> None:
@@ -80,8 +84,10 @@ def _verify_checkout(checkout: Checkout) -> None:
 class TestCheckout:
     """Tests for Checkout model."""
 
-    checkout = Checkout()
-    _verify_checkout(checkout)
+    def test_checkout_defaults(self) -> None:
+        """Test Checkout has correct default values."""
+        checkout = Checkout()
+        _verify_checkout(checkout)
 
 
 def _verify_stripe(stripe: Stripe) -> None:
@@ -93,59 +99,71 @@ def _verify_stripe(stripe: Stripe) -> None:
 class TestStripe:
     """Tests for Stripe model."""
 
-    stripe = Stripe()
-    _verify_stripe(stripe)
+    def test_stripe_defaults(self) -> None:
+        """Test Stripe has correct default values."""
+        stripe = Stripe()
+        _verify_stripe(stripe)
 
 
 class TestAPIKeyIndex:
     """Tests for APIKeyIndex model."""
 
-    api_key_index = APIKeyIndex()
-    assert "api_key" in dir(api_key_index)
+    def test_api_key_index_has_api_key_attr(self) -> None:
+        """Test APIKeyIndex has api_key attribute."""
+        api_key_index = APIKeyIndex()
+        assert "api_key" in dir(api_key_index)
 
 
 class TestInBetaIndex:
     """Tests for InBetaIndex model."""
 
-    in_beta_index = InBetaIndex()
-    assert "in_beta" in dir(in_beta_index)
+    def test_in_beta_index_has_in_beta_attr(self) -> None:
+        """Test InBetaIndex has in_beta attribute."""
+        in_beta_index = InBetaIndex()
+        assert "in_beta" in dir(in_beta_index)
 
 
 class TestCustomerIdIndex:
     """Tests for CustomerIdIndex model."""
 
-    customer_id_index = CustomerIdIndex()
-    assert "customer_id" in dir(customer_id_index)
+    def test_customer_id_index_has_customer_id_attr(self) -> None:
+        """Test CustomerIdIndex has customer_id attribute."""
+        customer_id_index = CustomerIdIndex()
+        assert "customer_id" in dir(customer_id_index)
 
 
 class TestSubscribedIndex:
     """Tests for SubscribedIndex model."""
 
-    subscribed_index = SubscribedIndex()
-    assert "subscribed" in dir(subscribed_index)
+    def test_subscribed_index_has_subscribed_attr(self) -> None:
+        """Test SubscribedIndex has subscribed attribute."""
+        subscribed_index = SubscribedIndex()
+        assert "subscribed" in dir(subscribed_index)
 
 
 class TestUserModel:
     """Tests for UserModel."""
 
-    user = UserModel("test_user@example.com")
-    assert isinstance(user.email, str)
-    assert user.email == "test_user@example.com"
-    assert isinstance(user.api_key, str)
-    assert len(user.api_key) == 86
-    assert isinstance(user.alerts, Alerts)
-    _verify_alerts(user.alerts)
-    assert isinstance(user.permissions, Permissions)
-    _verify_permissions(user.permissions)
-    assert isinstance(user.in_beta, int)
-    assert user.in_beta == 0
-    assert isinstance(user.subscribed, int)
-    assert user.subscribed == 0
-    assert isinstance(user.stripe, Stripe)
-    _verify_stripe(user.stripe)
-    assert isinstance(user.access_queue, list)
-    assert user.access_queue == [PAST_DATE] * 5
-    assert isinstance(user.api_key_index, APIKeyIndex)
-    assert isinstance(user.customer_id_index, CustomerIdIndex)
-    assert isinstance(user.in_beta_index, InBetaIndex)
-    assert isinstance(user.subscribed_index, SubscribedIndex)
+    def test_user_model_attributes(self) -> None:
+        """Test UserModel has correct attributes and defaults."""
+        user = UserModel("test_user@example.com")
+        assert isinstance(user.email, str)
+        assert user.email == "test_user@example.com"
+        assert isinstance(user.api_key, str)
+        assert len(user.api_key) == 86
+        assert isinstance(user.alerts, Alerts)
+        _verify_alerts(user.alerts)
+        assert isinstance(user.permissions, Permissions)
+        _verify_permissions(user.permissions)
+        assert isinstance(user.in_beta, int)
+        assert user.in_beta == 0
+        assert isinstance(user.subscribed, int)
+        assert user.subscribed == 0
+        assert isinstance(user.stripe, Stripe)
+        _verify_stripe(user.stripe)
+        assert isinstance(user.access_queue, list)
+        assert user.access_queue == [PAST_DATE] * 5
+        assert isinstance(user.api_key_index, APIKeyIndex)
+        assert isinstance(user.customer_id_index, CustomerIdIndex)
+        assert isinstance(user.in_beta_index, InBetaIndex)
+        assert isinstance(user.subscribed_index, SubscribedIndex)

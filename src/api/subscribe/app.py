@@ -14,6 +14,8 @@ from utils import (
     TEST,
     enough_time_has_passed,
     error,
+    get_origin,
+    normalize_headers,
     options,
     success,
     verify_user,
@@ -22,30 +24,33 @@ from utils import (
 stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
 
 
-def get_price(price_id: str) -> dict[str, Any]:
+def get_price(price_id: str, origin: str = "") -> dict[str, Any]:
     """Retrieve price details from Stripe.
 
     Args:
         price_id: Stripe price ID.
+        origin: Validated CORS origin.
 
     Returns:
         Success response with price data.
     """
     price = stripe.Price.retrieve(price_id)
-    return success(price)
+    return success(price, origin=origin)
 
 
-def get_plans(*_: Any) -> dict[str, Any]:
+def get_plans(event: dict[str, Any], _: Any) -> dict[str, Any]:
     """Get subscription plans.
 
     Args:
-        *_: Unused arguments (event, context).
+        event: API Gateway event.
+        _: Lambda context (unused).
 
     Returns:
         Success response with price data.
     """
+    origin = get_origin(event)
     price_id = os.environ["STRIPE_PRICE_ID"]
-    return get_price(price_id)
+    return get_price(price_id, origin=origin)
 
 
 def get_product(event: dict[str, Any], _: Any) -> dict[str, Any]:
@@ -58,10 +63,11 @@ def get_product(event: dict[str, Any], _: Any) -> dict[str, Any]:
     Returns:
         API response with product data.
     """
+    origin = get_origin(event)
     params = event["queryStringParameters"]
     product_id = params["id"]
     product = stripe.Product.retrieve(product_id)
-    return success(product)
+    return success(product, origin=origin)
 
 
 def handle_checkout(event: dict[str, Any], _: Any) -> dict[str, Any]:
@@ -75,11 +81,8 @@ def handle_checkout(event: dict[str, Any], _: Any) -> dict[str, Any]:
         API response dictionary with statusCode and body.
     """
     if event["httpMethod"].upper() == "OPTIONS":
-        response = options()
-    else:
-        response = post_checkout(event)
-
-    return response
+        return options(get_origin(event))
+    return post_checkout(event)
 
 
 def post_checkout(event: dict[str, Any]) -> dict[str, Any]:
@@ -91,19 +94,14 @@ def post_checkout(event: dict[str, Any]) -> dict[str, Any]:
     Returns:
         Success response with checkout URL or error.
     """
+    origin = get_origin(event)
     verified = verify_user(event)
 
     if not verified:
-        return error(401, "This account is not verified.")
+        return error(401, "This account is not verified.", origin)
 
     price_id = os.environ["STRIPE_PRICE_ID"]
-    env = os.environ["STAGE"]
     email = verified["email"]
-    req_headers = event["headers"]
-    domain = os.environ["DOMAIN"]
-    origin = (
-        req_headers.get("origin") or f"https://{'dev.' if env == 'dev' else ''}{domain}"
-    )
 
     user = UserModel.get(email)
     stripe_lookup = user.stripe
@@ -111,7 +109,7 @@ def post_checkout(event: dict[str, Any]) -> dict[str, Any]:
 
     if customer_id and customer_id != "_":
         if user.subscribed:
-            return error(400, "User is already subscribed.")
+            return error(400, "User is already subscribed.", origin)
     else:
         name = verified["name"]
         customer = stripe.Customer.create(email=email, name=name)
@@ -147,7 +145,7 @@ def post_checkout(event: dict[str, Any]) -> dict[str, Any]:
         user.update(actions=[UserModel.stripe.set(stripe_lookup)])
 
     url = checkout["url"]
-    return success(url)
+    return success(url, origin=origin)
 
 
 def handle_billing(event: dict[str, Any], _: Any) -> dict[str, Any]:
@@ -161,11 +159,8 @@ def handle_billing(event: dict[str, Any], _: Any) -> dict[str, Any]:
         API response dictionary with statusCode and body.
     """
     if event["httpMethod"].upper() == "OPTIONS":
-        response = options()
-    else:
-        response = post_billing(event)
-
-    return response
+        return options(get_origin(event))
+    return post_billing(event)
 
 
 def post_billing(event: dict[str, Any]) -> dict[str, Any]:
@@ -177,18 +172,13 @@ def post_billing(event: dict[str, Any]) -> dict[str, Any]:
     Returns:
         Success response with billing portal URL or error.
     """
+    origin = get_origin(event)
     verified = verify_user(event)
 
     if not verified:
-        return error(401, "This account is not verified.")
+        return error(401, "This account is not verified.", origin)
 
-    env = os.environ["STAGE"]
     email = verified["email"]
-    req_headers = event["headers"]
-    domain = os.environ["DOMAIN"]
-    origin = (
-        req_headers.get("origin") or f"https://{'dev.' if env == 'dev' else ''}{domain}"
-    )
 
     user = UserModel.get(email)
     customer_id = user.customer_id
@@ -198,7 +188,7 @@ def post_billing(event: dict[str, Any]) -> dict[str, Any]:
     )
 
     url = session.url
-    return success(url)
+    return success(url, origin=origin)
 
 
 def post_subscribe(event: dict[str, Any], _: Any) -> dict[str, Any]:
@@ -216,8 +206,8 @@ def post_subscribe(event: dict[str, Any], _: Any) -> dict[str, Any]:
     else:
         webhook_secret = os.environ["STRIPE_WEBHOOK_SECRET"]
         req_body = event["body"]
-        req_headers = event["headers"]
-        signature = req_headers["Stripe-Signature"]
+        req_headers = normalize_headers(event)
+        signature = req_headers["stripe-signature"]
         try:
             event = stripe.Webhook.construct_event(req_body, signature, webhook_secret)
         except ValueError as e:

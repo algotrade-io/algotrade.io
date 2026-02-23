@@ -1,5 +1,5 @@
 /**
- * Design Tokens - Centralized color and style constants
+ * Design Tokens — Centralized color and style constants
  * 
  * This file contains all design tokens used throughout the application.
  * Import from here instead of hardcoding values in components.

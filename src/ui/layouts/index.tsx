@@ -24,7 +24,6 @@ import Docs from "@/pages/docs";
 import Algorithm from "@/pages/algorithm";
 import Subscription from "@/pages/subscription";
 import Contact from "@/pages/contact";
-import Art from "@/pages/art";
 import Gym from "@/pages/gym";
 import TOS from "@/pages/tos";
 import Privacy from "@/pages/privacy";
@@ -35,7 +34,35 @@ import Trade from "@/pages/trade";
 
 const { darkAlgorithm } = theme;
 
-let config: any;
+interface AmplifyOAuthConfig {
+  domain: string;
+  scope: string[];
+  redirectSignIn: string;
+  redirectSignOut: string;
+  responseType: string;
+}
+
+interface AmplifyConfig {
+  aws_project_region: string;
+  aws_cognito_identity_pool_id?: string;
+  aws_cognito_region: string;
+  aws_user_pools_id: string;
+  aws_user_pools_web_client_id: string;
+  oauth: AmplifyOAuthConfig;
+  federationTarget?: string;
+  aws_cognito_username_attributes: string[];
+  aws_cognito_social_providers: string[];
+  aws_cognito_signup_attributes: string[];
+  aws_cognito_mfa_configuration: string;
+  aws_cognito_mfa_types: string[];
+  aws_cognito_password_protection_settings: {
+    passwordPolicyMinLength: number;
+    passwordPolicyCharacters: string[];
+  };
+  aws_cognito_verification_mechanisms: string[];
+}
+
+let config: AmplifyConfig;
 const isLocal = getEnvironment() === "local";
 const protocol = isLocal ? "http" : "https";
 const hostname = getHostname(false);
@@ -43,7 +70,7 @@ const port = isLocal ? ":8000" : "";
 let redirectUrl = `${protocol}://${hostname}${port}`;
 
 if (isLocal) {
-  config = (await import("@/aws-exports")).default;
+  config = (await import("@/aws-exports")).default as AmplifyConfig;
 } else {
   config = {
     aws_project_region: import.meta.env.VITE_APP_REGION,
@@ -84,11 +111,11 @@ if (isLocal) {
 }
 
 interface LayoutProps {
-  route?: any;
-  children?: any;
+  route?: string;
+  children?: React.ReactNode;
 }
 
-const Layout = ({ children }: LayoutProps) => {
+const Layout = ({ children: _children }: LayoutProps) => {
   const [showLogin, setShowLogin] = useState(false);
   const loginLoading = useLoginLoading();
   const { user: loggedIn, signOut } = useAuthenticator((context) => [
@@ -146,7 +173,6 @@ const Layout = ({ children }: LayoutProps) => {
             <Route path="/algorithm" element={<Algorithm />} />
             <Route path="/subscription" element={<Subscription />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/art" element={<Art />} />
             <Route path="/gym" element={<Gym />} />
             <Route path="/tos" element={<TOS modal={false} />} />
             <Route path="/privacy" element={<Privacy />} />
@@ -163,9 +189,10 @@ const Layout = ({ children }: LayoutProps) => {
   );
 };
 
-export default ({ route, children }: LayoutProps) => (
-  <ConfigProvider
-    theme={{
+const LayoutWrapper = function LayoutWrapper({ route: _route, children: _children }: LayoutProps) {
+  return (
+    <ConfigProvider
+      theme={{
       algorithm: darkAlgorithm,
       token: {
         borderRadius: 2,
@@ -189,9 +216,12 @@ export default ({ route, children }: LayoutProps) => (
   >
     <Authenticator.Provider>
       <BrowserRouter>
-        <Layout route={route}>{children}</Layout>
+      <Layout />
       </BrowserRouter>
     </Authenticator.Provider>
   </ConfigProvider>
-);
+  );
+};
+
+export default LayoutWrapper;
 
