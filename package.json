@@ -5,7 +5,7 @@
   "description": "Vite app for Algotrade.io",
   "type": "module",
   "scripts": {
-    "dev": "pnpm run start",
+    "dev": "VITE_APP_DOMAIN=\"$(basename ${PWD})\" pnpm run start",
     "lint": "eslint . --ext .ts,.tsx --max-warnings 0 -c src/ui/config/eslint.config.json",
     "typescript": "tsc -p src/ui/config/tsconfig.json --noEmit",
     "build": "pnpm run swagger && pnpm run typescript && NODE_OPTIONS=--max-old-space-size=8192 vite build -c src/ui/config/vite.config.ts",
