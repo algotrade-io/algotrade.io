@@ -26,9 +26,7 @@ def get_origin(event: dict[str, Any]) -> str:
         The validated origin if allowed, or the production domain as fallback.
     """
     headers = event.get("headers") or {}
-    # Normalize header keys to lowercase (HTTP headers are case-insensitive)
-    headers_lower = {k.lower(): v for k, v in headers.items()}
-    origin = headers_lower.get("origin", "")
+    origin = headers.get("origin", "")
     return origin if origin in ALLOWED_ORIGINS else f"https://{DOMAIN}"
 
 
