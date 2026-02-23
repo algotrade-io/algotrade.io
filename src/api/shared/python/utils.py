@@ -31,6 +31,7 @@ def get_origin(event: dict[str, Any]) -> str:
         f"Origin header: {headers.get('origin')}, Referer header: {headers.get('referer')}"
     )
     print(f"Received origin: {origin}")
+    print(f"Headers: {headers}")
     return origin if origin in ALLOWED_ORIGINS else f"https://{DOMAIN}"
 
 
@@ -180,7 +181,7 @@ def options(origin: str = "") -> dict[str, Any]:
             "Access-Control-Allow-Origin": origin or f"https://{DOMAIN}",
             "Access-Control-Allow-Credentials": "true",
             "Access-Control-Allow-Methods": "GET,HEAD,OPTIONS,POST,PUT,DELETE",
-            "Access-Control-Allow-Headers": "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-API-Key",
+            "Access-Control-Allow-Headers": "Origin, Referer, X-Requested-With, Content-Type, Accept, Authorization, X-API-Key",
         },
     }
 

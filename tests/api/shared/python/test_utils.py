@@ -97,7 +97,7 @@ def test_options() -> None:
     assert headers["Access-Control-Allow-Credentials"] == "true"
     assert headers["Access-Control-Allow-Methods"] == "GET,HEAD,OPTIONS,POST,PUT,DELETE"
     assert headers["Access-Control-Allow-Headers"] == (
-        "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-API-Key"
+        "Origin, Referer, X-Requested-With, Content-Type, Accept, Authorization, X-API-Key"
     )
 
     # Test with dev origin
