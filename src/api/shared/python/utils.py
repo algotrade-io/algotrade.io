@@ -26,7 +26,10 @@ def get_origin(event: dict[str, Any]) -> str:
         The validated origin if allowed, or the production domain as fallback.
     """
     headers = event.get("headers") or {}
-    origin = headers.get("origin", headers.get("host", ""))
+    origin = headers.get(
+        "origin",
+        headers.get("referer", headers.get("host", "").replace("api.", "")).rstrip("/"),
+    )
     return origin if origin in ALLOWED_ORIGINS else f"https://{DOMAIN}"
 
 

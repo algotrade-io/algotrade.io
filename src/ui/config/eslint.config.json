@@ -38,7 +38,7 @@
   },
   "overrides": [
     {
-      "files": ["cypress/**/*.ts", "cypress/**/*.tsx", "cypress.config.ts"],
+      "files": ["cypress/**/*.ts", "cypress/**/*.tsx", "src/ui/config/cypress.config.ts"],
       "plugins": ["cypress"],
       "extends": ["plugin:cypress/recommended"],
       "env": {
@@ -46,7 +46,7 @@
       }
     },
     {
-      "files": ["vite.config.ts", "tsconfig.node.json"],
+      "files": ["src/ui/config/vite.config.ts", "src/ui/config/tsconfig.node.json"],
       "env": {
         "node": true
       }

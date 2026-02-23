@@ -121,7 +121,7 @@ jobs:
           record: true
           install: false
           wait-on: 'https://${{ env.AWS_S3_BUCKET }}'
-          config-file: cypress.config.ts
+          config-file: src/ui/config/cypress.config.ts
           command-prefix: "--"
         env:
           SIGNAL_EMAIL: ${{ secrets.SIGNAL_EMAIL }}
@@ -134,7 +134,7 @@ jobs:
         run: |
           echo Cypress finished with: ${{ steps.cypress.outcome }}
           echo See results at ${{ steps.cypress.outputs.resultsUrl }}
-          nyc report --reporter=text
-          nyc report --reporter=text-summary
-          nyc check-coverage
+          nyc report --nycrc-path src/ui/config/nyc.config.json --reporter=text
+          nyc report --nycrc-path src/ui/config/nyc.config.json --reporter=text-summary
+          nyc check-coverage --nycrc-path src/ui/config/nyc.config.json
           exit ${{ fromJSON('["0", "1"]')[steps.cypress.outcome == 'failure'] }}

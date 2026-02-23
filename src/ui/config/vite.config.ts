@@ -4,9 +4,13 @@ import react from '@vitejs/plugin-react'
 import istanbul from 'vite-plugin-istanbul';
 
 const VITE_COVERAGE = Boolean(String(process.env['VITE_COVERAGE']).toLowerCase() === 'true')
+const UI_ROOT = path.resolve(__dirname, '..')
+const REPO_ROOT = path.resolve(__dirname, '../../..')
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  root: UI_ROOT,
+  publicDir: path.resolve(REPO_ROOT, 'public'),
   server: {
     port: 8000,
     proxy: {
@@ -18,6 +22,8 @@ export default defineConfig({
     }
   },
   build: {
+    outDir: path.resolve(REPO_ROOT, 'dist'),
+    emptyOutDir: true,
     sourcemap: true,
     target: 'esnext',
     rollupOptions: {
@@ -30,7 +36,7 @@ export default defineConfig({
   plugins: [react(), istanbul({forceBuildInstrument: VITE_COVERAGE, exclude: ['**/pages/trade/index.tsx']})],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src/ui'),
+      '@': UI_ROOT,
       './runtimeConfig': './runtimeConfig.browser',
     },
   },
