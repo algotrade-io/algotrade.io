@@ -127,7 +127,7 @@ def delete_account(event: dict[str, Any]) -> dict[str, Any]:
     customer_id = user.customer_id
     if customer_id and customer_id != "_":
         # deleting a customer automatically cancels subscriptions
-        stripe_client.customers.delete(customer_id)
+        stripe_client.v1.customers.delete(customer_id)
     user.delete()
 
     return success("OK", origin=origin)

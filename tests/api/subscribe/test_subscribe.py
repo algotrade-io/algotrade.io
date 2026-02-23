@@ -147,13 +147,13 @@ def test_post_subscribe() -> None:
 
 def test_cleanup() -> None:
     """Clean up test Stripe customers."""
-    result = stripe_client.customers.search(
+    result = stripe_client.v1.customers.search(
         params={"query": "email:'test_user@example.com'", "limit": 100}
     )
     customers = result.data
     customer_ids = [customer.id for customer in customers]
     for customer_id in customer_ids:
         try:
-            stripe_client.customers.delete(customer_id)
+            stripe_client.v1.customers.delete(customer_id)
         except stripe.InvalidRequestError:
             pass

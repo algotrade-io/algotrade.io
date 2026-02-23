@@ -34,7 +34,7 @@ def get_price(price_id: str, origin: str = "") -> dict[str, Any]:
     Returns:
         Success response with price data.
     """
-    price = stripe_client.prices.retrieve(price_id)
+    price = stripe_client.v1.prices.retrieve(price_id)
     return success(price, origin=origin)
 
 
@@ -66,7 +66,7 @@ def get_product(event: dict[str, Any], _: Any) -> dict[str, Any]:
     origin = get_origin(event)
     params = event["queryStringParameters"]
     product_id = params["id"]
-    product = stripe_client.products.retrieve(product_id)
+    product = stripe_client.v1.products.retrieve(product_id)
     return success(product, origin=origin)
 
 
@@ -112,7 +112,9 @@ def post_checkout(event: dict[str, Any]) -> dict[str, Any]:
             return error(400, "User is already subscribed.", origin)
     else:
         name = verified["name"]
-        customer = stripe_client.customers.create(params={"email": email, "name": name})
+        customer = stripe_client.v1.customers.create(
+            params={"email": email, "name": name}
+        )
         customer_id = customer.id
         user.update(actions=[UserModel.customer_id.set(customer_id)])
 
@@ -125,7 +127,7 @@ def post_checkout(event: dict[str, Any]) -> dict[str, Any]:
     now = datetime.now(UTC)
 
     if enough_time_has_passed(start, now, reset_duration):
-        session = stripe_client.checkout.sessions.create(
+        session = stripe_client.v1.checkout.sessions.create(
             params={
                 "customer": customer_id,
                 "customer_update": {"address": "auto", "name": "auto"},
@@ -184,7 +186,7 @@ def post_billing(event: dict[str, Any]) -> dict[str, Any]:
 
     user = UserModel.get(email)
     customer_id = user.customer_id
-    session = stripe_client.billing_portal.sessions.create(
+    session = stripe_client.v1.billing_portal.sessions.create(
         params={
             "customer": customer_id,
             "return_url": f"{origin}/subscription",
