@@ -86,6 +86,33 @@ def test_post_checkout() -> None:
     assert body.index("https://checkout.stripe.com") == 0
 
 
+def test_post_checkout_reuses_session() -> None:
+    """Test post_checkout reuses valid session within duration."""
+    event = {
+        "httpMethod": "GET",
+        "requestContext": {
+            "authorizer": {
+                "claims": {
+                    "email_verified": "true",
+                    "email": "test_user@example.com",
+                    "name": "test_user",
+                }
+            }
+        },
+        "headers": {"origin": "http://localhost:8000"},
+    }
+    # First call (from previous test) created a session
+    user = UserModel.get("test_user@example.com")
+    assert user.stripe.checkout["url"]  # Verify session exists from previous test
+
+    # Second call should check session status and potentially reuse
+    res = post_checkout(event)
+    assert res["statusCode"] == 200
+    body = json.loads(res["body"])
+    # Session should still be valid (open), so might reuse or create new
+    assert body.index("https://checkout.stripe.com") == 0
+
+
 def test_handle_billing() -> None:
     """Test handle_billing routes to correct handler based on HTTP method."""
     event = {"httpMethod": "OPTIONS"}

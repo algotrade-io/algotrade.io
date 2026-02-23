@@ -123,7 +123,27 @@ def post_checkout(event: dict[str, Any]) -> dict[str, Any]:
         start = UTCDateTimeAttribute().deserialize(start)
     now = datetime.now(UTC)
 
-    if enough_time_has_passed(start, now, reset_duration):
+    # Check if we need to create a new session
+    need_new_session = enough_time_has_passed(start, now, reset_duration)
+
+    # Also check if existing session is still valid (not completed/expired)
+    if not need_new_session and checkout.get("url"):
+        try:
+            # Extract session ID from URL and check its status
+            existing_url = checkout["url"]
+            if "cs_" in existing_url:
+                session_id_start = existing_url.find("cs_")
+                session_id = existing_url[
+                    session_id_start : existing_url.find("#", session_id_start)
+                ]
+                if session_id:
+                    existing_session = stripe.checkout.Session.retrieve(session_id)
+                    if existing_session.status != "open":
+                        need_new_session = True
+        except Exception:
+            need_new_session = True
+
+    if need_new_session:
         session = stripe.checkout.Session.create(
             customer=customer_id,
             customer_update={"address": "auto", "name": "auto"},
