@@ -60,11 +60,11 @@ format:
 type:
 	uv run ty check src/api tests/api
 
-test:
-	uv run python -m pytest
+# test:
+# 	uv run python -m pytest
 
-cov:
-	uv run python -m pytest --cov
+# cov:
+# 	uv run python -m pytest --cov
 
 clean:
 	rm -rf .coverage coverage.xml .pytest_cache .ruff_cache $(API_DIR)/.aws-sam
@@ -116,9 +116,9 @@ stop-db:
 seed-db:
 	util/seed.sh
 
-test-db:
+test cov:
 	-$(MAKE) stop-db
 	$(MAKE) start-db
 	$(MAKE) seed-db
-	bash -ic 'source util/env.sh && $(MAKE) cov'
+	bash -ic 'source util/env.sh && uv run python -m pytest --cov'
 	$(MAKE) stop-db

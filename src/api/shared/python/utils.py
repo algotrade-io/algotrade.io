@@ -16,6 +16,22 @@ PAST_DATE = datetime(2020, 1, 1, tzinfo=UTC)
 DATE_FMT = "%Y-%m-%d"
 
 
+def normalize_headers(event: dict[str, Any]) -> dict[str, str]:
+    """Normalize event headers to lowercase keys.
+
+    API Gateway may send headers with varying cases. This ensures
+    consistent lowercase access regardless of original case.
+
+    Args:
+        event: API Gateway event dict.
+
+    Returns:
+        Dict with all header keys lowercased.
+    """
+    headers = event.get("headers") or {}
+    return {k.lower(): v for k, v in headers.items()}
+
+
 def get_origin(event: dict[str, Any]) -> str:
     """Extract the Origin header from an API Gateway event.
 
@@ -25,7 +41,7 @@ def get_origin(event: dict[str, Any]) -> str:
     Returns:
         The validated origin if allowed, or the production domain as fallback.
     """
-    headers = event.get("headers") or {}
+    headers = normalize_headers(event)
     origin = headers.get("origin", headers.get("referer", "").rstrip("/"))
     return origin if origin in ALLOWED_ORIGINS else f"https://{DOMAIN}"
 

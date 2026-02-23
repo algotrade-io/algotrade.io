@@ -10,6 +10,7 @@ from utils import (
     enough_time_has_passed,
     error,
     get_origin,
+    normalize_headers,
     options,
     success,
     transform_signal,
@@ -93,7 +94,7 @@ def get_signals(event: dict[str, Any]) -> dict[str, Any]:
     """
     origin = get_origin(event)
     # first get user by api key
-    req_headers = event["headers"]
+    req_headers = normalize_headers(event)
     if "x-api-key" not in req_headers:
         return error(401, "Provide a valid API key.", origin)
     api_key = req_headers["x-api-key"]

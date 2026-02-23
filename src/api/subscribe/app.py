@@ -15,6 +15,7 @@ from utils import (
     enough_time_has_passed,
     error,
     get_origin,
+    normalize_headers,
     options,
     success,
     verify_user,
@@ -205,8 +206,8 @@ def post_subscribe(event: dict[str, Any], _: Any) -> dict[str, Any]:
     else:
         webhook_secret = os.environ["STRIPE_WEBHOOK_SECRET"]
         req_body = event["body"]
-        req_headers = event["headers"]
-        signature = req_headers["Stripe-Signature"]
+        req_headers = normalize_headers(event)
+        signature = req_headers["stripe-signature"]
         try:
             event = stripe.Webhook.construct_event(req_body, signature, webhook_secret)
         except ValueError as e:

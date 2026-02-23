@@ -22,6 +22,7 @@ from utils import (
     error,
     get_email,
     get_origin,
+    normalize_headers,
     success,
     transform_signal,
 )
@@ -188,9 +189,9 @@ def post_notify(event: dict[str, Any], _: Any) -> dict[str, Any]:
         Success response or error if authentication fails.
     """
     emit_secret = os.environ["EMIT_SECRET"]
-    req_headers = event["headers"]
+    req_headers = normalize_headers(event)
     origin = get_origin(event)
-    header = "emit_secret"
+    header = "emit-secret"
     if not req_headers.get(header) == emit_secret:
         sleep(0 if TEST else 10)
         print("Incorrect emit secret provided.")

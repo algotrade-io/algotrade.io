@@ -8,12 +8,32 @@ from shared.python.utils import (
     error,
     get_email,
     get_origin,
+    normalize_headers,
     options,
     transform_signal,
     verify_user,
 )
 
 DOMAIN = os.environ["DOMAIN"]
+
+
+def test_normalize_headers() -> None:
+    """Test normalize_headers lowercases all header keys."""
+    event = {"headers": {"X-API-Key": "secret", "Content-Type": "application/json"}}
+    result = normalize_headers(event)
+    assert result == {"x-api-key": "secret", "content-type": "application/json"}
+
+    # Empty headers
+    event = {"headers": {}}
+    assert normalize_headers(event) == {}
+
+    # Missing headers key
+    event = {}
+    assert normalize_headers(event) == {}
+
+    # None headers
+    event = {"headers": None}
+    assert normalize_headers(event) == {}
 
 
 def test_get_origin() -> None:
@@ -39,6 +59,13 @@ def test_get_origin() -> None:
     # Missing headers should fall back to production
     event = {}
     assert get_origin(event) == f"https://{DOMAIN}"
+
+    # Mixed-case headers should be normalized
+    event = {"headers": {"Origin": f"https://{DOMAIN}"}}
+    assert get_origin(event) == f"https://{DOMAIN}"
+
+    event = {"headers": {"ORIGIN": "http://localhost:8000"}}
+    assert get_origin(event) == "http://localhost:8000"
 
 
 def test_get_email() -> None:
