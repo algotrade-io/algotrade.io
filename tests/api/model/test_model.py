@@ -1,6 +1,7 @@
 """Tests for model Lambda handler."""
 
 import json
+import os
 from datetime import datetime
 
 import numpy as np
@@ -8,10 +9,12 @@ import pytest
 from model.app import NumpyEncoder, get_model, get_visualization
 from shared.python.utils import DATE_FMT
 
+DOMAIN = os.environ["DOMAIN"]
+
 
 def test_get_model() -> None:
     """Test get_model returns model metadata with expected fields."""
-    event = {"headers": {"origin": "https://dev.algotrade.io"}}
+    event = {"headers": {"origin": f"https://dev.{DOMAIN}"}}
     res = get_model(event, None)
     assert res["statusCode"] == 200
     data = json.loads(res["body"])
@@ -24,7 +27,7 @@ def test_get_model() -> None:
     assert isinstance(data["num_features"], int)
     assert isinstance(data["accuracy"], float)
     assert data["accuracy"] <= 1.0
-    assert res["headers"]["Access-Control-Allow-Origin"] == "https://dev.algotrade.io"
+    assert res["headers"]["Access-Control-Allow-Origin"] == f"https://dev.{DOMAIN}"
 
 
 def _verify_visualization(data: dict, dims: str | int) -> None:
@@ -49,16 +52,14 @@ def test_get_visualization() -> None:
     for dims in ["2D", "3D"]:
         event = {
             "queryStringParameters": {"dims": dims},
-            "headers": {"origin": "https://dev.algotrade.io"},
+            "headers": {"origin": f"https://dev.{DOMAIN}"},
         }
         res = get_visualization(event, None)
         assert res["statusCode"] == 200
         data = json.loads(res["body"])
         assert {"actual", "centroid", "radius", "grid", "preds"}.issubset(data.keys())
         _verify_visualization(data, dims)
-        assert (
-            res["headers"]["Access-Control-Allow-Origin"] == "https://dev.algotrade.io"
-        )
+        assert res["headers"]["Access-Control-Allow-Origin"] == f"https://dev.{DOMAIN}"
 
 
 encoder = NumpyEncoder()

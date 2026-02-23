@@ -20,12 +20,15 @@ stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
 price_id = os.environ["STRIPE_PRICE_ID"]
 
 
+DOMAIN = os.environ["DOMAIN"]
+
+
 def test_get_plans_and_product() -> None:
     """Test get_plans returns Stripe price and get_product returns product."""
-    event = {"headers": {"origin": "https://dev.algotrade.io"}}
+    event = {"headers": {"origin": f"https://dev.{DOMAIN}"}}
     res = get_plans(event, None)
     assert res["statusCode"] == 200
-    assert res["headers"]["Access-Control-Allow-Origin"] == "https://dev.algotrade.io"
+    assert res["headers"]["Access-Control-Allow-Origin"] == f"https://dev.{DOMAIN}"
     body = json.loads(res["body"])
     product_id = body["product"]
     assert body["id"] == price_id
@@ -33,11 +36,11 @@ def test_get_plans_and_product() -> None:
 
     event = {
         "queryStringParameters": {"id": product_id},
-        "headers": {"origin": "https://dev.algotrade.io"},
+        "headers": {"origin": f"https://dev.{DOMAIN}"},
     }
     res = get_product(event, None)
     assert res["statusCode"] == 200
-    assert res["headers"]["Access-Control-Allow-Origin"] == "https://dev.algotrade.io"
+    assert res["headers"]["Access-Control-Allow-Origin"] == f"https://dev.{DOMAIN}"
     body = json.loads(res["body"])
     assert body["id"] == product_id
     assert body["object"] == "product"
