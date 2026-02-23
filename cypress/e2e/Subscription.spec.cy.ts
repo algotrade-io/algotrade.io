@@ -39,7 +39,7 @@ describe('Subscription', () => {
       cy.contains('rough estimation');
       
       // Verify signal timing info
-      cy.contains('00:00 – 00:10 UTC');
+      cy.contains('00:00 — 00:10 UTC');
     })
 
     it('Show login modal when not logged in and clicking Subscribe', () => {

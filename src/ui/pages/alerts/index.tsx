@@ -220,7 +220,7 @@ const AlertsPage = () => {
                 onChange={(e) => !e && onClear()}
               />
             </div>
-            Receive a webhook event when a new signal is detected (00:00 - 00:10 UTC).
+            Receive a webhook event when a new signal is detected (00:00 — 00:10 UTC).
             <br />
             (For automated trading, this is the preferred notification type.)
             <b>Listen for events</b>
