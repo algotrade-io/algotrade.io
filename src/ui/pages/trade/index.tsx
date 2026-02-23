@@ -165,7 +165,7 @@ const TradePage = () => {
       //         "Access-Control-Allow-Origin": "*"
       //     }
       // }
-      // buy result is putting statusCode body and headers all in body - fix in api
+      // buy result is putting statusCode body and headers all in body — fix in api
 
       // if ('error' in data[holding.symbol]) {
       //   renderError();
@@ -249,7 +249,7 @@ const TradePage = () => {
       }
     })
     // add chart for premium income per week
-    // include dividend income on chart - area chart
+    // include dividend income on chart — area chart
   ]
 
   useEffect(() => {
@@ -364,7 +364,7 @@ const TradePage = () => {
   // execute (magenta) button executes strategy for all assets
   // graph of covered call income over time
   // total + for the week, filter sum to include filled orders after start of day Mon
-  // include dividend income on chart - area chart
+  // include dividend income on chart — area chart
   return (
     <>
       <span style={{ display: 'flex', justifyContent: 'space-between' }}>

@@ -545,8 +545,8 @@ const Page = () => {
             {/* if consecutive buy, then label BUY/HODL with green/orange diagonal split */}
             {/* same if consecutive sell, then label SELL/HODL with red/orange diagonal split */}
             {/* on the right of latest signal title or  below latest signals title but above squares row*/}
-            {/* #0C2226 background color of chart - cyan*/}
-            {/* #2C2246 background color of chart - magenta*/}
+            {/* #0C2226 background color of chart — cyan*/}
+            {/* #2C2246 background color of chart — magenta*/}
           </Title>
           <span
             style={{
@@ -756,7 +756,7 @@ const Page = () => {
     // best soln so far:
     // hyperdrive: test predictions.csv using pca5 branch / create model workflow dispatch
     // backend: make api endpoint that combines predictions.csv with signals.csv and returns
-    // backend: make endpoint that returns btc close data (including most recent close - little hard) / might use alt source
+    // backend: make endpoint that returns btc close data (including most recent close — little hard) / might use alt source
     // frontend: make js fx that calculates acct balance given close array and signals array
   );
 };

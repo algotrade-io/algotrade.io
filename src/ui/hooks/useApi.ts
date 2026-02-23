@@ -34,8 +34,8 @@ interface UseApiResult<T> {
 
 /**
  * Generic hook for API calls with loading and error states.
- * @param endpoint - API endpoint path (e.g., '/preview')
- * @param options - Configuration options
+ * @param endpoint — API endpoint path (e.g., '/preview')
+ * @param options — Configuration options
  */
 export function useApi<T>(
   endpoint: string,

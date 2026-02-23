@@ -3,8 +3,8 @@
 Migrate to UV workspace with shared dependencies and per-Lambda `pyproject.toml`.
 
 **Chosen Options:**
-- **Decision 1:** Option 1B - SAM `BuildMethod: makefile`
-- **Decision 2:** Option 2B - Multiple shared packages (shared-core, shared-db)
+- **Decision 1:** Option 1B — SAM `BuildMethod: makefile`
+- **Decision 2:** Option 2B — Multiple shared packages (shared-core, shared-db)
 
 ## Current State
 

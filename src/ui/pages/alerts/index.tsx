@@ -269,9 +269,9 @@ const AlertsPage = () => {
         {/* 
         // use buy and sell email templates
         // create partials, render html as pngs, and then combine into final html
-        // header image should link to homepage - transparent background, final html background will be gray
+        // header image should link to homepage — transparent background, final html background will be gray
         // title, subtitle, bull or bear image together as next partial, use no display hidden text for preview
-        // use send_ses subject and non-html - copy into src/api/notify/app.py
+        // use send_ses subject and non-html — copy into src/api/notify/app.py
         // leave text description as text and use web-safe font or lump into previous partial?
         // view signals button as image
         // leave unsubscribe as text not button
