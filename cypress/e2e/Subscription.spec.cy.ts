@@ -74,7 +74,7 @@ describe('Subscription', () => {
           cy.get('input[name="billingPostalCode"]').type('95014');
           cy.get('select[name="billingAdministrativeArea"').select('CA')
           // cy.get('input[type="checkbox"]').uncheck()
-          cy.get('.SubmitButton').contains('span', 'Subscribe').click({force: true});
+          cy.get('.SubmitButton--complete').contains('span', 'Subscribe').click({force: true});
         });
 
         // Wait for redirect back to app after Stripe processes subscription
