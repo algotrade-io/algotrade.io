@@ -20,6 +20,7 @@ import './commands'
 // require('./commands')
 
 import '@cypress/code-coverage/support'
+import 'cypress-image-diff-js/commands'
 
 const repoRoot = Cypress.config('repoRoot') || ''; // or projectRoot
 export const domain = `dev.${repoRoot.split('/').pop()}`;

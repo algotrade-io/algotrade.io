@@ -1,7 +1,8 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import vitePreprocessor from 'cypress-vite';
-import codeCoverage from '@cypress/code-coverage/task'
+import codeCoverage from '@cypress/code-coverage/task';
+import getCompareSnapshotsPlugin from 'cypress-image-diff-js/plugin';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -30,6 +31,7 @@ export default {
         }),
       )
       codeCoverage(on, config)
+      getCompareSnapshotsPlugin(on, config)
       return config;
     },
   },
