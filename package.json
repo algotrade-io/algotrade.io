@@ -19,7 +19,7 @@
     "test:open": "dotenv -e config.env -- npx cypress open --config-file src/ui/config/cypress.config.ts",
     "test": "dotenv -e config.env -- npx cypress run --config-file src/ui/config/cypress.config.ts",
     "test:vrt": "dotenv -e config.env -- npx cypress run --config-file src/ui/config/cypress.config.ts --spec cypress/e2e/VRT.spec.cy.ts",
-    "test:vrt:update": "dotenv -e config.env -- npx cypress run --config-file src/ui/config/cypress.config.ts --spec cypress/e2e/VRT.spec.cy.ts --env updateSnapshots=true"
+    "test:vrt:update": "rm -rf src/ui/config/cypress-image-diff-screenshots/baseline src/ui/config/cypress-image-diff-screenshots/comparison src/ui/config/cypress-image-diff-screenshots/diff && pnpm run test:vrt"
   },
   "author": "Krish Suchak <suchak.krish@gmail.com>",
   "license": "MIT",
