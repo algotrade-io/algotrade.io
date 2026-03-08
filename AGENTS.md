@@ -33,7 +33,7 @@ pnpm run build        # vite build (must succeed)
 make ci DEV=1          # install deps (frozen lockfile)
 make lint              # lint + format check
 make type              # type check
-make test.             # full test suite with local DynamoDB (requires Docker)
+make test              # full test suite with local DynamoDB (requires Docker)
 ```
 
 ### UI
