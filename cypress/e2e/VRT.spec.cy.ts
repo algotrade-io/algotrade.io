@@ -23,17 +23,14 @@ describe('Visual Regression Tests', () => {
       it('Landing page - Hero section', () => {
         cy.visit('/');
         cy.get('.ant-layout-content').should('be.visible');
-        // Wait for animations and images to load
+        // Wait for chart canvas to render
+        cy.get('canvas').should('be.visible');
         cy.wait(2000);
         // Higher threshold due to dynamic animations on hero
-        cy.compareSnapshot({ name: `landing-hero-${viewport}`, testThreshold: 0.1 });
+        cy.compareSnapshot({ name: `landing-hero-${viewport}`, testThreshold: 0.05 });
       });
 
-      it('Landing page - Navigation', () => {
-        cy.visit('/');
-        cy.get('.ant-layout-header').should('be.visible');
-        cy.compareSnapshot(`landing-nav-${viewport}`);
-      });
+
 
       it('Login modal', () => {
         cy.visit('/');
@@ -60,49 +57,65 @@ describe('Visual Regression Tests', () => {
       it('API Documentation page', () => {
         cy.visit('/docs');
         cy.get('.swagger-ui').should('be.visible');
-        cy.wait(1000);
-        cy.compareSnapshot(`docs-${viewport}`);
+        cy.wait(500);
+        cy.compareSnapshot(`docs-collapsed-${viewport}`);
+        // Scroll to the operations section and expand all
+        cy.get('.opblock-summary').first().scrollIntoView();
+        cy.get('.opblock-summary').each(($el) => cy.wrap($el).click());
+        cy.get('.opblock-summary').first().scrollIntoView();
+        cy.wait(500);
+        cy.compareSnapshot(`docs-expanded-${viewport}`);
       });
-    });
-  });
 
-  // Authenticated page tests are skipped for now as they require
-  // stable login flow. Run these manually after verifying login works.
-  describe.skip('Authenticated pages', () => {
-    beforeEach(() => {
-      cy.viewport('macbook-15');
-      cy.visit('/');
-      cy.login();
-      // Wait for login to complete and modal to close
-      cy.get('.ant-modal-body').should('not.exist');
-    });
+      describe('Authenticated pages', () => {
+        beforeEach(() => {
+          cy.visit('/');
+          cy.login();
+          // Wait for login to complete
+          cy.get('button').contains('Sign out').should('be.visible');
+        });
 
-    it('Dashboard', () => {
-      cy.visit('/dashboard');
-      cy.get('.ant-layout-content').should('be.visible');
-      cy.wait(2000);
-      cy.compareSnapshot('dashboard-authenticated');
-    });
+        it('Dashboard', () => {
+          cy.visit('/dashboard');
+          cy.get('.ant-layout-content').should('be.visible');
+          cy.wait(2000);
+          cy.compareSnapshot(`dashboard-${viewport}`);
+        });
 
-    it('Subscription page', () => {
-      cy.visit('/subscription');
-      cy.get('.ant-layout-content').should('be.visible');
-      cy.wait(2000);
-      cy.compareSnapshot('subscription-authenticated');
-    });
+        it('Subscription page', () => {
+          cy.visit('/subscription');
+          cy.get('.ant-layout-content').should('be.visible');
+          // Wait for subscription card to load
+          cy.get('.ant-card').should('be.visible');
+          cy.wait(500);
+          cy.compareSnapshot({ name: `subscription-${viewport}`, testThreshold: 0.05 });
+        });
 
-    it('Algorithm page', () => {
-      cy.visit('/algorithm');
-      cy.get('.ant-layout-content').should('be.visible');
-      cy.wait(2000);
-      cy.compareSnapshot('algorithm-authenticated');
-    });
+        it('Algorithm page', () => {
+          cy.visit('/algorithm');
+          cy.get('.ant-layout-content').should('be.visible');
+          // Wait for Plotly charts to render
+          cy.get('.js-plotly-plot').should('be.visible');
+          // Switch to 2D view for deterministic screenshot
+          cy.contains('.ant-segmented-item', '2D').click();
+          cy.wait(1000);
+          cy.compareSnapshot(`algorithm-${viewport}`);
+        });
 
-    it('Alerts page', () => {
-      cy.visit('/alerts');
-      cy.get('.ant-layout-content').should('be.visible');
-      cy.wait(2000);
-      cy.compareSnapshot('alerts-authenticated');
+        it('Alerts page', () => {
+          cy.visit('/alerts');
+          cy.get('.ant-layout-content').should('be.visible');
+          cy.wait(2000);
+          cy.compareSnapshot(`alerts-${viewport}`);
+        });
+
+        it('Contact page', () => {
+          cy.visit('/contact');
+          cy.get('.ant-layout-content').should('be.visible');
+          cy.wait(500);
+          cy.compareSnapshot(`contact-${viewport}`);
+        });
+      });
     });
   });
 });
