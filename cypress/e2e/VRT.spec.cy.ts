@@ -98,7 +98,7 @@ describe('Visual Regression Tests', () => {
           cy.get('.js-plotly-plot').should('be.visible');
           // Switch to 2D view for deterministic screenshot
           cy.contains('.ant-segmented-item', '2D').click();
-          cy.wait(1000);
+          cy.wait(2000);
           cy.compareSnapshot(`algorithm-${viewport}`);
         });
 

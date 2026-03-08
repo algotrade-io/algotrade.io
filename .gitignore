@@ -39,6 +39,11 @@ functions/*
 
 # screenshot
 screenshot
+
+# VRT (keep baseline tracked, ignore transient dirs)
+cypress/vrt/comparison
+cypress/vrt/diff
+cypress/vrt-reports
 .firebase
 .eslintcache
 

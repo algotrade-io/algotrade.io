@@ -19,8 +19,8 @@
     "test:open": "dotenv -e config.env -- npx cypress open --config-file src/ui/config/cypress.config.ts",
     "test": "dotenv -e config.env -- npx cypress run --config-file src/ui/config/cypress.config.ts",
     "test:vrt": "dotenv -e config.env -- npx cypress run --config-file src/ui/config/cypress.config.ts --spec cypress/e2e/VRT.spec.cy.ts",
-    "test:vrt:accept": "for f in src/ui/config/cypress-image-diff-screenshots/diff/*.png; do cp \"src/ui/config/cypress-image-diff-screenshots/comparison/$(basename $f)\" \"src/ui/config/cypress-image-diff-screenshots/baseline/$(basename $f)\"; done && rm -rf src/ui/config/cypress-image-diff-screenshots/diff src/ui/config/cypress-image-diff-screenshots/comparison",
-    "test:vrt:update": "rm -rf src/ui/config/cypress-image-diff-screenshots/baseline src/ui/config/cypress-image-diff-screenshots/comparison src/ui/config/cypress-image-diff-screenshots/diff && pnpm run test:vrt"
+    "test:vrt:accept": "for f in cypress/vrt/diff/*.png; do cp \"cypress/vrt/comparison/$(basename $f)\" \"cypress/vrt/baseline/$(basename $f)\"; done && rm -rf cypress/vrt/diff cypress/vrt/comparison",
+    "test:vrt:update": "rm -rf cypress/vrt/baseline cypress/vrt/comparison cypress/vrt/diff && pnpm run test:vrt"
   },
   "author": "Krish Suchak <suchak.krish@gmail.com>",
   "license": "MIT",
