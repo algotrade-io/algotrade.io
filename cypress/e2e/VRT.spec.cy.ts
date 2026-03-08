@@ -8,7 +8,7 @@
  * Run `pnpm run test:vrt` to compare against baseline.
  */
 
-import { getUrl } from '../support/e2e';
+/* eslint-disable cypress/no-unnecessary-waiting */
 
 describe('Visual Regression Tests', () => {
   // Viewport sizes to test
