@@ -130,6 +130,7 @@ const SubscriptionPage = () => {
           last = last[0].Name === "hyperdrive" ? last[0] : last[1];
           const end = last.Time;
           const days = getDayDiff(start, end);
+          if (isNaN(days) || days <= 0) return;
           const totalBTCRate = last.Bal - 1;
           const monthlyBTCRate = (totalBTCRate / days) * 30;
           // this should be tied to val in backend / maybe make endpoint that returns backend constant
