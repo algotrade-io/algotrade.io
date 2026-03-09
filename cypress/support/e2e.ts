@@ -27,5 +27,18 @@ const repoRoot = Cypress.config('repoRoot') || ''; // or projectRoot
 export const domain = `dev.${repoRoot.split('/').pop()}`;
 export const getUrl = (path) => `https://${domain}/${path}`
 
+// Grant clipboard permissions in Chrome (not needed in Electron)
+Cypress.on('test:before:run', () => {
+  if (Cypress.browser.name === 'chrome') {
+    Cypress.automation('remote:debugger:protocol', {
+      command: 'Browser.grantPermissions',
+      params: {
+        permissions: ['clipboardReadWrite', 'clipboardSanitizedWrite'],
+        origin: `https://${domain}`,
+      },
+    });
+  }
+});
+
 Cypress.on('uncaught:exception', () => false)
 
