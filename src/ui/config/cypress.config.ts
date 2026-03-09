@@ -1,3 +1,6 @@
+// Force 1x DPI for consistent screenshots across Retina Macs and CI Linux
+process.env.ELECTRON_FORCE_DEVICE_SCALE_FACTOR = '1';
+
 import path from 'path';
 import { fileURLToPath } from 'url';
 import vitePreprocessor from 'cypress-vite';
