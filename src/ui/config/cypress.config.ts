@@ -23,6 +23,19 @@ export default {
     experimentalMemoryManagement: Boolean(process.env.CI),
     setupNodeEvents(on, config) {
       // implement node event listeners here
+      on('before:browser:launch', (browser = {}, launchOptions) => {
+        if (browser.family === 'chromium' && browser.name !== 'electron') {
+          // Force 1x DPI for Chrome
+          launchOptions.args.push('--force-device-scale-factor=1');
+        }
+        
+        if (browser.name === 'electron') {
+          // For Electron, you can set the scale factor via preferences
+          launchOptions.preferences.deviceScaleFactor = 1;
+        }
+
+        return launchOptions;
+      });
       on(
         'file:preprocessor',
         vitePreprocessor({

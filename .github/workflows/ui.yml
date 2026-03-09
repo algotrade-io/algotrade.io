@@ -118,6 +118,7 @@ jobs:
         id: cypress
         continue-on-error: true
         with:
+          browser: chrome
           record: true
           install: false
           wait-on: 'https://${{ env.AWS_S3_BUCKET }}'
