@@ -1,3 +1,6 @@
+// Force 1x DPI for consistent screenshots across Retina Macs and CI Linux
+process.env.ELECTRON_FORCE_DEVICE_SCALE_FACTOR = '1';
+
 import path from 'path';
 import { fileURLToPath } from 'url';
 import vitePreprocessor from 'cypress-vite';
@@ -23,19 +26,6 @@ export default {
     experimentalMemoryManagement: Boolean(process.env.CI),
     setupNodeEvents(on, config) {
       // implement node event listeners here
-      on('before:browser:launch', (browser = {}, launchOptions) => {
-        if (browser.family === 'chromium' && browser.name !== 'electron') {
-          // Force 1x DPI for Chrome
-          launchOptions.args.push('--force-device-scale-factor=1');
-        }
-        
-        if (browser.name === 'electron') {
-          // For Electron, you can set the scale factor via preferences
-          launchOptions.preferences.deviceScaleFactor = 1;
-        }
-
-        return launchOptions;
-      });
       on(
         'file:preprocessor',
         vitePreprocessor({

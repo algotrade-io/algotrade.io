@@ -18,7 +18,7 @@
     "visualize": "vite-bundle-visualizer -c src/ui/config/vite.config.ts -t treemap --open -o ${PWD}/stats.html",
     "test:open": "dotenv -e config.env -- npx cypress open --config-file src/ui/config/cypress.config.ts",
     "test": "dotenv -e config.env -- npx cypress run --config-file src/ui/config/cypress.config.ts",
-    "test:vrt": "dotenv -e config.env -- npx cypress run --browser chrome --config-file src/ui/config/cypress.config.ts --spec cypress/e2e/VRT.spec.cy.ts",
+    "test:vrt": "dotenv -e config.env -- npx cypress run --config-file src/ui/config/cypress.config.ts --spec cypress/e2e/VRT.spec.cy.ts",
     "test:vrt:accept": "for f in cypress/vrt/diff/*.png; do cp \"cypress/vrt/comparison/$(basename $f)\" \"cypress/vrt/baseline/$(basename $f)\"; done && rm -rf cypress/vrt/diff cypress/vrt/comparison",
     "test:vrt:update": "rm -rf cypress/vrt/baseline cypress/vrt/comparison cypress/vrt/diff && pnpm run test:vrt"
   },
