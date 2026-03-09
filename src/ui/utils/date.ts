@@ -35,6 +35,9 @@ export const getDateRange = (
 export const getDayDiff = (start: string | Date, end: string | Date) => {
   const startDate = new Date(start);
   const endDate = new Date(end);
+
+  if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) return NaN;
+
   const startUTC = Date.UTC(
     startDate.getFullYear(),
     startDate.getMonth(),

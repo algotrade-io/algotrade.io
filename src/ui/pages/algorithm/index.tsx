@@ -55,9 +55,11 @@ const AlgorithmPage = () => {
           num_features: numFeatures,
           accuracy,
         } = data;
-        const monthsAgo = Math.floor(getDayDiff(created, new Date()) / 30);
+        const daysSinceCreated = getDayDiff(created, new Date());
+        const monthsAgo = isNaN(daysSinceCreated) ? 0 : Math.floor(daysSinceCreated / 30);
         const lastUpdated = `${monthsAgo} month${monthsAgo == 1 ? '' : 's'} ago`;
-        const dataRange = `${Math.floor(getDayDiff(start, end) / 365)} years`;
+        const daysInRange = getDayDiff(start, end);
+        const dataRange = isNaN(daysInRange) ? '?' : `${Math.floor(daysInRange / 365)} years`;
         const labels = [
           "Last Updated",
           "Training Data Range",
