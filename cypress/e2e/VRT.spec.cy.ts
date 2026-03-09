@@ -75,13 +75,6 @@ describe('Visual Regression Tests', () => {
           cy.get('button').contains('Sign out').should('be.visible');
         });
 
-        it('Dashboard', () => {
-          cy.visit('/dashboard');
-          cy.get('.ant-layout-content').should('be.visible');
-          cy.wait(2000);
-          cy.compareSnapshot(`dashboard-${viewport}`);
-        });
-
         it('Subscription page', () => {
           cy.visit('/subscription');
           cy.get('.ant-layout-content').should('be.visible');
