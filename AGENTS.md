@@ -13,7 +13,7 @@ All changes must pass these checks before merging.
 ```bash
 make lint      # ruff check . && ruff format --check .
 make type      # ty check src/api tests/api
-make test-db   # pytest with coverage against local DynamoDB
+make test      # pytest with coverage against local DynamoDB
 ```
 
 ### UI (TypeScript/React) — triggered by all other changes
@@ -33,7 +33,7 @@ pnpm run build        # vite build (must succeed)
 make ci DEV=1          # install deps (frozen lockfile)
 make lint              # lint + format check
 make type              # type check
-make test-db           # full test suite with local DynamoDB (requires Docker)
+make test              # full test suite with local DynamoDB (requires Docker)
 ```
 
 ### UI

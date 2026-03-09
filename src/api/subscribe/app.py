@@ -21,7 +21,7 @@ from utils import (
     verify_user,
 )
 
-stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
+stripe_client = stripe.StripeClient(os.environ["STRIPE_SECRET_KEY"])
 
 
 def get_price(price_id: str, origin: str = "") -> dict[str, Any]:
@@ -34,7 +34,7 @@ def get_price(price_id: str, origin: str = "") -> dict[str, Any]:
     Returns:
         Success response with price data.
     """
-    price = stripe.Price.retrieve(price_id)
+    price = stripe_client.v1.prices.retrieve(price_id)
     return success(price, origin=origin)
 
 
@@ -66,7 +66,7 @@ def get_product(event: dict[str, Any], _: Any) -> dict[str, Any]:
     origin = get_origin(event)
     params = event["queryStringParameters"]
     product_id = params["id"]
-    product = stripe.Product.retrieve(product_id)
+    product = stripe_client.v1.products.retrieve(product_id)
     return success(product, origin=origin)
 
 
@@ -112,8 +112,10 @@ def post_checkout(event: dict[str, Any]) -> dict[str, Any]:
             return error(400, "User is already subscribed.", origin)
     else:
         name = verified["name"]
-        customer = stripe.Customer.create(email=email, name=name)
-        customer_id = customer["id"]
+        customer = stripe_client.v1.customers.create(
+            params={"email": email, "name": name}
+        )
+        customer_id = customer.id
         user.update(actions=[UserModel.customer_id.set(customer_id)])
 
     checkout = stripe_lookup.checkout
@@ -125,19 +127,21 @@ def post_checkout(event: dict[str, Any]) -> dict[str, Any]:
     now = datetime.now(UTC)
 
     if enough_time_has_passed(start, now, reset_duration):
-        session = stripe.checkout.Session.create(
-            customer=customer_id,
-            customer_update={"address": "auto", "name": "auto"},
-            success_url=f"{origin}/subscription?success=true&session_id={{CHECKOUT_SESSION_ID}}",
-            cancel_url=f"{origin}/subscription?canceled=true",
-            mode="subscription",
-            line_items=[
-                {
-                    "price": price_id,
-                    "quantity": 1,
-                }
-            ],
-            automatic_tax={"enabled": True},
+        session = stripe_client.v1.checkout.sessions.create(
+            params={
+                "customer": customer_id,
+                "customer_update": {"address": "auto", "name": "auto"},
+                "success_url": f"{origin}/subscription?success=true&session_id={{CHECKOUT_SESSION_ID}}",
+                "cancel_url": f"{origin}/subscription?canceled=true",
+                "mode": "subscription",
+                "line_items": [
+                    {
+                        "price": price_id,
+                        "quantity": 1,
+                    }
+                ],
+                "automatic_tax": {"enabled": True},
+            }
         )
         checkout["created"] = UTCDateTimeAttribute().serialize(now)
         checkout["url"] = session.url
@@ -182,9 +186,11 @@ def post_billing(event: dict[str, Any]) -> dict[str, Any]:
 
     user = UserModel.get(email)
     customer_id = user.customer_id
-    session = stripe.billing_portal.Session.create(
-        customer=customer_id,
-        return_url=f"{origin}/subscription",
+    session = stripe_client.v1.billing_portal.sessions.create(
+        params={
+            "customer": customer_id,
+            "return_url": f"{origin}/subscription",
+        }
     )
 
     url = session.url
@@ -213,7 +219,7 @@ def post_subscribe(event: dict[str, Any], _: Any) -> dict[str, Any]:
         except ValueError as e:
             logging.exception(e)
             raise
-        except stripe.error.SignatureVerificationError as e:
+        except stripe.SignatureVerificationError as e:
             logging.exception(e)
             raise
 

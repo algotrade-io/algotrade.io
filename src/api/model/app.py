@@ -82,19 +82,19 @@ class NumpyEncoder(json.JSONEncoder):
         if isinstance(o, np.integer):
             return int(o)
 
-        elif isinstance(o, np.floating):
+        if isinstance(o, np.floating):
             return float(o)
 
-        elif isinstance(o, np.complexfloating):
+        if isinstance(o, np.complexfloating):
             return {"real": float(o.real), "imag": float(o.imag)}
 
-        elif isinstance(o, (np.ndarray,)):
+        if isinstance(o, np.ndarray):
             return o.tolist()
 
-        elif isinstance(o, (np.bool_)):
+        if isinstance(o, np.bool_):
             return bool(o)
 
-        elif isinstance(o, (np.void)):
+        if isinstance(o, np.void):
             return None
 
         return json.JSONEncoder.default(self, o)

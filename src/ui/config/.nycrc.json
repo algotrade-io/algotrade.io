@@ -1,0 +1,11 @@
+{
+    "temp-dir": "../../../.nyc_output",
+    "report-dir": "../../../coverage",
+    "lines": 80,
+    "functions": 75,
+    "branches": 65,
+    "statements": 80,
+    "exclude": [
+        "src/pages/trade/**"
+    ]
+}

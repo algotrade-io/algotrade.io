@@ -16,7 +16,7 @@ from subscribe.app import (
     post_subscribe,
 )
 
-stripe.api_key = os.environ["STRIPE_SECRET_KEY"]
+stripe_client = stripe.StripeClient(os.environ["STRIPE_SECRET_KEY"])
 price_id = os.environ["STRIPE_PRICE_ID"]
 
 
@@ -147,11 +147,13 @@ def test_post_subscribe() -> None:
 
 def test_cleanup() -> None:
     """Clean up test Stripe customers."""
-    result = stripe.Customer.search(query="email:'test_user@example.com'", limit=100)
+    result = stripe_client.v1.customers.search(
+        params={"query": "email:'test_user@example.com'", "limit": 100}
+    )
     customers = result.data
     customer_ids = [customer.id for customer in customers]
     for customer_id in customer_ids:
         try:
-            stripe.Customer.delete(customer_id)
-        except stripe.error.InvalidRequestError:
+            stripe_client.v1.customers.delete(customer_id)
+        except stripe.InvalidRequestError:
             pass

@@ -116,7 +116,7 @@ stop-db:
 seed-db:
 	util/seed.sh
 
-test cov:
+test cov test-db:
 	-$(MAKE) stop-db
 	$(MAKE) start-db
 	$(MAKE) seed-db
