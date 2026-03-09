@@ -127,7 +127,6 @@ jobs:
           SIGNAL_EMAIL: ${{ secrets.SIGNAL_EMAIL }}
           EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
           ELECTRON_ENABLE_LOGGING: 1
-          ELECTRON_FORCE_DEVICE_SCALE_FACTOR: 1
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           CYPRESS_PROJECT_ID: ${{ secrets.CYPRESS_PROJECT_ID }}
 
