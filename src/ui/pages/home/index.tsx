@@ -15,7 +15,7 @@ import {
   notification,
 } from "antd";
 import styled from "styled-components";
-import { G2, Line, LineConfig } from "@ant-design/charts";
+import { Line, LineConfig } from "@ant-design/charts";
 import {
   LoadingOutlined,
   CaretDownFilled,
@@ -230,7 +230,8 @@ const LineChart: React.FC<LineChartProps> = memo(
         },
       },
       point: {
-        shape: "breath-point",
+        shape: 'circle',
+        size: 0, // Hide points by default, tooltip handles buy/sell display
       },
     };
     return <Line ref={chartRef} {...config as unknown as LineConfig} />;
@@ -332,49 +333,6 @@ const Page = () => {
       .catch((err) => console.error(err))
       .finally(() => setSignalLoading(false));
   };
-  G2.registerShape("point", "breath-point", {
-    draw(cfg, container) {
-      const data = cfg.data as { Name?: string; Sig?: boolean | null } | undefined;
-      const point = {
-        x: cfg.x as number,
-        y: cfg.y as number,
-      };
-      const group = container.addGroup();
-
-      if (data?.Name === hyperdrive && data?.Sig !== null) {
-        const fill = data.Sig ? "lime" : "red";
-        const symbol = data.Sig ? "triangle" : "triangle-down";
-        // const text = data.Sig ? "BUY" : "SELL";
-        // const fontSize = 10;
-        // group.addShape("text", {
-        //   attrs: {
-        //     text,
-        //     x: point.x - fontSize,
-        //     y: point.y - fontSize / 2,
-        //     fill,
-        //     fontWeight: 400,
-        //     shadowOffsetX: 10,
-        //     shadowOffsetY: 10,
-        //     shadowBlur: 10,
-        //     fontSize,
-        //   },
-        // });
-
-        group.addShape("marker", {
-          attrs: {
-            x: point.x,
-            y: point.y,
-            r: 5,
-            fill,
-            opacity: 1,
-            symbol,
-          },
-        });
-      }
-
-      return group;
-    },
-  });
 
   // Memoize columns to prevent recreation on each render
   // Empty dependency array is intentional since HODL and hyperdrive are module-level constants
