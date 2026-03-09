@@ -24,6 +24,8 @@ export default {
     // This must be DEV only (NOT prod) since we're using with stripe test credit cards.
     baseUrl: `https://dev.${domain}`,
     experimentalMemoryManagement: Boolean(process.env.CI),
+    // VRT is local-only (font rendering differs between macOS and CI Linux)
+    excludeSpecPattern: process.env.CI ? ['**/VRT.spec.cy.ts'] : [],
     setupNodeEvents(on, config) {
       // implement node event listeners here
       on(
