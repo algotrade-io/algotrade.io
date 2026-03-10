@@ -15,8 +15,10 @@ import {
   notification,
 } from "antd";
 import styled from "styled-components";
-import Plot from "react-plotly.js";
+import createPlotlyComponent from "react-plotly.js/factory";
+import Plotly from "plotly.js-dist-min";
 import type { Data, Layout, Config } from "plotly.js";
+const Plot = createPlotlyComponent(Plotly);
 import {
   LoadingOutlined,
   CaretDownFilled,
