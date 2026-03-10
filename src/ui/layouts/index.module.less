@@ -286,14 +286,18 @@ input {
   background-color: inherit;
 }
 
+:global(.ant-btn:not(:disabled):not(.ant-btn-disabled):hover) {
+  background-color: inherit !important;
+}
+
 :global(.ant-btn-default:not(:disabled):hover) {
-  border-color: #52e5ff;
+  border-color: #52e5ff !important;
   color: rgba(255, 255, 255, 0.85) !important;
 }
 
 :global(.ant-btn-default:hover),
 :global(.ant-btn-default:active) {
-  border-color: #52e5ff;
+  border-color: #52e5ff !important;
   box-shadow: 0 0 5px #52e5ff;
   color: rgba(255, 255, 255, 0.85) !important;
 }
@@ -304,12 +308,12 @@ input {
 
 :global(.ant-btn-default:not(:disabled):active) {
   box-shadow: none;
-  border-color: #52e5ff;
+  border-color: #52e5ff !important;
   color: rgba(255, 255, 255, 0.85);
 }
 
 :global(.ant-btn-default:focus) {
-  border-color: #52e5ff;
+  border-color: #52e5ff !important;
   color: rgba(255, 255, 255, 0.85);
 }
 
