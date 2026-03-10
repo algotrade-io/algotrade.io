@@ -15,6 +15,7 @@ const domain = path.basename(ROOT_DIR);
 export default {
   experimentalModifyObstructiveThirdPartyCode: true,
   chromeWebSecurity: false,
+  // TODO: Set allowCypressEnv: false once cypress-image-diff-js migrates from Cypress.env()
   env: {
     SIGNAL_EMAIL: process.env['SIGNAL_EMAIL'],
     EMAIL_PASS: process.env['EMAIL_PASS'],
