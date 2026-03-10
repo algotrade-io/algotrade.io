@@ -1,4 +1,4 @@
-import React, { memo, useRef, useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { useState, useEffect } from "react";
 import {
   Typography,
@@ -15,7 +15,8 @@ import {
   notification,
 } from "antd";
 import styled from "styled-components";
-import { Line, LineConfig } from "@ant-design/charts";
+import Plot from "react-plotly.js";
+import type { Data, Layout, Config } from "plotly.js";
 import {
   LoadingOutlined,
   CaretDownFilled,
@@ -84,157 +85,123 @@ const cardHeaderColors: Record<string, string> = {
 interface LineChartProps {
   data: PreviewDataPoint[];
   formatFx: (value: number | string) => string;
-  chartRef?: React.RefObject<unknown>;
 }
 
-interface TooltipItem {
-  color: string;
-  name: string;
-  value: string | number;
-  data: PreviewDataPoint;
-}
-
-// Look up memo vs useMemo
-// https://blog.logrocket.com/react-memo-vs-usememo/
+// Plotly-based chart with native marker support for BUY/SELL signals
 const LineChart: React.FC<LineChartProps> = memo(
-  function LineChart({ data, formatFx, chartRef }) {
-    const sqSize = 5;
-    const config = {
-      // search for symbols:
-      // https://github.com/search?q=org%3Aantvis+bowtie+-filename%3A*.json+-filename%3A*.html+-filename%3A*.md&type=Code
-      legend: {
-        layout: 'horizontal',
-        position: 'top-right',
-        custom: true,
-        items: [
-          {
-            value: HODL,
-            name: HODL,
-            marker: {
-              symbol: 'hexagon',
-              style: {
-                fill: 'magenta',
-                r: sqSize,
-              },
-            },
-          },
-          {
-            value: hyperdrive,
-            name: hyperdrive,
-            marker: {
-              symbol: 'hexagon',
-              style: {
-                fill: '#52e5ff',
-                r: sqSize,
-              },
-            },
-          },
-          {
-            value: 'BUY',
-            name: 'BUY',
-            marker: {
-              symbol: 'triangle',
-              style: {
-                fill: 'lime',
-                r: sqSize,
-              },
-            },
-          },
-          {
-            value: 'SELL',
-            name: 'SELL',
-            marker: {
-              symbol: 'triangle-down',
-              style: {
-                fill: 'red',
-                r: sqSize,
-              },
-            },
-          },
-        ],
-      },
-      tooltip: {
-        domStyles: {
-          'g2-tooltip': {
-            'border-radius': '6px',
-            'background-color': 'rgba(45, 45, 45, 0.95)',
-            'box-shadow': '0 0 10px black',
-            color: 'rgba(255, 255, 255, 0.85)',
-            opacity: 'unset'
-          }
-        },
-        showCrosshairs: true,
-        showMarkers: false,
-        customItems: (originalItems: TooltipItem[]) => {
-          const hyperdriveItem = originalItems[0].name === hyperdrive ? originalItems[0] : originalItems[1];
-          const signal = hyperdriveItem.data.Full_Sig;
-          const signalDatum: TooltipItem = {
-            color: signal ? 'lime' : 'red',
-            name: 'SIGNAL',
-            value: signal ? '▲ BUY' : '▼ SELL',
-            data: hyperdriveItem.data
-          };
-          originalItems.push(signalDatum);
-          return originalItems;
-        }
-      },
-      autoFit: true,
-      data,
-      xField: "Time",
-      yField: "Bal",
-      seriesField: "Name",
-      smooth: true,
-      colorField: "Name",
-      color: ({ Name }: { Name: string }) => {
-        if (Name === HODL) {
-          return "magenta";
-        }
-        return "#52e5ff";
-      },
-      area: {
-        style: {
-          fillOpacity: 0.15,
-        },
-      },
-      animation:
-      // Why is this necessary?
-      // !inBeta &&
+  function LineChart({ data, formatFx }) {
+    // Separate data by series
+    const hodlData = data.filter((d) => d.Name === HODL);
+    const hyperdriveData = data.filter((d) => d.Name === hyperdrive);
+
+    // Extract signal points (BUY and SELL)
+    const buySignals = hyperdriveData.filter((d) => d.Sig === true);
+    const sellSignals = hyperdriveData.filter((d) => d.Sig === false && d.Sig !== null);
+
+    const traces: Data[] = [
+      // HODL line
       {
-        appear: {
-          animation: "wave-in",
-          duration: 4000,
-        },
+        x: hodlData.map((d) => d.Time),
+        y: hodlData.map((d) => d.Bal),
+        type: "scatter",
+        mode: "lines",
+        name: HODL,
+        line: { color: "magenta", width: 2, shape: "spline" },
+        fill: "tozeroy",
+        fillcolor: "rgba(255, 0, 255, 0.1)",
+        hovertemplate: `<b>${HODL}</b><br>%{x}<br>%{y:,.2f}<extra></extra>`,
       },
-      xAxis: {
-        tickCount: 10,
-        grid: {
-          line: {
-            style: {
-              lineWidth: 0,
-              strokeOpacity: 0,
-            },
-          },
-        },
+      // Hyperdrive line
+      {
+        x: hyperdriveData.map((d) => d.Time),
+        y: hyperdriveData.map((d) => d.Bal),
+        type: "scatter",
+        mode: "lines",
+        name: hyperdrive,
+        line: { color: "#52e5ff", width: 2, shape: "spline" },
+        fill: "tozeroy",
+        fillcolor: "rgba(82, 229, 255, 0.1)",
+        hovertemplate: `<b>${hyperdrive}</b><br>%{x}<br>%{y:,.2f}<extra></extra>`,
       },
-      yAxis: {
-        label: {
-          formatter: (v: number | string) => formatFx(v),
+      // BUY signals (triangle-up markers)
+      {
+        x: buySignals.map((d) => d.Time),
+        y: buySignals.map((d) => d.Bal),
+        type: "scatter",
+        mode: "markers",
+        name: "BUY",
+        marker: {
+          symbol: "triangle-up",
+          size: 12,
+          color: "lime",
+          line: { color: "darkgreen", width: 1 },
         },
-        grid: {
-          line: {
-            style: {
-              lineWidth: 0,
-              strokeOpacity: 0,
-            },
-          },
-        },
+        hovertemplate: "<b>▲ BUY</b><br>%{x}<br>%{y:,.2f}<extra></extra>",
       },
-      point: {
-        shape: 'circle',
-        size: 0, // Hide points by default, tooltip handles buy/sell display
+      // SELL signals (triangle-down markers)
+      {
+        x: sellSignals.map((d) => d.Time),
+        y: sellSignals.map((d) => d.Bal),
+        type: "scatter",
+        mode: "markers",
+        name: "SELL",
+        marker: {
+          symbol: "triangle-down",
+          size: 12,
+          color: "red",
+          line: { color: "darkred", width: 1 },
+        },
+        hovertemplate: "<b>▼ SELL</b><br>%{x}<br>%{y:,.2f}<extra></extra>",
+      },
+    ];
+
+    const layout: Partial<Layout> = {
+      autosize: true,
+      paper_bgcolor: "transparent",
+      plot_bgcolor: "transparent",
+      font: { color: "rgba(255, 255, 255, 0.85)" },
+      margin: { l: 60, r: 20, t: 40, b: 40 },
+      legend: {
+        orientation: "h",
+        x: 1,
+        xanchor: "right",
+        y: 1.15,
+        bgcolor: "transparent",
+      },
+      xaxis: {
+        showgrid: false,
+        tickformat: "%b %Y",
+        tickfont: { size: 10 },
+      },
+      yaxis: {
+        showgrid: false,
+        tickformat: formatFx === formatBTC ? ",.1f" : ",.0f",
+        tickprefix: formatFx === formatUSD ? "$ " : "",
+        ticksuffix: formatFx === formatBTC ? " ₿" : "",
+        tickfont: { size: 10 },
+      },
+      hovermode: "x unified",
+      hoverlabel: {
+        bgcolor: "rgba(45, 45, 45, 0.95)",
+        bordercolor: "rgba(255, 255, 255, 0.2)",
+        font: { color: "rgba(255, 255, 255, 0.85)" },
       },
     };
-    return <Line ref={chartRef} {...config as unknown as LineConfig} />;
+
+    const config: Partial<Config> = {
+      displayModeBar: false,
+      responsive: true,
+    };
+
+    return (
+      <Plot
+        data={traces}
+        layout={layout}
+        config={config}
+        style={{ width: "100%", height: "100%" }}
+        useResizeHandler={true}
+      />
+    );
   },
   (pre, next) => JSON.stringify(pre?.data) === JSON.stringify(next?.data)
 );
@@ -270,7 +237,6 @@ const Page = () => {
   const [quotaReached, setQuotaReached] = useState(false);
   const loading = previewLoading || accountLoading || loginLoading;
   const inBeta = loggedIn && (account?.in_beta || account?.subscribed);
-  const chartRef = useRef();
 
   useEffect(() => {
     // find a way to not load this for in_beta
@@ -552,7 +518,6 @@ const Page = () => {
               <LineChart
                 data={toggle ? previewData.BTC.data : previewData.USD.data}
                 formatFx={toggle ? formatBTC : formatUSD}
-                chartRef={chartRef}
               />
             </div>
           )}
