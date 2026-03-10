@@ -3,7 +3,8 @@ import { useState, useEffect, useReducer } from "react";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 const { Title } = Typography;
 import { getApiUrl, Toggle, getEnvironment, isEmpty } from "@/utils";
-import { Pie } from '@ant-design/charts';
+import Plot from "react-plotly.js";
+import type { Data, Layout, Config } from "plotly.js";
 import useWebSocket from 'react-use-websocket';
 import layoutStyles from "@/layouts/index.module.less";
 import subStyles from "@/pages/subscription/index.module.less";
@@ -316,44 +317,50 @@ const TradePage = () => {
   //   }
   // }, [lastJsonMessage]);
 
-  const data = portfolio[variant].map(holding => ({ type: holding.symbol, value: Math.round(Number(holding.percentage) * 100) / 100 }))
+  const pieData = portfolio[variant].map(holding => ({
+    label: holding.symbol,
+    value: Math.round(Number(holding.percentage) * 100) / 100
+  }));
 
-  const config = {
-    appendPadding: 10,
-    data,
-    theme: 'dark' as const,
-    angleField: 'value',
-    colorField: 'type',
-    radius: 1,
-    innerRadius: 0.6,
-    label: {
-      type: 'inner' as const,
-      offset: '-50%',
-      content: (d: { type?: string }) => d.type ?? '',
-      style: {
-        textAlign: 'center' as const,
-        fontSize: 14,
-      },
+  const pieTraces: Data[] = [{
+    type: 'pie',
+    labels: pieData.map(d => d.label),
+    values: pieData.map(d => d.value),
+    hole: 0.6,
+    textinfo: 'label',
+    textposition: 'inside',
+    textfont: { size: 14, color: 'white' },
+    hoverinfo: 'label+percent+value',
+    marker: {
+      line: { color: 'rgba(0,0,0,0.3)', width: 1 }
+    }
+  }];
+
+  const pieLayout: Partial<Layout> = {
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+    font: { color: 'rgba(255, 255, 255, 0.85)' },
+    showlegend: true,
+    legend: {
+      orientation: 'h',
+      x: 0.5,
+      xanchor: 'center',
+      y: -0.1,
+      bgcolor: 'transparent'
     },
-    interactions: [
-      {
-        type: 'element-selected',
-      },
-      {
-        type: 'element-active',
-      },
-    ],
-    statistic: {
-      title: false as const,
-      content: {
-        style: {
-          whiteSpace: 'pre-wrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-        },
-        content: 'STX',
-      },
-    },
+    margin: { l: 20, r: 20, t: 20, b: 60 },
+    annotations: [{
+      text: 'STX',
+      x: 0.5,
+      y: 0.5,
+      font: { size: 20, color: 'rgba(255, 255, 255, 0.85)' },
+      showarrow: false
+    }]
+  };
+
+  const pieConfig: Partial<Config> = {
+    displayModeBar: false,
+    responsive: true
   };
   // Use webhooks to get around 30s timeout
   // https://github.com/aws-samples/simple-websockets-chat-app
@@ -396,7 +403,15 @@ const TradePage = () => {
         />
       </span>
       <Table loading={loading} dataSource={toggle ? portfolio[variant] : portfolio[variant].filter(holding => parseFloat(holding?.quantity) >= 100)} columns={columns} />
-      {toggle && <Pie {...config} />}
+      {toggle && (
+        <Plot
+          data={pieTraces}
+          layout={pieLayout}
+          config={pieConfig}
+          style={{ width: '100%', height: '400px' }}
+          useResizeHandler={true}
+        />
+      )}
       {toggle && <span>Loose Change: ${portfolio[variant].map(holding => holding?.loose ?? 0).reduce((x, y) => x + y, 0).toFixed(2)}</span>}
     </>
   );
