@@ -56,9 +56,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: |
-          pnpm run ci
-          pnpm add -g @apidevtools/swagger-cli@4.0.4 nyc@15.1.0
+        run: pnpm run ci
 
       - name: Generate aws-exports.js and swagger.json files
         env:
@@ -135,7 +133,7 @@ jobs:
           echo Cypress finished with: ${{ steps.cypress.outcome }}
           echo See results at ${{ steps.cypress.outputs.resultsUrl }}
           mkdir -p .nyc_output
-          nyc report --nycrc-path src/ui/config/nyc.config.json --reporter=text
-          nyc report --nycrc-path src/ui/config/nyc.config.json --reporter=text-summary
-          nyc check-coverage --nycrc-path src/ui/config/nyc.config.json
+          npx nyc report --nycrc-path src/ui/config/nyc.config.json --reporter=text
+          npx nyc report --nycrc-path src/ui/config/nyc.config.json --reporter=text-summary
+          npx nyc check-coverage --nycrc-path src/ui/config/nyc.config.json
           exit ${{ fromJSON('["0", "1"]')[steps.cypress.outcome == 'failure'] }}
