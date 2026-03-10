@@ -22,7 +22,7 @@
     "test:vrt:accept": "for f in cypress/vrt/diff/*.png; do cp \"cypress/vrt/comparison/$(basename $f)\" \"cypress/vrt/baseline/$(basename $f)\"; done && rm -rf cypress/vrt/diff cypress/vrt/comparison",
     "test:vrt:update": "rm -rf cypress/vrt/baseline cypress/vrt/comparison cypress/vrt/diff && pnpm run test:vrt"
   },
-  "author": "Krish Suchak <suchak.krish@gmail.com>",
+  "author": "Krish Suchak",
   "license": "MIT",
   "dependencies": {
     "@ant-design/icons": "^5.0.0",
