@@ -16,9 +16,9 @@ describe('Algorithm', () => {
     // Test that stat cards have relevant values
     const card = '.ant-card';
     const stat = '.ant-statistic'
-    cy.get(card).contains('Last Updated').parent(stat).contains('month');
-    cy.get(card).contains('Training Data Range').parent(stat).contains('year');
-    cy.get(card).contains('Number of Features').parent(stat).find('.ant-statistic-content').invoke('text').should('match', /^\d+$/);
-    cy.get(card).contains('Test Accuracy').parent(stat).contains('%').invoke('text').should('match', /^\d{2,3}\.\d%$/);
+    cy.get(card).contains('Last Updated').parents(stat).contains('month');
+    cy.get(card).contains('Training Data Range').parents(stat).contains('year');
+    cy.get(card).contains('Number of Features').parents(stat).find('.ant-statistic-content').invoke('text').should('match', /^\d+$/);
+    cy.get(card).contains('Test Accuracy').parents(stat).contains('%').invoke('text').should('match', /^\d{2,3}\.\d%$/);
   })
 })
