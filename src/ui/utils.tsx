@@ -16,7 +16,7 @@ import { Segmented, SegmentedProps } from "antd";
 export * from './utils/index';
 
 // Re-export from centralized tokens
-export { signalColors, signalEmojis, toggleColors } from './tokens';
+export { signalColors, signalEmojis, toggleColors, colors } from './tokens';
 import { toggleColors, colors } from './tokens';
 
 // Toggle component props

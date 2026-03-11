@@ -18,11 +18,23 @@ export const colors = {
   // Toggle/UI accent colors
   accentCyan: '#52e5ff',
   accentMagenta: 'magenta',
+  hodlMagenta: '#DF00DF',
+  
+  // Swagger/API colors
+  swaggerGreen: '#49cc90',
   
   // Neutral colors
   white: 'rgba(255, 255, 255, 0.85)',
+  whiteSecondary: 'rgba(255, 255, 255, 0.65)',
+  whiteTertiary: 'rgba(255, 255, 255, 0.45)',
   gray: 'rgba(255, 255, 255, 0.3)',
   transparent: 'transparent',
+  
+  // Background colors
+  bgBase: 'black',
+  bgElevated: '#1f1f1f',
+  bgHover: '#262626',
+  bgContainer: '#141414',
 } as const;
 
 // Signal-specific color mapping
