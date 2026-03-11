@@ -1,3 +1,5 @@
+@import "../../styles/variables.less";
+
 // Swagger UI
 .swagger-ui .info {
   display: none;
@@ -16,7 +18,7 @@
 }
 
 .swagger-ui .opblock.opblock-get .opblock-summary-method {
-  background: #52e5ff !important;
+  background: @color-cyan !important;
 }
 
 .swagger-ui select {
@@ -42,7 +44,7 @@
 
 // Allow api path width to take up more space
 .swagger-ui .opblock .opblock-summary-path {
-  color: #52e5ff;
+  color: @color-cyan;
   max-width: unset;
   font-size: unset;
 }
@@ -59,12 +61,12 @@
 
 // application/json response val select border
 .swagger-ui .response-control-media-type--accept-controller select {
-  border-color: #49cc90;
+  border-color: @color-green;
 }
 
 // description below Accept response header select
 .swagger-ui .response-control-media-type__accept-message {
-  color: #49cc90;
+  color: @color-green;
 }
 
 // general UI
@@ -123,7 +125,7 @@
 
 // Unlock icon
 .swagger-ui .authorization__btn {
-  fill: #49cc90;
+  fill: @color-green;
 }
 
 // keep API route lock icon full opacity and in sync with Authorize btn lock icon
@@ -186,7 +188,7 @@
 
 // Borders of sections
 .swagger-ui .opblock.opblock-get .opblock-summary {
-  border: 2px solid #52E5FF;
+  border: 2px solid @color-cyan;
   border-radius: 5px;
 }
 
@@ -286,12 +288,12 @@
 // Execute button
 .swagger-ui .btn.execute {
   background-color: inherit;
-  border-color: #52E5FF;
+  border-color: @color-cyan;
   color: inherit;
 }
 
 .swagger-ui .try-out__btn {
-  border-color: magenta !important;
+  border-color: @color-magenta !important;
 }
 
 .swagger-ui .btn.cancel {
@@ -306,8 +308,8 @@
 
 // Loading
 .swagger-ui .loading-container .loading:before {
-  border-color: black;
-  border-top-color: #52E5FF;
+  border-color: @color-bg-base;
+  border-top-color: @color-cyan;
 }
 
 .swagger-ui .loading-container .loading:after {

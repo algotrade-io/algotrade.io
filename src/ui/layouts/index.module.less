@@ -1,3 +1,5 @@
+@import "../styles/variables.less";
+
 #root {
   height: 100vh;
 }
@@ -21,7 +23,7 @@
 }
 
 a:hover {
-  color: #52e5ff;
+  color: @color-cyan;
 }
 
 body {
@@ -191,7 +193,7 @@ input {
 
 .home {
   font-size: 20px;
-  color: #52e5ff;
+  color: @color-cyan;
   margin-left: -10px;
 }
 
@@ -201,16 +203,16 @@ input {
 
 .signOut,
 .signOut:focus {
-  border-left-color: magenta !important;
-  border-right-color: magenta !important;
+  border-left-color: @color-magenta !important;
+  border-right-color: @color-magenta !important;
   border-top-color: transparent !important;
   border-bottom-color: transparent !important;
 }
 
 .signOut:hover {
-  border-color: magenta !important;
-  box-shadow: 0 0 5px magenta !important;
-  color: rgba(255, 255, 255, 0.85) !important;
+  border-color: @color-magenta !important;
+  box-shadow: @shadow-glow-magenta !important;
+  color: @color-text-primary !important;
   background-color: inherit !important;
 }
 
@@ -231,7 +233,7 @@ input {
 :global(.ant-checkbox .ant-checkbox-inner),
 :global(.ant-checkbox:not(.ant-checkbox-disabled):hover .ant-checkbox-inner),
 :global(.ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-inner) {
-  border-color: #52e5ff;
+  border-color: @color-cyan;
   background: transparent;
 }
 
@@ -296,7 +298,7 @@ input {
 }
 
 .start {
-  border-color: #52e5ff;
+  border-color: @color-cyan;
 }
 
 // mobile
@@ -332,26 +334,26 @@ input {
 
 // Cyan styling for .start buttons only
 .start:not(:disabled):hover {
-  border-color: #52e5ff !important;
-  color: rgba(255, 255, 255, 0.85) !important;
+  border-color: @color-cyan !important;
+  color: @color-text-primary !important;
 }
 
 .start:hover,
 .start:active {
-  border-color: #52e5ff !important;
-  box-shadow: 0 0 5px #52e5ff;
-  color: rgba(255, 255, 255, 0.85) !important;
+  border-color: @color-cyan !important;
+  box-shadow: @shadow-glow-cyan;
+  color: @color-text-primary !important;
 }
 
 .start:not(:disabled):active {
   box-shadow: none;
-  border-color: #52e5ff !important;
-  color: rgba(255, 255, 255, 0.85);
+  border-color: @color-cyan !important;
+  color: @color-text-primary;
 }
 
 .start:focus {
-  border-color: #52e5ff !important;
-  color: rgba(255, 255, 255, 0.85);
+  border-color: @color-cyan !important;
+  color: @color-text-primary;
 }
 
 :global(.ant-layout-footer) {
@@ -384,33 +386,33 @@ input {
 }
 
 :global(.ant-menu.ant-menu-dark .ant-menu-item-selected) {
-  color: #52e5ff;
+  color: @color-cyan;
   background-color: transparent;
 }
 
 // selected menu item style
 :global(.ant-menu-dark .ant-menu-item-selected > span > a) {
-  // color: #52e5ff;
+  // color: @color-cyan;
   display: flex;
   margin-top: -2px;
 }
 
 :global(.ant-menu-item .ant-menu-title-content) {
-  color: rgba(255, 255, 255, 0.65);
+  color: @color-text-secondary;
 }
 
 :global(.ant-menu-item-selected .ant-menu-title-content) {
-  border-top: 2px solid #52e5ff !important;
+  border-top: 2px solid @color-cyan !important;
   color: white !important;
   // border-radius: 2px;
 }
 
 :global(.ant-menu-dark) {
-  background: black;
+  background: @color-bg-base;
 }
 
 :global(.ant-menu-dark.ant-menu-submenu>.ant-menu) {
-  background-color: #1f1f1f;
+  background-color: @color-bg-elevated;
 }
 
 :global(.ant-menu.ant-menu-dark .ant-menu-item-active:hover) {
@@ -426,7 +428,7 @@ input {
 }
 
 .ice {
-  color: #52e5ff;
+  color: @color-cyan;
   font-weight: 600;
 }
 
@@ -440,7 +442,7 @@ input {
 // google sign in button
 :global(.federated-sign-in-button:hover),
 :global(.federated-sign-in-button:focus .federated-sign-in-button:active) {
-  background-color: #1d1d1d !important;
+  background-color: @color-bg-elevated !important;
   border-color: transparent !important;
 }
 
@@ -450,7 +452,7 @@ input {
 
 // inactive tab
 [data-amplify-authenticator] [data-state="inactive"] {
-  color: rgba(255, 255, 255, 0.65) !important;
+  color: @color-text-secondary !important;
 }
 
 [data-amplify-authenticator] [data-state="inactive"]:hover {
