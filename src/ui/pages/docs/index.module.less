@@ -1,3 +1,5 @@
+@import "../../styles/variables.less";
+
 // API Key input styling (migrated from styled-components)
 .apiKeyInput {
   input {
@@ -10,15 +12,15 @@
 
 :global(.apiKeyInput.ant-input-affix-wrapper:hover),
 :global(.apiKeyInput.ant-input-affix-wrapper:active) {
-  border-color: #52e5ff;
-  box-shadow: 0 0 5px #52e5ff;
+  border-color: @color-cyan;
+  box-shadow: @shadow-glow-cyan;
 }
 
 :global(.apiKeyInput.ant-input-affix-wrapper:focus),
 :global(.apiKeyInput.ant-input-affix-wrapper-focused) {
-  border-color: #52e5ff;
+  border-color: @color-cyan;
 }
 
 .authorizeText {
-  color: #49cc90;
+  color: @color-green;
 }

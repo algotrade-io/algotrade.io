@@ -1,12 +1,14 @@
+@import "../../styles/variables.less";
+
 // contact form subject input border
 :global(.ant-select:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer):hover .ant-select-selector),
 :global(.ant-select-focused.ant-select:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer) .ant-select-selector) {
-    border-color: #52e5ff;
+    border-color: @color-cyan;
     // or magenta?
 }
 
 // contact form message input border
 :global(.ant-input:focus),
 :global(.ant-input:hover) {
-    border-color: #52e5ff;
+    border-color: @color-cyan;
 }

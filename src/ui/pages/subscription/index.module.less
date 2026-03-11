@@ -1,23 +1,25 @@
+@import "../../styles/variables.less";
+
 .subscribe,
 .subscribe:focus {
-  border-color: magenta;
+  border-color: @color-magenta;
   background-color: inherit;
 }
 
 .subscribe:hover:enabled {
-  border-color: magenta !important;
-  box-shadow: 0 0 5px magenta;
-  color: rgba(255, 255, 255, 0.85) !important;
+  border-color: @color-magenta !important;
+  box-shadow: @shadow-glow-magenta;
+  color: @color-text-primary !important;
   background-color: inherit !important;
 }
 
 .subscribe:active {
-  border-color: magenta !important;
-  color: rgba(255, 255, 255, 0.85) !important;
+  border-color: @color-magenta !important;
+  color: @color-text-primary !important;
 }
 
 .contact {
-  color: magenta;
+  color: @color-magenta;
 }
 
 .contact:hover {
@@ -35,14 +37,14 @@
 // Code/API path styling
 .codeText {
   font-family: "Courier","Courier New",monospace;
-  color: #52e5ff;
+  color: @color-cyan;
 }
 
 // Signal text colors
 .buyText {
-  color: #52e5ff;
+  color: @color-cyan;
 }
 
 .sellText {
-  color: magenta;
+  color: @color-magenta;
 }

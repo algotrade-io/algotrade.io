@@ -1,9 +1,11 @@
+@import "../../styles/variables.less";
+
 .ant-segmented .ant-segmented-item:hover:not(.ant-segmented-item-selected):not(.ant-segmented-item-disabled)::after {
   background-color: unset;
 }
 
 .ant-statistic .ant-statistic-title {
-  color: rgba(255, 255, 255, 0.65);
+  color: @color-text-secondary;
 }
 
 @media (min-width: 1000px) {
@@ -13,9 +15,9 @@
 }
 
 .buyText {
-  color: #52e5ff;
+  color: @color-cyan;
 }
 
 .sellText {
-  color: magenta;
+  color: @color-magenta;
 }
