@@ -198,6 +198,7 @@ input {
   border-color: magenta !important;
   box-shadow: 0 0 5px magenta !important;
   color: rgba(255, 255, 255, 0.85) !important;
+  background-color: inherit !important;
 }
 
 .invisible {
@@ -268,8 +269,8 @@ input {
   border-bottom: 0;
 }
 
-// pagination item background
-:global(.ant-pagination .ant-pagination-item) {
+// pagination item background - only unset for default state
+:global(.ant-pagination .ant-pagination-item:not(:hover):not(:focus):not(:active)) {
   background-color: unset !important;
 }
 
@@ -305,37 +306,37 @@ input {
   }
 }
 
-:global(.ant-btn-default) {
+// Custom button background - only for our styled buttons, not primary/secondary
+.start,
+.signOut {
   background-color: inherit;
 }
 
-:global(.ant-btn:not(:disabled):not(.ant-btn-disabled):hover) {
+.start:not(:disabled):not(.ant-btn-disabled):hover,
+.signOut:not(:disabled):not(.ant-btn-disabled):hover {
   background-color: inherit !important;
 }
 
-:global(.ant-btn-default:not(:disabled):hover) {
+// Cyan styling for .start buttons only
+.start:not(:disabled):hover {
   border-color: #52e5ff !important;
   color: rgba(255, 255, 255, 0.85) !important;
 }
 
-:global(.ant-btn-default:hover),
-:global(.ant-btn-default:active) {
+.start:hover,
+.start:active {
   border-color: #52e5ff !important;
   box-shadow: 0 0 5px #52e5ff;
   color: rgba(255, 255, 255, 0.85) !important;
 }
 
-:global(.ant-btn-default:not(:disabled):hover) {
-  color: rgba(255, 255, 255, 0.85) !important;
-}
-
-:global(.ant-btn-default:not(:disabled):active) {
+.start:not(:disabled):active {
   box-shadow: none;
   border-color: #52e5ff !important;
   color: rgba(255, 255, 255, 0.85);
 }
 
-:global(.ant-btn-default:focus) {
+.start:focus {
   border-color: #52e5ff !important;
   color: rgba(255, 255, 255, 0.85);
 }
