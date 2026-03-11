@@ -419,11 +419,11 @@ const AlgorithmPage = () => {
                   which region today&apos;s data point occupies, we may be able to
                   predict whether now is a good time to{" "}
                   <b>
-                    <span style={{ color: "#52e5ff" }}>BUY</span>
+                    <span className={overrides.buyText}>BUY</span>
                   </b>{" "}
                   or{" "}
                   <b>
-                    <span style={{ color: "magenta" }}>SELL</span>
+                    <span className={overrides.sellText}>SELL</span>
                   </b>
                   .
                 </Col>

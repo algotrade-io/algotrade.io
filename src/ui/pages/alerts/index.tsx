@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { Typography, notification, Button, Alert, Input, Switch } from "antd";
-import { getApiUrl } from "@/utils";
+import { getApiUrl, colors } from "@/utils";
 import { CopyOutlined } from "@ant-design/icons";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import type { Account, AuthUser } from "@/types";
@@ -147,7 +147,7 @@ const AlertsPage = () => {
           message={<span>You must be&nbsp;
             <button
               type="button"
-              style={{ color: '#52e5ff', background: 'none', border: 'none', padding: 0, cursor: 'pointer', textDecoration: 'underline' }}
+              className={overrides.linkButton}
               onClick={() => setShowLogin(true)}>
               {'signed in'}
             </button>

@@ -35,6 +35,7 @@ import {
   signalColors,
   signalEmojis,
   Toggle,
+  colors,
 } from "@/utils";
 import type { PreviewDataPoint } from "@/types";
 import { useAuthenticator } from "@aws-amplify/ui-react";
@@ -114,7 +115,7 @@ const LineChart: React.FC<LineChartProps> = memo(
         type: "scatter",
         mode: "lines",
         name: hyperdrive,
-        line: { color: "#52e5ff", width: 2, shape: "spline" },
+        line: { color: colors.accentCyan, width: 2, shape: "spline" },
         fill: "tozeroy",
         fillcolor: "rgba(82, 229, 255, 0.1)",
         hovertemplate: `<b>${hyperdrive}</b><br>%{x}<br>%{y:,.2f}<extra></extra>`,
@@ -301,12 +302,12 @@ const Page = () => {
   const columns = useMemo(() => [
     { title: "Metric", dataIndex: "metric", key: "metric" },
     {
-      title: <span style={{ color: "#DF00DF" }}>{HODL}</span>,
+      title: <span style={{ color: colors.hodlMagenta }}>{HODL}</span>,
       dataIndex: HODL,
       key: HODL,
     },
     {
-      title: <i style={{ color: "#52e5ff" }}>{hyperdrive}</i>,
+      title: <i style={{ color: colors.accentCyan }}>{hyperdrive}</i>,
       dataIndex: hyperdrive,
       key: hyperdrive,
     },
@@ -481,7 +482,7 @@ const Page = () => {
                 <Title level={5}>
                   a momentum trading strategy using{" "}
                   <a href="https://github.com/suchak1/hyperdrive">
-                    <i style={{ color: "#52e5ff" }}>{hyperdrive}</i>
+                    <i style={{ color: colors.accentCyan }}>{hyperdrive}</i>
                   </a>
                 </Title>
                 <Toggle

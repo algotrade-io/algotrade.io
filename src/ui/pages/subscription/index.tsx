@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { NavLink, useSearchParams } from "react-router-dom";
 import { Typography, Tooltip, Badge, Card, Button, Spin, Alert } from "antd";
-import { getApiUrl, getDayDiff } from "@/utils";
+import { getApiUrl, getDayDiff, colors } from "@/utils";
 import layoutStyles from "@/layouts/index.module.less";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useAuthenticator } from "@aws-amplify/ui-react";
@@ -171,7 +171,7 @@ const SubscriptionPage = () => {
           justifyContent: 'space-between'
         }
       }>
-        <li>{"access to the "}<span style={{ fontFamily: '"Courier","Courier New",monospace', color: "#52e5ff" }}>
+        <li>{"access to the "}<span className={styles.codeText}>
           /signals
         </span> API</li>
 
@@ -213,8 +213,8 @@ const SubscriptionPage = () => {
         }}
       >
         <Title level={5} style={{ width: "75%" }}>
-          to the algorithm&apos;s <span style={{ color: "#52e5ff" }}>BUY</span> and{" "}
-          <span style={{ color: "magenta" }}>SELL</span> signals
+          to the algorithm&apos;s <span className={styles.buyText}>BUY</span> and{" "}
+          <span className={styles.sellText}>SELL</span> signals
         </Title>
       </span>
 

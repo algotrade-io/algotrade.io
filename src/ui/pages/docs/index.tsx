@@ -103,7 +103,7 @@ const DocsPage = () => {
                 <>
                   <span>{"Paste your API key in the "}</span>
                   <b>
-                    <span style={{ color: "#49cc90" }}>Authorize</span>
+                    <span className={styles.authorizeText}>Authorize</span>
                   </b>
                   <span>{" modal."}</span>
                 </>
