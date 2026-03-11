@@ -164,7 +164,7 @@ const Layout = ({ children: _children }: LayoutProps) => {
           loggedIn={loggedIn as AuthUser}
           setAccount={setAccount}
         />
-        <AccountContext.Provider
+        <AccountContext
           value={{ account, accountLoading, loginLoading, setShowLogin, setAccount }}
         >
           <Routes>
@@ -182,7 +182,7 @@ const Layout = ({ children: _children }: LayoutProps) => {
             {/* This is 404 redirect to home page for unknown routes */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
-        </AccountContext.Provider>
+        </AccountContext>
       </AntLayout.Content>
       <Footer setSelectedMenuIdx={setSelectedMenuIdx} />
     </AntLayout>
@@ -193,64 +193,64 @@ const LayoutWrapper = function LayoutWrapper({ route: _route, children: _childre
   return (
     <ConfigProvider
       theme={{
-      cssVar: true,
-      algorithm: darkAlgorithm,
-      token: {
-        borderRadius: 2,
-        boxShadow:
-          '0 1px 2px -2px rgb(0 0 0 / 64%), 0 3px 6px 0 rgb(0 0 0 / 48%), 0 5px 12px 4px rgb(0 0 0 / 36%)',
-        fontFamily:
-          'Syne Mono, "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
-      },
-      components: {
-        Input: {
-          colorBgContainer: 'transparent',
+        cssVar: true,
+        algorithm: darkAlgorithm,
+        token: {
+          borderRadius: 2,
+          boxShadow:
+            '0 1px 2px -2px rgb(0 0 0 / 64%), 0 3px 6px 0 rgb(0 0 0 / 48%), 0 5px 12px 4px rgb(0 0 0 / 36%)',
+          fontFamily:
+            'Syne Mono, "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
         },
-        Table: {
-          borderRadiusLG: 4,
-          rowHoverBg: '#262626',
-          headerBorderRadius: 0,
+        components: {
+          Input: {
+            colorBgContainer: 'transparent',
+          },
+          Table: {
+            borderRadiusLG: 4,
+            rowHoverBg: '#262626',
+            headerBorderRadius: 0,
+          },
+          Card: {
+            borderRadiusLG: 4,
+          },
+          Modal: {
+            contentBg: '#141414',
+            headerBg: '#141414',
+            footerBg: '#141414',
+            paddingContentHorizontalLG: 0,
+            paddingMD: 0,
+          },
+          Button: {
+            defaultBorderColor: '#434343',
+          },
+          Message: {
+            contentBg: '#1f1f1f',
+            colorText: 'rgba(255, 255, 255, 0.85)',
+          },
+          Notification: {
+            colorBgElevated: '#1f1f1f',
+            colorText: 'rgba(255, 255, 255, 0.85)',
+          },
+          Alert: {
+            defaultPadding: '8px 15px',
+          },
+          Checkbox: {
+            colorBorder: '#52e5ff',
+            colorBgContainer: 'transparent',
+          },
+          Pagination: {
+            itemBg: 'transparent',
+          },
         },
-        Card: {
-          borderRadiusLG: 4,
-        },
-        Modal: {
-          contentBg: '#141414',
-          headerBg: '#141414',
-          footerBg: '#141414',
-          paddingContentHorizontalLG: 0,
-          paddingMD: 0,
-        },
-        Button: {
-          defaultBorderColor: '#434343',
-        },
-        Message: {
-          contentBg: '#1f1f1f',
-          colorText: 'rgba(255, 255, 255, 0.85)',
-        },
-        Notification: {
-          colorBgElevated: '#1f1f1f',
-          colorText: 'rgba(255, 255, 255, 0.85)',
-        },
-        Alert: {
-          defaultPadding: '8px 15px',
-        },
-        Checkbox: {
-          colorBorder: '#52e5ff',
-          colorBgContainer: 'transparent',
-        },
-        Pagination: {
-          itemBg: 'transparent',
-        },
-      },
-    }}
-  >
-    <Authenticator.Provider>
-      <BrowserRouter>
-      <Layout />
-      </BrowserRouter>
-    </Authenticator.Provider>
-  </ConfigProvider>
+      }}
+    >
+      <Authenticator.Provider>
+        <BrowserRouter>
+          <Layout />
+        </BrowserRouter>
+      </Authenticator.Provider>
+    </ConfigProvider>
   );
 };
 
