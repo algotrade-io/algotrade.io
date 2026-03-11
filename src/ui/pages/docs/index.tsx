@@ -17,30 +17,10 @@ import SwaggerUI from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
 import layoutStyles from "@/layouts/index.module.less";
 import "./index.less";
-import styled from "styled-components";
+import styles from "./index.module.less";
 
 const { Title } = Typography;
 swaggerSpec.servers[0].url = getApiUrl();
-
-const APIKey = styled(Input.Password)`
-  input {
-    font-family: "Courier","Courier New",monospace;
-    pointer-events: none;
-    user-select: none;
-    -webkit-user-select: none;
-  }
-
-  .ant-input-affix-wrapper:hover,
-  .ant-input-affix-wrapper:active {
-    border-color: #52e5ff;
-    box-shadow: 0 0 5px #52e5ff;
-  }
-
-  .ant-input-affix-wrapper:focus,
-  .ant-input-affix-wrapper-focused {
-    border-color: #52e5ff;
-  }
-`;
 
 export const copyToClipboard = (val: string | undefined, name: string) =>
   navigator.clipboard.writeText(val || '').then(
@@ -78,7 +58,8 @@ const DocsPage = () => {
                 title="Use the button on the right to copy."
                 placement="bottom"
               >
-                <APIKey
+                <Input.Password
+                  className={`${styles.apiKeyInput} apiKeyInput`}
                   style={{ userSelect: "none" }}
                   addonBefore="API Key"
                   defaultValue={account?.api_key}

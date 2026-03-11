@@ -5,23 +5,13 @@ import { getApiUrl, getDayDiff } from "@/utils";
 import layoutStyles from "@/layouts/index.module.less";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useAuthenticator } from "@aws-amplify/ui-react";
-import styled from "styled-components";
 import { AccountContext } from "../../layouts";
 import CUBE from "@/assets/cube.gif";
 import { AuthUser, Account } from "@/types";
 
-import overrides from "./index.module.less";
+import styles from "./index.module.less";
 
 const { Title } = Typography;
-
-
-
-const List = styled.ul`
-  li::marker {
-    content: '✓ ';
-    color: lime;
-  }
-`;
 
 const antIcon = <LoadingOutlined style={{ fontSize: 50 }} spin />;
 const spinner = <Spin style={{ width: "100%" }} indicator={antIcon} />;
@@ -91,7 +81,7 @@ const SubscriptionPage = () => {
       onClick={subIsActive ? onBilling : onCheckout}
       loading={checkoutLoading || billingLoading}
       disabled={loggedIn && !account}
-      className={subIsActive ? layoutStyles.start : overrides.subscribe}>{subIsActive ? "Manage subscription" : "Subscribe"}
+      className={subIsActive ? layoutStyles.start : styles.subscribe}>{subIsActive ? "Manage subscription" : "Subscribe"}
     </Button>;
   if (loggedIn && !account) {
     subscribeButton = <Tooltip
@@ -173,7 +163,7 @@ const SubscriptionPage = () => {
         </Title>
       </span>
       {/* should be level 3-5 */}
-      <List style={
+      <ul className={styles.checkList} style={
         {
           height: '40%',
           display: 'flex',
@@ -187,7 +177,7 @@ const SubscriptionPage = () => {
 
         <li>provides up to a week&apos;s worth of the latest BUY and SELL signals</li>
         <li>maximum of 5 requests / day</li>
-      </List>
+      </ul>
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         {subscribeButton}
       </div>
@@ -241,7 +231,7 @@ const SubscriptionPage = () => {
               {/* use badges to show discount percentage for yearly plans or combos */}
               {/* additional cards say Downgrade or Upgrade (magenta btn) and backend uses stripe.Subscription.modify + prorating  */}
               {subscriptionCard}
-              <div style={{ display: 'flex', justifyContent: 'center' }}>Having issues? &nbsp;<NavLink className={overrides.contact} to={'/contact'}>{'Contact us!'}</NavLink></div>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>Having issues? &nbsp;<NavLink className={styles.contact} to={'/contact'}>{'Contact us!'}</NavLink></div>
               <div>
                 <div style={{
                   width: '100%', display: 'flex',

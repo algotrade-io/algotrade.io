@@ -1,0 +1,53 @@
+/**
+ * Design Tokens — Less Variables
+ * 
+ * Centralized color and style variables for use in Less files.
+ * These mirror the tokens defined in tokens.ts for consistency.
+ */
+
+// Brand/Accent Colors
+@color-cyan: #52e5ff;
+@color-magenta: magenta;
+@color-bitcoin: #F7931A;
+
+// Signal Colors
+@color-buy: lime;
+@color-sell: red;
+@color-hodl: @color-bitcoin;
+
+// Background Colors (dark theme)
+@color-bg-base: black;
+@color-bg-elevated: #1f1f1f;
+@color-bg-hover: #262626;
+@color-bg-container: #141414;
+
+// Border Colors
+@color-border-primary: #434343;
+@color-border-secondary: #303030;
+@color-border-accent: @color-cyan;
+
+// Text Colors
+@color-text-primary: rgba(255, 255, 255, 0.85);
+@color-text-secondary: rgba(255, 255, 255, 0.65);
+@color-text-tertiary: rgba(255, 255, 255, 0.45);
+@color-text-disabled: rgba(255, 255, 255, 0.3);
+
+// Interactive States
+@color-link: #177ddc;
+@color-link-hover: @color-cyan;
+
+// Shadows
+@shadow-glow-cyan: 0 0 5px @color-cyan;
+@shadow-glow-magenta: 0 0 5px @color-magenta;
+
+// Spacing (using Ant Design's system)
+@spacing-xs: 4px;
+@spacing-sm: 8px;
+@spacing-md: 16px;
+@spacing-lg: 24px;
+@spacing-xl: 32px;
+
+// Border Radius
+@border-radius-sm: 2px;
+@border-radius-md: 4px;
+@border-radius-lg: 8px;

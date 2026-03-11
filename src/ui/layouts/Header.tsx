@@ -7,8 +7,8 @@ import { Layout as AntLayout, Menu, Button, Modal } from 'antd';
 import { NavLink } from 'react-router-dom';
 import { Authenticator, AmplifyProvider } from '@aws-amplify/ui-react';
 import BTC_ICE from '@/assets/logo.png';
-import overrides from './index.module.less';
-import { HeaderHeight, HeaderWrapper, AuthActions } from './Header.styles';
+import styles from './index.module.less';
+import { HeaderHeight } from './Header.styles';
 import { authTheme, routes, headerHeight } from './config';
 import type { AuthUser } from '@/types';
 
@@ -38,7 +38,7 @@ const Header: React.FC<HeaderProps> = ({
     // Filter out home link from antd's menu "selected" css stylings
     const selectedMenuItems = selectedMenuIdx ? [selectedMenuIdx.toString()] : [];
     // Invisible authenticator needed for auth state
-    const dummy = <Authenticator className={overrides.invisible} />;
+    const dummy = <Authenticator className={styles.invisible} />;
 
     return (
         <AntLayout.Header
@@ -49,7 +49,7 @@ const Header: React.FC<HeaderProps> = ({
                 height: headerHeight,
             }}
         >
-            <HeaderWrapper>
+            <span className={styles.headerWrapper}>
                 <img className="logo" src={BTC_ICE} width={24} height={24} alt="logo" />
                 <Menu
                     onClick={(item) => setSelectedMenuIdx(parseInt(item.key))}
@@ -59,7 +59,7 @@ const Header: React.FC<HeaderProps> = ({
                     defaultSelectedKeys={selectedMenuItems}
                     selectedKeys={selectedMenuItems}
                     items={routes.map((route: { text: React.ReactNode; to: string }, idx: number) => ({
-                        className: [overrides.white, overrides.ice].join(' '),
+                        className: [styles.white, styles.ice].join(' '),
                         key: idx.toString(),
                         style:
                             idx === 0
@@ -70,11 +70,11 @@ const Header: React.FC<HeaderProps> = ({
                 />
                 {dummy}
                 {!loginLoading && (
-                    <AuthActions>
-                        {loggedIn && <span className={overrides.account}>{accountText}</span>}
+                    <span className={styles.authActions}>
+                        {loggedIn && <span className={styles.account}>{accountText}</span>}
                         {loggedIn ? (
                             <Button
-                                className={overrides.signOut}
+                                className={styles.signOut}
                                 onClick={() => {
                                     setShowLogin(false);
                                     signOut();
@@ -83,7 +83,7 @@ const Header: React.FC<HeaderProps> = ({
                                 Sign out
                             </Button>
                         ) : (
-                            <Button className={overrides.start} onClick={() => setShowLogin(true)}>
+                            <Button className={styles.start} onClick={() => setShowLogin(true)}>
                                 Get started
                             </Button>
                         )}
@@ -100,9 +100,9 @@ const Header: React.FC<HeaderProps> = ({
                                 <Authenticator />
                             </AmplifyProvider>
                         </Modal>
-                    </AuthActions>
+                    </span>
                 )}
-            </HeaderWrapper>
+            </span>
         </AntLayout.Header>
     );
 };

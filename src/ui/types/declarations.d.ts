@@ -64,12 +64,6 @@ declare module 'swagger-ui-react' {
   export default SwaggerUI;
 }
 
-declare module 'styled-components' {
-  import * as styledComponents from 'styled-components/dist/styled-components.cjs';
-  export default styledComponents.default;
-  export * from 'styled-components/dist/styled-components.cjs';
-}
-
 declare module '@/aws-exports' {
   const awsmobile: {
     aws_project_region: string;
