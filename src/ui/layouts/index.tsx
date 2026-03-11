@@ -193,6 +193,7 @@ const LayoutWrapper = function LayoutWrapper({ route: _route, children: _childre
   return (
     <ConfigProvider
       theme={{
+      cssVar: true,
       algorithm: darkAlgorithm,
       token: {
         borderRadius: 2,
@@ -207,9 +208,39 @@ const LayoutWrapper = function LayoutWrapper({ route: _route, children: _childre
         },
         Table: {
           borderRadiusLG: 4,
+          rowHoverBg: '#262626',
+          headerBorderRadius: 0,
         },
         Card: {
           borderRadiusLG: 4,
+        },
+        Modal: {
+          contentBg: '#141414',
+          headerBg: '#141414',
+          footerBg: '#141414',
+          paddingContentHorizontalLG: 0,
+          paddingMD: 0,
+        },
+        Button: {
+          defaultBorderColor: '#434343',
+        },
+        Message: {
+          contentBg: '#1f1f1f',
+          colorText: 'rgba(255, 255, 255, 0.85)',
+        },
+        Notification: {
+          colorBgElevated: '#1f1f1f',
+          colorText: 'rgba(255, 255, 255, 0.85)',
+        },
+        Alert: {
+          defaultPadding: '8px 15px',
+        },
+        Checkbox: {
+          colorBorder: '#52e5ff',
+          colorBgContainer: 'transparent',
+        },
+        Pagination: {
+          itemBg: 'transparent',
         },
       },
     }}

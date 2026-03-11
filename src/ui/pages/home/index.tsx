@@ -14,7 +14,6 @@ import {
   Skeleton,
   notification,
 } from "antd";
-import styled from "styled-components";
 import createPlotlyComponent from "react-plotly.js/factory";
 import Plotly from "plotly.js-dist-min";
 import type { Data, Layout, Config } from "plotly.js";
@@ -45,11 +44,6 @@ import { useAccount } from "@/contexts";
 
 const toggleLabels = { BTC: "₿", USD: "$" };
 
-const RibbonCol = styled(Col)`
-  .ant-ribbon-wrapper, .ant-card {
-    height: 100%;
-  }
-`;
 const HODL = "HODL";
 const hyperdrive = "hyperdrive";
 const formatBTC = (v: number | string) => `${Math.round(Number(v) * 10) / 10} ₿`;
@@ -589,7 +583,7 @@ const Page = () => {
                 >
                   <Row style={{ width: "100%" }}>
                     {signalData.map((datum, idx) => (
-                      <RibbonCol key={idx} flex={1}>
+                      <Col key={idx} flex={1} className={styles.ribbonCol}>
                         <Badge.Ribbon
                           color={ribbonColors[datum.Day]}
                           text={<b>{datum.Day.toUpperCase()}</b>}
@@ -641,7 +635,7 @@ const Page = () => {
                               ))}
                           </Card>
                         </Badge.Ribbon>
-                      </RibbonCol>
+                      </Col>
                     ))}
                   </Row>
                 </div>

@@ -1,0 +1,20 @@
+// API Key input styling (migrated from styled-components)
+.apiKeyInput {
+  input {
+    font-family: "Courier","Courier New",monospace;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+}
+
+:global(.apiKeyInput.ant-input-affix-wrapper:hover),
+:global(.apiKeyInput.ant-input-affix-wrapper:active) {
+  border-color: #52e5ff;
+  box-shadow: 0 0 5px #52e5ff;
+}
+
+:global(.apiKeyInput.ant-input-affix-wrapper:focus),
+:global(.apiKeyInput.ant-input-affix-wrapper-focused) {
+  border-color: #52e5ff;
+}
