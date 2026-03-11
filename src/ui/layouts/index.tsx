@@ -165,7 +165,7 @@ const Layout = ({ children: _children }: LayoutProps) => {
           loggedIn={loggedIn as AuthUser}
           setAccount={setAccount}
         />
-        <AccountContext.Provider
+        <AccountContext
           value={{ account, accountLoading, loginLoading, setShowLogin, setAccount }}
         >
           <Routes>
@@ -183,7 +183,7 @@ const Layout = ({ children: _children }: LayoutProps) => {
             {/* This is 404 redirect to home page for unknown routes */}
             <Route path="*" element={<Navigate to="/" />} />
           </Routes>
-        </AccountContext.Provider>
+        </AccountContext>
       </AntLayout.Content>
       <Footer setSelectedMenuIdx={setSelectedMenuIdx} />
     </AntLayout>
