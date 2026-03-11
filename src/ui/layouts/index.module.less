@@ -257,9 +257,24 @@ input {
   border-top: 0;
 }
 
+// hide table row bottom border
+:global(.ant-table-wrapper .ant-table-tbody >tr >th),
+:global(.ant-table-wrapper .ant-table-tbody >tr >td) {
+  border-bottom: unset !important;
+}
+
 // hide last row bottom border
 :global(.ant-table-wrapper .ant-table-tbody >tr:last-child>td) {
   border-bottom: 0;
+}
+
+// pagination item background
+:global(.ant-pagination .ant-pagination-item) {
+  background-color: unset !important;
+}
+
+:global(.ant-btn.ant-btn-variant-solid) {
+  box-shadow: unset !important;
 }
 
 .ant-btn[disabled]:hover {
