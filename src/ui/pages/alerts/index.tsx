@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { NavLink } from "react-router-dom";
 import { Typography, notification, Button, Alert, Input, Switch } from "antd";
-import { getApiUrl, colors } from "@/utils";
+import { getApiUrl } from "@/utils";
 import { CopyOutlined } from "@ant-design/icons";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import type { Account, AuthUser } from "@/types";
