@@ -45,8 +45,8 @@ describe('Gym', () => {
       cy.get('input.ant-input').should('not.be.disabled');
       
       // Verify search button exists
-      cy.get('.ant-input-search-button').should('exist');
-      cy.get('.ant-input-search-button').contains('Search');
+      cy.get('.ant-input-search-btn').should('exist');
+      cy.get('.ant-input-search-btn').contains('Search');
       
       // Verify allow clear is enabled
       cy.get('.ant-input-search').find('input').type('test');
