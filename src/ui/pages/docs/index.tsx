@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useRef } from "react";
 import {
   Typography,
   Input,
@@ -14,6 +14,7 @@ import swaggerSpec from "@/gen/swagger.json";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 import { CopyOutlined } from "@ant-design/icons";
 import SwaggerUI from "swagger-ui-react";
+import type { SwaggerUIProps } from "swagger-ui-react";
 import "swagger-ui-react/swagger-ui.css";
 import layoutStyles from "@/layouts/index.module.less";
 import "./index.less";
@@ -21,6 +22,8 @@ import styles from "./index.module.less";
 
 const { Title } = Typography;
 swaggerSpec.servers[0].url = getApiUrl();
+
+type SwaggerUISystem = Parameters<NonNullable<SwaggerUIProps['onComplete']>>[0];
 
 export const copyToClipboard = (val: string | undefined, name: string) =>
   navigator.clipboard.writeText(val || '').then(
@@ -34,6 +37,14 @@ const DocsPage = () => {
     AccountContext
   ) as { account: Account | null; accountLoading: boolean; loginLoading: boolean; setShowLogin: (show: boolean) => void };
   const loading = loginLoading || accountLoading;
+  const swaggerRef = useRef<SwaggerUISystem | null>(null);
+
+  // Re-authorize when account changes (handles case where SwaggerUI loads before account)
+  useEffect(() => {
+    if (swaggerRef.current && account?.api_key) {
+      swaggerRef.current.preauthorizeApiKey?.("ApiKeyAuth", account.api_key);
+    }
+  }, [account?.api_key]);
 
   // TODO:
   // 3. Move Docs tab to the right? and remove signed in as User text?
@@ -84,10 +95,12 @@ const DocsPage = () => {
       )}
       <Title level={2}>API</Title>
       <SwaggerUI
-        onComplete={(ui) =>
-          // ui.preauthorizeApiKey?.("ApiKeyAuth", account?.api_key || "")
-          ui.preauthorizeApiKey?.("ApiKeyAuth", "test")
-        }
+        onComplete={(ui) => {
+          swaggerRef.current = ui;
+          if (account?.api_key) {
+            ui.preauthorizeApiKey?.("ApiKeyAuth", account.api_key);
+          }
+        }}
         spec={swaggerSpec as object}
         // can make this 0 to collapse Schema
         // or 1 to reveal Schema names
