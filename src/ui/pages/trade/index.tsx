@@ -1,4 +1,4 @@
-import { Typography, Table, Button, notification } from "antd";
+import { Typography, Table, Button, App } from "antd";
 import { useState, useEffect, useReducer } from "react";
 import { useAuthenticator } from "@aws-amplify/ui-react";
 const { Title } = Typography;
@@ -23,7 +23,7 @@ if (isLocal) {
   mockData = (await import("@/pages/trade/fixtures")).default as Holding[];
 }
 const TradePage = () => {
-
+  const { notification } = App.useApp();
   const { user: loggedIn } = useAuthenticator((context) => [context.user]);
   const [portfolio, setPortfolio] = useState<Holding[][]>([[], []]);
   const [loading, setLoading] = useState(true);
@@ -130,7 +130,7 @@ const TradePage = () => {
         }
       })
     }
-  }, [message, selector, variant]);
+  }, [message, selector, variant, notification]);
   const handleQueue = (holding: Holding) => {
     const holdingDir = Boolean(holding.open_contracts);
     const queueIsEmpty = queue[selector].size === 0;

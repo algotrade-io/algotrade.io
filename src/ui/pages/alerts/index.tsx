@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { NavLink } from "react-router-dom";
-import { Typography, notification, Button, Alert, Input, Switch } from "antd";
+import { Typography, App, Button, Alert, Input, Switch } from "antd";
 import { getApiUrl } from "@/utils";
 import { CopyOutlined } from "@ant-design/icons";
 import { useAuthenticator } from "@aws-amplify/ui-react";
@@ -68,6 +68,7 @@ const AlertsPage = () => {
   const { account, setShowLogin, setAccount, accountLoading } = useContext(
     AccountContext
   ) as { account: Account | null; setShowLogin: (show: boolean) => void; setAccount: (account: Account | null) => void; accountLoading: boolean };
+  const { notification } = App.useApp();
   const [alertsLoading, setLoading] = useState(false);
   // may need useEffect to set webhook url
   const [url, setUrl] = useState(account?.alerts?.webhook || "")

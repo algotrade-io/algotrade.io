@@ -5,7 +5,7 @@ import {
   message,
   Button,
   Tooltip,
-  notification,
+  App,
 } from "antd";
 import { getApiUrl, signalColors, signalEmojis } from "@/utils";
 import { AccountContext } from "@/layouts";
@@ -38,6 +38,7 @@ const DocsPage = () => {
   ) as { account: Account | null; accountLoading: boolean; loginLoading: boolean; setShowLogin: (show: boolean) => void };
   const loading = loginLoading || accountLoading;
   const swaggerRef = useRef<SwaggerUISystem | null>(null);
+  const { notification } = App.useApp();
 
   // Re-authorize when account changes (handles case where SwaggerUI loads before account)
   useEffect(() => {

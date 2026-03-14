@@ -12,7 +12,7 @@ import {
   Badge,
   Modal,
   Skeleton,
-  notification,
+  App,
 } from "antd";
 import createPlotlyComponent from "react-plotly.js/factory";
 import Plotly from "plotly.js-dist-min";
@@ -205,6 +205,7 @@ const LineChart: React.FC<LineChartProps> = memo(
 
 const Page = () => {
   const { account, accountLoading } = useAccount();
+  const { notification } = App.useApp();
 
   const caretIconSize = 50;
   const { user: loggedIn } = useAuthenticator((context) => [context.user]);
