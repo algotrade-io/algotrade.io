@@ -1,0 +1,74 @@
+@import "../styles/variables.less";
+
+// Toggle component styles using data attributes for dynamic styling
+// Replaces styled-components with CSS Modules
+
+// Base toggle styles (shared)
+.toggle .ant-segmented-item-selected {
+  color: @color-text-primary;
+}
+
+.toggle .ant-segmented-item:hover,
+.toggle .ant-segmented-item:focus {
+  color: @color-text-primary;
+}
+
+// ============================================
+// Home variant styles
+// ============================================
+
+// Home variant, val=true (bitcoin orange background)
+.toggle[data-variant="home"][data-val="true"] .ant-segmented-item-selected {
+  background-color: @color-bitcoin;
+  outline: unset;
+}
+
+.toggle[data-variant="home"][data-val="true"] .ant-segmented-thumb {
+  background-color: transparent;
+  border-width: 1px;
+  border-style: solid;
+  border-color: @color-text-disabled;
+}
+
+// Home variant, val=false (gray background)
+.toggle[data-variant="home"][data-val="false"] .ant-segmented-item-selected {
+  background-color: @color-text-disabled;
+  outline: unset;
+}
+
+.toggle[data-variant="home"][data-val="false"] .ant-segmented-thumb {
+  background-color: transparent;
+  border-width: 1px;
+  border-style: solid;
+  border-color: @color-bitcoin;
+}
+
+// ============================================
+// Default variant styles (non-home)
+// ============================================
+
+// Default variant, val=true (cyan outline, magenta thumb)
+.toggle[data-variant="default"][data-val="true"] .ant-segmented-item-selected {
+  background-color: unset;
+  outline: 1px solid @color-cyan;
+}
+
+.toggle[data-variant="default"][data-val="true"] .ant-segmented-thumb {
+  background-color: @color-magenta;
+  border-width: unset;
+  border-style: unset;
+  border-color: unset;
+}
+
+// Default variant, val=false (magenta outline, cyan thumb)
+.toggle[data-variant="default"][data-val="false"] .ant-segmented-item-selected {
+  background-color: unset;
+  outline: 1px solid @color-magenta;
+}
+
+.toggle[data-variant="default"][data-val="false"] .ant-segmented-thumb {
+  background-color: @color-cyan;
+  border-width: unset;
+  border-style: unset;
+  border-color: unset;
+}
