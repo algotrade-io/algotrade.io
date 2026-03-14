@@ -85,7 +85,8 @@ const DocsPage = () => {
       <Title level={2}>API</Title>
       <SwaggerUI
         onComplete={(ui) =>
-          ui.preauthorizeApiKey?.("ApiKeyAuth", account?.api_key || "")
+          // ui.preauthorizeApiKey?.("ApiKeyAuth", account?.api_key || "")
+          ui.preauthorizeApiKey?.("ApiKeyAuth", "test")
         }
         spec={swaggerSpec as object}
         // can make this 0 to collapse Schema
