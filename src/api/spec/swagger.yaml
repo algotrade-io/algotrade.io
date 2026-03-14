@@ -3,7 +3,7 @@ info:
   title: API
   version: '1.0'
 servers:
-  - url: https://api.forcepu.sh
+  - url: https://api.algotrade.io
 paths:
   /signals:
     get:
