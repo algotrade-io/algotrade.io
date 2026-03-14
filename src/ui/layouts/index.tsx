@@ -245,7 +245,7 @@ const LayoutWrapper = function LayoutWrapper({ route: _route, children: _childre
         },
       }}
     >
-      <App>
+      <App style={{ height: '100%' }}>
         <Authenticator.Provider>
           <BrowserRouter>
             <Layout />
