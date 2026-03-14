@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
-import { Layout as AntLayout, ConfigProvider, theme } from "antd";
+import { Layout as AntLayout, ConfigProvider, theme, App } from "antd";
 import {
   Authenticator,
   useAuthenticator,
@@ -246,11 +246,13 @@ const LayoutWrapper = function LayoutWrapper({ route: _route, children: _childre
         },
       }}
     >
-      <Authenticator.Provider>
-        <BrowserRouter>
-          <Layout />
-        </BrowserRouter>
-      </Authenticator.Provider>
+      <App>
+        <Authenticator.Provider>
+          <BrowserRouter>
+            <Layout />
+          </BrowserRouter>
+        </Authenticator.Provider>
+      </App>
     </ConfigProvider>
   );
 };
