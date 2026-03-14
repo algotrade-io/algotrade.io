@@ -2,15 +2,15 @@
  * Frontend Utilities
  * 
  * This file re-exports domain-specific utilities and contains
- * UI components.
+ * UI components that depend on styled-components.
  * 
  * For new code, prefer importing from specific utility modules:
  * - import { getApiUrl } from '@/utils/env';
  * - import { getDayDiff } from '@/utils/date';
  */
 
-import React from "react";
-import { Segmented, SegmentedProps } from "antd";
+import { Segmented } from "antd";
+import styled from "styled-components";
 
 // Re-export all utilities for backwards compatibility
 export * from './utils/index';
@@ -19,42 +19,29 @@ export * from './utils/index';
 export { signalColors, signalEmojis, toggleColors, colors } from './tokens';
 import { toggleColors, colors } from './tokens';
 
-// Toggle component props
-interface ToggleProps extends Omit<SegmentedProps, 'ref'> {
-  var?: string;
-  val?: boolean;
-}
+// Styled Components — kept here as they depend on styled-components
+export const Toggle = styled(Segmented)`
 
-// Toggle component - uses CSS custom properties for dynamic styling
-export const Toggle: React.FC<ToggleProps> = ({ var: variant, val, style, ...props }) => {
-  const isHome = variant === 'home';
+  .ant-segmented-item-selected {
+    background-color: ${(props: { var: string, val: boolean }) => (props.var == 'home' ? (props.val ? colors.bitcoin : toggleColors.gray) : 'unset')};
+    outline: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? "unset" : "1px solid " + (props.val ? toggleColors.outlineActive : toggleColors.outlineInactive))};
+    color: ${toggleColors.text};
+  }
 
-  // Set CSS custom properties based on variant and value
-  const cssVars: React.CSSProperties = {
-    '--toggle-selected-bg': isHome
-      ? (val ? colors.bitcoin : toggleColors.gray)
-      : 'unset',
-    '--toggle-selected-outline': isHome
-      ? 'unset'
-      : `1px solid ${val ? toggleColors.outlineActive : toggleColors.outlineInactive}`,
-    '--toggle-thumb-bg': isHome
-      ? colors.transparent
-      : (val ? toggleColors.thumbActive : toggleColors.thumbInactive),
-    '--toggle-thumb-border-width': isHome ? '1px' : 'unset',
-    '--toggle-thumb-border-style': isHome ? 'solid' : 'unset',
-    '--toggle-thumb-border-color': isHome
-      ? (val ? toggleColors.gray : colors.bitcoin)
-      : 'unset',
-    ...style,
-  } as React.CSSProperties;
+  .ant-segmented-item:hover,
+  .ant-segmented-item:focus {
+    color: ${toggleColors.text};
+  }
 
-  return (
-    <Segmented
-      className="custom-toggle"
-      style={cssVars}
-      {...props}
-    />
-  );
-};
+  .ant-segmented-thumb {
+    background-color: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? colors.transparent : (props.val ? toggleColors.thumbActive : toggleColors.thumbInactive))};
+    border-width: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? '1px' : 'unset')};
+    border-style: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? 'solid' : 'unset')};
+    border-left-color: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? (props.val ? toggleColors.gray : colors.bitcoin) : 'unset')};
+    border-top-color: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? (props.val ? toggleColors.gray : colors.bitcoin) : 'unset')};
+    border-right-color: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? (props.val ? toggleColors.gray : colors.bitcoin) : 'unset')};
+    border-bottom-color: ${(props: { var: string, val: boolean }) => (props.var === 'home' ? (props.val ? toggleColors.gray : colors.bitcoin) : 'unset')};
+  }
+`;
 
 export const isEmpty = (obj: object) => !(obj && Object.keys(obj).length)
