@@ -40,6 +40,10 @@ const DocsPage = () => {
   const swaggerRef = useRef<SwaggerUISystem | null>(null);
   const { notification } = App.useApp();
 
+  // Ref to avoid stale closure in SwaggerUI interceptors
+  const accountRef = useRef(account);
+  accountRef.current = account;
+
   // Re-authorize when account changes (handles case where SwaggerUI loads before account)
   useEffect(() => {
     if (swaggerRef.current && account?.api_key) {
@@ -110,6 +114,7 @@ const DocsPage = () => {
         displayRequestDuration
         requestInterceptor={(req) => {
           const { headers } = req;
+          const currentAccount = accountRef.current;
           if (!("X-API-Key" in headers)) {
             notification.error({
               duration: 10,
@@ -124,7 +129,7 @@ const DocsPage = () => {
                 </>
               ),
             });
-          } else if (headers["X-API-Key"] !== account?.api_key) {
+          } else if (headers["X-API-Key"] !== currentAccount?.api_key) {
             notification.error({
               duration: 10,
               message: "Wrong API Key",
