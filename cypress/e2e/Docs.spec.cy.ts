@@ -42,7 +42,7 @@ describe('Docs', () => {
       cy.get('.ant-message').contains('Copied API Key to clipboard');
     })
     it('Trigger Signals API', () => {
-        const notification = '.ant-notification';
+        const notification = '.ant-notification-notice-wrapper';
         cy.login();
         cy.intercept('GET', `https://api.${domain}/account`).as('getAccount');
         cy.get('input[type="password"]', { timeout: 10000 }).invoke('val').should('have.length', 86);
