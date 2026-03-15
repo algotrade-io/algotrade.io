@@ -293,6 +293,16 @@ input {
   box-shadow: unset !important;
 }
 
+// Outlined button hover/focus styling (cyan glow like .start button)
+:global(.ant-btn.ant-btn-variant-outlined:not(:disabled):hover),
+:global(.ant-btn.ant-btn-variant-outlined:not(:disabled):focus) {
+  border-color: @color-cyan !important;
+}
+
+:global(.ant-btn.ant-btn-variant-outlined:not(:disabled):hover) {
+  box-shadow: @shadow-glow-cyan;
+}
+
 .ant-btn[disabled]:hover {
   border-color: #434343 !important;
 }
