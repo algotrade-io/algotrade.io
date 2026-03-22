@@ -93,6 +93,7 @@ if (isLocal) {
     },
     federationTarget: "COGNITO_USER_POOLS",
     aws_cognito_username_attributes: ["EMAIL"],
+    // aws_cognito_social_providers: ["GOOGLE", "FACEBOOK", "AMAZON"],
     aws_cognito_social_providers: [],
     aws_cognito_signup_attributes: ["EMAIL", "NAME", "PICTURE"],
     aws_cognito_mfa_configuration: "OPTIONAL",
@@ -193,33 +194,33 @@ const LayoutWrapper = function LayoutWrapper({ route: _route, children: _childre
   return (
     <ConfigProvider
       theme={{
-      algorithm: darkAlgorithm,
-      token: {
-        borderRadius: 2,
-        boxShadow:
-          '0 1px 2px -2px rgb(0 0 0 / 64%), 0 3px 6px 0 rgb(0 0 0 / 48%), 0 5px 12px 4px rgb(0 0 0 / 36%)',
-        fontFamily:
-          'Syne Mono, "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
-      },
-      components: {
-        Input: {
-          colorBgContainer: 'transparent',
+        algorithm: darkAlgorithm,
+        token: {
+          borderRadius: 2,
+          boxShadow:
+            '0 1px 2px -2px rgb(0 0 0 / 64%), 0 3px 6px 0 rgb(0 0 0 / 48%), 0 5px 12px 4px rgb(0 0 0 / 36%)',
+          fontFamily:
+            'Syne Mono, "Helvetica Neue", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
         },
-        Table: {
-          borderRadiusLG: 4,
+        components: {
+          Input: {
+            colorBgContainer: 'transparent',
+          },
+          Table: {
+            borderRadiusLG: 4,
+          },
+          Card: {
+            borderRadiusLG: 4,
+          },
         },
-        Card: {
-          borderRadiusLG: 4,
-        },
-      },
-    }}
-  >
-    <Authenticator.Provider>
-      <BrowserRouter>
-      <Layout />
-      </BrowserRouter>
-    </Authenticator.Provider>
-  </ConfigProvider>
+      }}
+    >
+      <Authenticator.Provider>
+        <BrowserRouter>
+          <Layout />
+        </BrowserRouter>
+      </Authenticator.Provider>
+    </ConfigProvider>
   );
 };
 
