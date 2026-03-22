@@ -1,5 +1,12 @@
 @import "../styles/variables.less";
 
+// Ant Design CSS variable overrides
+:global(:root) {
+  --ant-modal-footer-bg: @color-bg-elevated;
+  --ant-modal-content-bg: @color-bg-elevated;
+  --ant-modal-header-bg: @color-bg-elevated;
+}
+
 #root {
   height: 100vh;
 }
@@ -232,7 +239,8 @@ input {
 // adds cyan border when unchecked
 :global(.ant-checkbox .ant-checkbox-inner),
 :global(.ant-checkbox:not(.ant-checkbox-disabled):hover .ant-checkbox-inner),
-:global(.ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-inner) {
+:global(.ant-checkbox-wrapper:not(.ant-checkbox-wrapper-disabled):hover .ant-checkbox-inner),
+:global(span.ant-checkbox:not(.ant-checkbox-disabled):hover .ant-checkbox-inner) {
   border-color: @color-cyan;
   background: transparent;
 }
@@ -248,7 +256,7 @@ input {
 
 // removes cyan border after checking
 :global(.ant-checkbox-checked .ant-checkbox-inner) {
-  border-color: transparent !important;
+  border: 0 !important;
   background-color: unset;
 }
 
@@ -297,9 +305,29 @@ input {
 :global(.ant-btn.ant-btn-variant-outlined:not(:disabled):hover),
 :global(.ant-btn.ant-btn-variant-outlined:not(:disabled):focus) {
   border-color: @color-cyan !important;
+  color: white !important;
 }
 
 :global(.ant-btn.ant-btn-variant-outlined:not(:disabled):hover) {
+  box-shadow: @shadow-glow-cyan;
+}
+
+// Disabled outlined buttons should not change on hover
+:global(.ant-btn.ant-btn-variant-outlined:disabled:hover),
+:global(.ant-btn.ant-btn-variant-outlined.ant-btn-disabled:hover) {
+  color: @color-text-disabled !important;
+  border-color: @color-border-primary !important;
+  box-shadow: none !important;
+}
+
+// Input affix wrapper hover/focus styling (cyan glow like .start button)
+:global(.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover),
+:global(.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):focus),
+:global(.ant-input-affix-wrapper-focused:not(.ant-input-affix-wrapper-disabled)) {
+  border-color: @color-cyan !important;
+}
+
+:global(.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover) {
   box-shadow: @shadow-glow-cyan;
 }
 
