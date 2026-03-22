@@ -93,7 +93,7 @@ if (isLocal) {
     },
     federationTarget: "COGNITO_USER_POOLS",
     aws_cognito_username_attributes: ["EMAIL"],
-    aws_cognito_social_providers: ["GOOGLE", "FACEBOOK", "AMAZON"],
+    // aws_cognito_social_providers: ["GOOGLE", "FACEBOOK", "AMAZON"],
     aws_cognito_signup_attributes: ["EMAIL", "NAME", "PICTURE"],
     aws_cognito_mfa_configuration: "OPTIONAL",
     aws_cognito_mfa_types: ["TOTP"],
